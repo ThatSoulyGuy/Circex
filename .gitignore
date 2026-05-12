@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Tool caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment / secrets
+.env
+.env.local
+
+# Local data (large; reproducible from references/ and remote)
+data/
+cache/
+*.sqlite
+*.sqlite-*
+*.db
+
+# Reference repos (cloned shallow; not part of this project)
+references/
+
+# Build / runtime artifacts
+reports/
+runs/
+
+# Node (Sprint 5 leanmcp_bridge)
+node_modules/
+*.tsbuildinfo
