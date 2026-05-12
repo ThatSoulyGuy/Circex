@@ -65,6 +65,8 @@ ignore = []
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["B"]
+# Typer idiom: Option/Argument calls in defaults.
+"circex/cli.py" = ["B008"]
 
 # ---------- Mypy ----------
 [tool.mypy]

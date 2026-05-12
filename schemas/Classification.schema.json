@@ -1,0 +1,45 @@
+{
+  "$id": "https://gcn.nasa.gov/schema/main/gcn/notices/core/Classification.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Classification",
+  "description": "Source classification with optional subtype and confidence.",
+  "properties": {
+    "classification": {
+      "description": "Canonical class name from skyportal/timedomain-taxonomy (e.g., 'Ia', 'Ic-BL', 'Tidal Disruption Event', 'kilonova').",
+      "title": "Classification",
+      "type": "string"
+    },
+    "subtype": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Free-form subtype refinement when the taxonomy lacks a finer class.",
+      "title": "Subtype"
+    },
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Classifier confidence [0-1] when reported.",
+      "title": "Confidence"
+    }
+  },
+  "required": [
+    "classification"
+  ],
+  "type": "object"
+}

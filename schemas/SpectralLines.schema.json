@@ -1,0 +1,60 @@
+{
+  "$id": "https://gcn.nasa.gov/schema/main/gcn/notices/core/SpectralLines.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SpectralLines",
+  "type": "array",
+  "items": {
+    "description": "One identified spectral line from an optical-spectroscopy observation.",
+    "properties": {
+      "line_id": {
+        "description": "Identifier for the line, ex. 'Halpha', 'CaII H&K', 'OIII 5007', 'MgII 2796/2803'.",
+        "title": "Line Id",
+        "type": "string"
+      },
+      "rest_wavelength": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Rest-frame wavelength of the transition [Angstrom].",
+        "title": "Rest Wavelength"
+      },
+      "observed_wavelength": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Observed-frame wavelength as measured [Angstrom].",
+        "title": "Observed Wavelength"
+      },
+      "equivalent_width": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "description": "Equivalent width [Angstrom]. Positive = emission, negative = absorption.",
+        "title": "Equivalent Width"
+      }
+    },
+    "required": [
+      "line_id"
+    ],
+    "type": "object"
+  },
+  "description": "Identified spectral lines from one optical-spectroscopy observation."
+}

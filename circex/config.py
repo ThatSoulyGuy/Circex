@@ -16,6 +16,14 @@ class Settings(BaseSettings):
     data_dir: Path = Field(default=Path("./data"), alias="CIRCEX_DATA_DIR")
     db_path: Path = Field(default=Path("./data/circex.sqlite"), alias="CIRCEX_DB_PATH")
     max_usd_per_run: float = Field(default=10.0, alias="CIRCEX_MAX_USD_PER_RUN")
+    taxonomy_dir: Path = Field(
+        default=Path("./references/timedomain-taxonomy/tdtax"),
+        alias="CIRCEX_TAXONOMY_DIR",
+        description=(
+            "Directory containing the timedomain-taxonomy YAML files. "
+            "Defaults to the local clone in references/."
+        ),
+    )
 
 
 def get_settings() -> Settings:

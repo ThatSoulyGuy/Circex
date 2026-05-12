@@ -34,9 +34,12 @@ Thumbs.db
 .env
 .env.local
 
-# Local data (large; reproducible from references/ and remote)
-data/
-cache/
+# Local data — exclude specific subdirs that are large or runtime-generated.
+# Keep data/labels/ and data/subsets/ tracked (small, reproducible artifacts).
+/data/archive_*/
+/data/cache/
+/data/db/
+/cache/
 *.sqlite
 *.sqlite-*
 *.db

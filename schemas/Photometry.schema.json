@@ -1,0 +1,178 @@
+{
+  "$id": "https://gcn.nasa.gov/schema/main/gcn/notices/core/Photometry.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PhotometryExt",
+  "description": "Magnitude-based UV/optical/NIR photometry for one source in one filter (one row).",
+  "properties": {
+    "filter": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Filter used for the observation (e.g., u, g, r, R, clear).",
+      "title": "Filter"
+    },
+    "mag": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Measured apparent magnitude [mag] of the source in the specified filter.",
+      "title": "Mag"
+    },
+    "mag_error": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "1-sigma statistical uncertainty on magnitude [mag].",
+      "title": "Mag Error"
+    },
+    "mag_system": {
+      "anyOf": [
+        {
+          "enum": [
+            "AB",
+            "Vega",
+            "STMag"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Photometric magnitude system (zeropoint convention) for mag and limiting_mag. One of [AB, Vega, STMag]. Tightened from upstream open-string default.",
+      "title": "Mag System"
+    },
+    "limiting_mag": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Limiting magnitude (upper limit) for the observation [mag].",
+      "title": "Limiting Mag"
+    },
+    "limiting_mag_sigma": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Significance level [sigma] associated with limiting_mag (default 5).",
+      "title": "Limiting Mag Sigma"
+    },
+    "telescope": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Name of the telescope (e.g., GTC, ZTF, Pan-STARRS1).",
+      "title": "Telescope"
+    },
+    "instrument": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Name of the instrument (e.g., OSIRIS, ZTF Camera).",
+      "title": "Instrument"
+    },
+    "calibration_reference": {
+      "anyOf": [
+        {
+          "enum": [
+            "PS1",
+            "SDSS",
+            "APASS",
+            "2MASS",
+            "Gaia",
+            "Other"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Photometric calibration reference catalog. One of [PS1, SDSS, APASS, 2MASS, Gaia, Other].",
+      "title": "Calibration Reference"
+    },
+    "galactic_extinction_corrected": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "True if the reported magnitude has been corrected for Galactic extinction.",
+      "title": "Galactic Extinction Corrected"
+    },
+    "seeing": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Seeing FWHM during the observation [arcsec].",
+      "title": "Seeing"
+    },
+    "airmass": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Airmass during the observation [dimensionless].",
+      "title": "Airmass"
+    }
+  },
+  "type": "object"
+}

@@ -1,0 +1,1094 @@
+[
+  {
+    "circular_id": 22,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 33,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 150,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 175,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 206,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 213,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 319,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 329,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 345,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 421,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 440,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 472,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 524,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 648,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 668,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 674,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 727,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 821,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 825,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 840,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 963,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1040,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1288,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1298,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1346,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1388,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1419,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1503,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1615,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1823,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1825,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1948,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 1979,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2017,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2037,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2048,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2054,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2092,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2576,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2680,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2799,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2817,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2873,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 2900,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3016,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3028,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3061,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3239,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3312,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3481,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3575,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3666,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 3691,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4127,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4184,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4208,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4216,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4235,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4471,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4557,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4607,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4610,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 4838,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5016,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5057,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5071,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5127,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5195,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5216,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5298,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5319,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5372,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5670,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5754,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5771,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5869,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 5928,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 6046,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 6144,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 6146,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 6565,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 6630,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 6876,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 6959,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7065,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7187,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7363,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7415,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7429,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7535,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7543,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7678,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7681,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7783,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7795,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7827,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7832,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 7940,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 8160,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 8271,
+    "stratum": "single_row_mag"
+  },
+  {
+    "circular_id": 9,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 24,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 207,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 227,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 398,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 413,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 850,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 886,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 887,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 907,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 955,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 972,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 979,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1195,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1271,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1274,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1276,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1385,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1554,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1651,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1701,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1911,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1920,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1925,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1957,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 1968,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2106,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2112,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2193,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2245,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2246,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2247,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2323,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2514,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2515,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2555,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2594,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2684,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2726,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 2971,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3008,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3125,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3126,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3736,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3745,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3809,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3817,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3818,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 3931,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 4203,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 4383,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 4767,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 4779,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 4943,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 4955,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 5140,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 5245,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 5786,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 5978,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 7011,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 7191,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 7421,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 7458,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 7488,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 7680,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 7970,
+    "stratum": "multi_row_mag_table"
+  },
+  {
+    "circular_id": 216,
+    "stratum": "spec_z_classification"
+  },
+  {
+    "circular_id": 481,
+    "stratum": "spec_z_classification"
+  },
+  {
+    "circular_id": 4353,
+    "stratum": "spec_z_classification"
+  },
+  {
+    "circular_id": 5958,
+    "stratum": "spec_z_classification"
+  },
+  {
+    "circular_id": 7210,
+    "stratum": "spec_z_classification"
+  },
+  {
+    "circular_id": 8089,
+    "stratum": "spec_z_classification"
+  },
+  {
+    "circular_id": 14,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 92,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 377,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 1307,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 1619,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 1832,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 2369,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 2600,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3079,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3107,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3358,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3403,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3581,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3892,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3923,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3981,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 3986,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4024,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4054,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4113,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4189,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4223,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4331,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4373,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4386,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4396,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4418,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4436,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4437,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4512,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4515,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4529,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4824,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4829,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4839,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4852,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4894,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5138,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5139,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5178,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5219,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5332,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5351,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5385,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5432,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5500,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5580,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5605,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5674,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5780,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5821,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5878,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5888,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5973,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 5993,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6066,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6366,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6439,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6442,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6449,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6481,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6611,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6632,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6650,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6730,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6755,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6765,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6769,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6934,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 6975,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7000,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7016,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7018,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7026,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7108,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7112,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7116,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7198,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7207,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7245,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7276,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7279,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7322,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7375,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7514,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7820,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7858,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7901,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7927,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 7932,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8043,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8179,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8192,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8248,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8262,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8272,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8287,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8298,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8308,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 8348,
+    "stratum": "photometric_upper_limit"
+  },
+  {
+    "circular_id": 4774,
+    "stratum": "gw_neutrino_counterpart"
+  }
+]

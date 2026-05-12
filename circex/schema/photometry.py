@@ -1,0 +1,76 @@
+"""Extended Photometry schema.
+
+Base mirrors gcn-schema gcn/notices/core/Photometry.schema.json. Sprint 1 adds:
+telescope, instrument, calibration_reference, galactic_extinction_corrected, seeing,
+airmass; tightens mag_system to enum [AB, Vega, STMag] (BREAKING for the upstream PR).
+
+These additions are the optical-specific extensions the plan calls for.
+"""
+
+from __future__ import annotations
+
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+MagSystem = Literal["AB", "Vega", "STMag"]
+CalibrationReference = Literal["PS1", "SDSS", "APASS", "2MASS", "Gaia", "Other"]
+
+
+class PhotometryExt(BaseModel):
+    """Magnitude-based UV/optical/NIR photometry for one source in one filter (one row)."""
+
+    filter: str | None = Field(
+        default=None,
+        description="Filter used for the observation (e.g., u, g, r, R, clear).",
+    )
+    mag: float | None = Field(
+        default=None,
+        description="Measured apparent magnitude [mag] of the source in the specified filter.",
+    )
+    mag_error: float | None = Field(
+        default=None,
+        description="1-sigma statistical uncertainty on magnitude [mag].",
+    )
+    mag_system: MagSystem | None = Field(
+        default=None,
+        description=(
+            "Photometric magnitude system (zeropoint convention) for mag and limiting_mag. "
+            "One of [AB, Vega, STMag]. Tightened from upstream open-string default."
+        ),
+    )
+    limiting_mag: float | None = Field(
+        default=None,
+        description="Limiting magnitude (upper limit) for the observation [mag].",
+    )
+    limiting_mag_sigma: float | None = Field(
+        default=None,
+        description="Significance level [sigma] associated with limiting_mag (default 5).",
+    )
+
+    # ---- optical-specific extensions added by Circex ----
+    telescope: str | None = Field(
+        default=None, description="Name of the telescope (e.g., GTC, ZTF, Pan-STARRS1)."
+    )
+    instrument: str | None = Field(
+        default=None, description="Name of the instrument (e.g., OSIRIS, ZTF Camera)."
+    )
+    calibration_reference: CalibrationReference | None = Field(
+        default=None,
+        description=(
+            "Photometric calibration reference catalog. One of "
+            "[PS1, SDSS, APASS, 2MASS, Gaia, Other]."
+        ),
+    )
+    galactic_extinction_corrected: bool | None = Field(
+        default=None,
+        description="True if the reported magnitude has been corrected for Galactic extinction.",
+    )
+    seeing: float | None = Field(
+        default=None,
+        description="Seeing FWHM during the observation [arcsec].",
+    )
+    airmass: float | None = Field(
+        default=None,
+        description="Airmass during the observation [dimensionless].",
+    )
