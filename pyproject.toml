@@ -76,7 +76,7 @@ warn_unused_configs = true
 files = ["circex"]
 
 [[tool.mypy.overrides]]
-module = ["tdtax.*"]
+module = ["tdtax.*", "astropy.*"]
 ignore_missing_imports = true
 
 # ---------- Pytest ----------

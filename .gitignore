@@ -47,7 +47,8 @@ Thumbs.db
 # Reference repos (cloned shallow; not part of this project)
 references/
 
-# Build / runtime artifacts
+# Build / runtime artifacts (reports + extraction outputs).
+# schemas/ is intentionally tracked — it's the upstream-PR deliverable.
 reports/
 runs/
 

@@ -1,0 +1,75 @@
+"""Redshift parser: 'z = X.XXX' with optional error + method/type heuristics.
+
+The plan's headline regex is `z\\s*[=~]\\s*(\\d+\\.\\d+)` plus ±200-char context
+windows for spec/photo and host/em/abs. We implement both.
+"""
+
+from __future__ import annotations
+
+import re
+
+from circex.schema import Redshift, RedshiftMeasure, RedshiftType
+
+_Z_RE = re.compile(
+    r"\bz\s*[=~≈]\s*(\d+\.\d+)(?:\s*±\s*(\d+\.\d+))?",
+    re.IGNORECASE,
+)
+_ALT_RE = re.compile(
+    r"\b(?:redshift\s+(?:of\s+)?)(\d+\.\d+)",
+    re.IGNORECASE,
+)
+
+# Context-window heuristics. Search ±200 chars around the redshift match.
+_CONTEXT_WINDOW = 200
+
+_SPEC_RE = re.compile(r"\bspectroscop(?:ic|y|ically)\b", re.IGNORECASE)
+_PHOTO_RE = re.compile(r"\bphotomet(?:ric|ry|rically)\b", re.IGNORECASE)
+_HOST_RE = re.compile(r"\bhost(?:\s+galaxy)?\b", re.IGNORECASE)
+_EMISSION_RE = re.compile(r"\bemission\s+line", re.IGNORECASE)
+_ABSORPTION_RE = re.compile(r"\babsorption\s+line", re.IGNORECASE)
+
+
+def _classify_measure(context: str) -> RedshiftMeasure | None:
+    if _SPEC_RE.search(context):
+        return "spectroscopic"
+    if _PHOTO_RE.search(context):
+        return "photometric"
+    return None
+
+
+def _classify_type(context: str) -> RedshiftType | None:
+    if _HOST_RE.search(context):
+        return "host"
+    if _EMISSION_RE.search(context):
+        return "emission"
+    if _ABSORPTION_RE.search(context):
+        return "absorption"
+    return None
+
+
+def parse_redshift(text: str) -> Redshift | None:
+    """Return a Redshift if the text contains z = X.XXX or 'redshift of X.XXX'."""
+    match = _Z_RE.search(text) or _ALT_RE.search(text)
+    if not match:
+        return None
+
+    z = float(match.group(1))
+    err: float | None = None
+    if _Z_RE.match(match.group(0)) is not None:
+        try:
+            err_str = match.group(2)
+        except IndexError:
+            err_str = None
+        if err_str:
+            err = float(err_str)
+
+    start = max(0, match.start() - _CONTEXT_WINDOW)
+    end = min(len(text), match.end() + _CONTEXT_WINDOW)
+    context = text[start:end]
+
+    return Redshift(
+        redshift=z,
+        redshift_error=err,
+        redshift_measure=_classify_measure(context),
+        redshift_type=_classify_type(context),
+    )

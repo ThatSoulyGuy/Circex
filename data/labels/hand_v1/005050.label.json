@@ -1,0 +1,23 @@
+{
+  "circular_id": 5050,
+  "event": null,
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "extraction_meta": {
+    "extractor": "hand-v1",
+    "model_id": null,
+    "prompt_version": null,
+    "tokens_in": null,
+    "tokens_out": null,
+    "latency_ms": null,
+    "cost_usd": null,
+    "cache_hit": false
+  }
+}

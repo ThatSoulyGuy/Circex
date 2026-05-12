@@ -1,7 +1,8 @@
-"""Event-name regex extraction. Ported from sjhend03/GCNMCP src/utils.py.
+"""Event-name regex extraction.
 
-Sprint 2 will extend EVENT_PATTERNS with TNS, ZTF, ATLAS, ASAS-SN, Pan-STARRS,
-GOTO, and a GCN cross-reference pattern. Sprint 0 keeps the predecessor set.
+Originally ported from sjhend03/GCNMCP src/utils.py; extended in Sprint 2 with
+TNS-style AT/SN suffixes (lowercase letter run), ZTF, ATLAS, ASAS-SN, Pan-STARRS,
+GOTO, plus GCN cross-reference extraction.
 """
 
 from __future__ import annotations
@@ -10,13 +11,51 @@ import re
 from typing import Any
 
 EVENT_PATTERNS: list[str] = [
+    # GRB: 6-digit YYMMDD + optional uppercase letter (e.g., GRB 230307A).
     r"\b(GRB\s?\d{6}[A-Z]?)\b",
+    # Einstein Probe (2024+): EP240617A.
     r"\b(EP\s?\d+[A-Z]?)\b",
-    r"\b(AT\s?\d+[A-Z]?)\b",
-    r"\b(SN\s?\d+[A-Z]?)\b",
+    # TNS designations (modern): AT2017gfo, AT 2018cow, SN 2024abc.
+    r"\b(AT\s?\d{4}[a-z]+)\b",
+    r"\b(SN\s?\d{4}[a-z]+)\b",
+    # Old-style AT/SN with uppercase single-letter suffix (pre-TNS era).
+    r"\b(AT\s?\d{2,4}[A-Z])\b",
+    r"\b(SN\s?\d{2,4}[A-Z])\b",
+    # ZTF survey: ZTF21aaqkqfp (2-digit year + lowercase letters).
+    r"\b(ZTF\d{2}[a-z]+)\b",
+    # ATLAS survey: ATLAS24abc.
+    r"\b(ATLAS\s?-?\d{2}[a-z]+)\b",
+    # ASAS-SN survey: ASASSN-19abc.
+    r"\b(ASASSN[-\s]?\d{2}[a-z]+)\b",
+    # Pan-STARRS: PS22ggn or Pan-STARRS 22abc.
+    r"\b(PS\d{2}[a-z]+)\b",
+    r"\b(Pan-?STARRS\s?\d{2}[a-z]+)\b",
+    # GOTO: GOTO24abc.
+    r"\b(GOTO\s?\d{2}[a-z]+)\b",
+    # IceCube: ICECUBE-200107A or IceCube 191001A.
     r"\b(ICECUBE\s?-?\d+[A-Z]?)\b",
+    # Swift X-ray catalog: SWIFT J1234.5+6789.0.
     r"\b(SWIFT\s?J\d+(?:\.\d+)?[+-]\d+(?:\.\d+)?)\b",
 ]
+
+# GCN cross-reference: "GCN #12345", "GCN Circular 12345", "GCN Circ. #12345".
+# Stored separately from event names — used to populate follow_up.reference.
+GCN_XREF_PATTERN = re.compile(
+    r"\bGCN\s*(?:Circ(?:ular|\.)?\s*)?#?\s*(\d{1,7})\b",
+    re.IGNORECASE,
+)
+
+
+def extract_gcn_xrefs(text: str) -> list[int]:
+    """Return all GCN Circular cross-reference IDs from text, deduplicated, in order."""
+    seen: set[int] = set()
+    out: list[int] = []
+    for match in GCN_XREF_PATTERN.finditer(text):
+        cid = int(match.group(1))
+        if cid not in seen:
+            seen.add(cid)
+            out.append(cid)
+    return out
 
 
 def clean_text(text: str | None) -> str:

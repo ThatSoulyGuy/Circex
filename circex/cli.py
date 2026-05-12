@@ -28,16 +28,60 @@ def version() -> None:
 @app.command()
 def extract(
     extractor: str = typer.Option(
-        ..., "--extractor", help="regex | claude-haiku | claude-sonnet | ollama"
+        "regex", "--extractor", help="regex (claude-* / ollama land in Sprint 3)"
     ),
-    circulars: str = typer.Option(
-        ..., "--circulars", help="path to a circulars subset JSON or label dir"
+    circulars: Path = typer.Option(
+        ..., "--circulars", help="path to a subset.json or a directory of *.label.json files"
     ),
-    out: str = typer.Option(..., "--out", help="output directory for extraction results"),
+    out: Path = typer.Option(..., "--out", help="output directory for extraction results"),
 ) -> None:
-    """Run an extractor over a set of circulars. (Sprint 2+)"""
-    console.print(f"[yellow]not yet implemented[/]: extract {extractor=} {circulars=} {out=}")
-    raise typer.Exit(code=2)
+    """Run an extractor over a set of circulars and write CircularExtraction JSON files."""
+    if extractor != "regex":
+        console.print(f"[yellow]extractor {extractor!r} not yet implemented (Sprint 3+).[/]")
+        raise typer.Exit(code=2)
+
+    from circex.data.archive import iter_circulars
+    from circex.data.subset import load_subset
+    from circex.extract.protocol import Circular
+    from circex.extract.regex import RegexExtractor
+
+    # Resolve circular IDs from the input target.
+    ids: list[int] = []
+    if circulars.is_file() and circulars.suffix == ".json":
+        ids = [s.circular_id for s in load_subset(circulars)]
+    elif circulars.is_dir():
+        ids = sorted(int(p.stem.split(".")[0]) for p in circulars.glob("*.label.json"))
+    else:
+        console.print(f"[red]error:[/] {circulars} is not a subset.json or label dir")
+        raise typer.Exit(code=2)
+
+    if not ids:
+        console.print(f"[yellow]no circulars found in {circulars}[/]")
+        raise typer.Exit(code=1)
+
+    out.mkdir(parents=True, exist_ok=True)
+    ext = RegexExtractor()
+    records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
+
+    written = 0
+    missing = 0
+    for cid in ids:
+        rec = records.get(cid)
+        if rec is None:
+            missing += 1
+            continue
+        result = ext.extract(Circular.from_record(rec))
+        out_path = out / f"{cid:06d}.extraction.json"
+        out_path.write_text(
+            result.model_dump_json(indent=2, by_alias=True, exclude_none=True) + "\n",
+            encoding="utf-8",
+        )
+        written += 1
+
+    console.print(
+        f"[green]wrote {written} extractions to {out}[/]"
+        + (f" ([yellow]{missing} circulars missing from archive[/])" if missing else "")
+    )
 
 
 @app.command(name="schema-dump")

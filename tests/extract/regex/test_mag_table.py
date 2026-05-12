@@ -1,0 +1,71 @@
+"""Tests for the magnitude parsers (single + table)."""
+
+from __future__ import annotations
+
+from circex.extract.regex.mag_table import (
+    infer_mag_system,
+    parse_mag_table,
+    parse_single_mags,
+)
+
+
+def test_infer_sloan_is_ab() -> None:
+    assert infer_mag_system("r") == "AB"
+    assert infer_mag_system("g") == "AB"
+    assert infer_mag_system("z") == "AB"
+
+
+def test_infer_bessel_is_vega() -> None:
+    assert infer_mag_system("R") == "Vega"
+    assert infer_mag_system("V") == "Vega"
+
+
+def test_infer_nir_is_vega() -> None:
+    assert infer_mag_system("J") == "Vega"
+    assert infer_mag_system("Ks") == "Vega"
+
+
+def test_parse_single_detection_with_error() -> None:
+    rows = parse_single_mags("The OT is detected at r = 18.42 ± 0.05 mag.")
+    assert any(p.filter == "r" and p.mag == 18.42 and p.mag_error == 0.05 for p in rows)
+
+
+def test_parse_single_upper_limit() -> None:
+    rows = parse_single_mags("3-sigma upper limit r > 22.5 in the field.")
+    matches = [p for p in rows if p.filter == "r" and p.limiting_mag == 22.5]
+    assert len(matches) == 1
+
+
+def test_rejects_redshift_value_as_z_mag() -> None:
+    """'z = 1.61' is a redshift, not a Sloan-z mag; must NOT be returned."""
+    rows = parse_single_mags("Redshift z = 1.61 from absorption lines.")
+    assert not any(p.filter == "z" and p.mag == 1.61 for p in rows)
+
+
+def test_rejects_too_bright_mag() -> None:
+    """Magnitudes below 5 are vanishingly rare in optical circulars; reject."""
+    rows = parse_single_mags("Some random equation r = 3.14 in cosmology.")
+    assert not any(p.filter == "r" and p.mag == 3.14 for p in rows)
+
+
+def test_parse_clean_table() -> None:
+    text = """
+Date          Filter   Mag      Err
+2020-01-01    r        18.42    0.05
+2020-01-02    r        18.51    0.05
+2020-01-03    g        19.10    0.07
+""".strip()
+    rows = parse_mag_table(text)
+    assert len(rows) == 3
+    assert {(p.filter, p.mag) for p in rows} == {
+        ("r", 18.42), ("r", 18.51), ("g", 19.10),
+    }
+
+
+def test_parse_empty_when_no_table() -> None:
+    """Prose-only circulars should produce zero table rows (the PDF's expected failure mode)."""
+    text = (
+        "We observed the field with the GTC. The optical transient appears to have "
+        "faded over the past 24 hours, consistent with previous reports."
+    )
+    assert parse_mag_table(text) == []
