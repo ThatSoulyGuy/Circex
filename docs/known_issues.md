@@ -59,6 +59,37 @@ spec_z).
 
 ---
 
+## Sprint 3 — LLM extractors
+
+### Claude pricing constants may be stale — **open**
+**Severity:** M (affects Sprint 4 cost projection accuracy). `_PRICING` in
+`circex/extract/llm/claude.py` has hardcoded USD-per-million-token prices
+sourced manually 2026-05-13 (Haiku 4.5: $1/$5; Sonnet 4.6: $3/$15; cache-write
+1.25× / cache-read 0.10× input). Anthropic doesn't expose a pricing API; these
+constants drift over time.
+**Decision:** verify and update before publishing `reports/cost_projection.md`
+at Sprint 4 close. Add a one-line check against the docs at that time.
+**Where:** `circex/extract/llm/claude.py`.
+
+### Live claude/ollama smoke test deferred to user run — **open**
+**Severity:** L. Sprint 3 commit ran 28 mocked tests against ClaudeExtractor +
+OllamaExtractor + cache. Full end-to-end against the live Anthropic API was
+deferred because `ANTHROPIC_API_KEY` isn't sourced in the shell I'm operating
+in.
+**How to verify:** `$env:ANTHROPIC_API_KEY="..."; circex extract --extractor
+claude-haiku --circulars data/labels/hand_v1 --out runs/claude_haiku_v1` —
+expected to produce 50 valid extraction files for ~$0.05 total.
+**Where:** N/A (user action).
+
+### Ollama JSON-mode repair retry covers only first failure — **open**
+**Severity:** L. If the repair retry ALSO produces an invalid JSON or a
+schema-violating object, `_call_with_repair` re-raises. No second repair.
+**Decision:** acceptable for v1; Mistral-7B's JSON mode is usually reliable.
+Sprint 4 metrics will surface if this is a real problem.
+**Where:** `circex/extract/llm/ollama.py`.
+
+---
+
 ## Sprint 2 — regex baseline
 
 ### Classification matches first taxonomy alias, no context — **accepted**

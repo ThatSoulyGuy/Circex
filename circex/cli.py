@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import typer
 from pydantic import ValidationError
@@ -10,6 +11,9 @@ from rich.console import Console
 from circex import __version__
 from circex.schema import CircularExtraction
 from circex.schema.dump import write_all
+
+if TYPE_CHECKING:
+    from circex.extract.protocol import Extractor
 
 app = typer.Typer(
     name="circex",
@@ -25,27 +29,55 @@ def version() -> None:
     console.print(f"circex {__version__}")
 
 
+_CLAUDE_MODEL_IDS = {
+    "claude-haiku": "claude-haiku-4-5-20251001",
+    "claude-sonnet": "claude-sonnet-4-6",
+}
+
+
+def _build_extractor(
+    name: str, cache_path: Path | None
+) -> Extractor:
+    """Resolve an extractor name to an instance. Lazy imports so the CLI loads even
+    when the LLM clients aren't usable yet (e.g., missing API keys)."""
+    if name == "regex":
+        from circex.extract.regex import RegexExtractor
+        return RegexExtractor()
+
+    from circex.cache.llm import LLMCache
+    cache = LLMCache(cache_path) if cache_path is not None else None
+
+    if name in _CLAUDE_MODEL_IDS:
+        from circex.extract.llm import ClaudeExtractor
+        return ClaudeExtractor(model_id=_CLAUDE_MODEL_IDS[name], cache=cache)
+    if name == "ollama":
+        from circex.extract.llm import OllamaExtractor
+        return OllamaExtractor(cache=cache)
+    raise typer.BadParameter(
+        f"unknown extractor {name!r}; choose regex | claude-haiku | claude-sonnet | ollama"
+    )
+
+
 @app.command()
 def extract(
     extractor: str = typer.Option(
-        "regex", "--extractor", help="regex (claude-* / ollama land in Sprint 3)"
+        "regex", "--extractor",
+        help="regex | claude-haiku | claude-sonnet | ollama",
     ),
     circulars: Path = typer.Option(
         ..., "--circulars", help="path to a subset.json or a directory of *.label.json files"
     ),
     out: Path = typer.Option(..., "--out", help="output directory for extraction results"),
+    cache_db: Path = typer.Option(
+        Path("data/cache/llm.sqlite"), "--cache-db",
+        help="SQLite cache file for LLM responses",
+    ),
 ) -> None:
     """Run an extractor over a set of circulars and write CircularExtraction JSON files."""
-    if extractor != "regex":
-        console.print(f"[yellow]extractor {extractor!r} not yet implemented (Sprint 3+).[/]")
-        raise typer.Exit(code=2)
-
     from circex.data.archive import iter_circulars
     from circex.data.subset import load_subset
     from circex.extract.protocol import Circular
-    from circex.extract.regex import RegexExtractor
 
-    # Resolve circular IDs from the input target.
     ids: list[int] = []
     if circulars.is_file() and circulars.suffix == ".json":
         ids = [s.circular_id for s in load_subset(circulars)]
@@ -60,7 +92,7 @@ def extract(
         raise typer.Exit(code=1)
 
     out.mkdir(parents=True, exist_ok=True)
-    ext = RegexExtractor()
+    ext = _build_extractor(extractor, cache_db if extractor != "regex" else None)
     records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
 
     written = 0
