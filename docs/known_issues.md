@@ -59,6 +59,51 @@ spec_z).
 
 ---
 
+## Sprint 4 — eval harness
+
+### Vidushi CSV uses "No Information" as null sentinel — **resolved**
+**Severity:** M. `redshift_accuracy.csv` "Actual" and "Predicted" telescope /
+GRB-number / redshift-type columns store "No Information" for missing values,
+not empty strings. Untreated, this fired hundreds of spurious value-mismatch
+errors in the comparator.
+**Fix:** `_NULL_SENTINELS` in `circex/data/swift_gold.py` now includes
+"no information", "n/a", "na", "-" alongside nan/none/null.
+
+### Vidushi gold doesn't cover redshift_type — **accepted**
+**Severity:** L. All 500 sampled rows have `Actual Redshift Type` =
+"No Information". Comparator correctly reports 0 gold support on
+`redshift.redshift_type`. The plan's "four Vidushi fields" turns out to be
+three in practice — the Swift catalog doesn't populate type.
+**Decision:** Hand-labeled 50 will be the gold source for redshift_type.
+**Where:** `references/circulars-nlp-paper/.../redshift_accuracy.csv`.
+
+### Vidushi telescope_name F1 = 0.098 — **flagged for investigation**
+**Severity:** L (regex/Claude can't lose to this). Vidushi's predicted telescope
+names match the Swift-gold telescope names only ~9.8% of the time. Likely cause:
+Swift catalog uses formal codes ("VLT/X-shooter"), Vidushi's pipeline extracts
+informal mentions ("the VLT"). Sprint 4 LLM extractors should normalize.
+
+### Live LLM eval columns deferred (no API key in shell) — **open**
+**Severity:** L. `reports/eval_v1.md` contains regex-v1 + vidushi-mistral only.
+**How to run:** `$env:ANTHROPIC_API_KEY="..."; circex eval --extractors
+regex,claude-haiku,claude-sonnet --gold vidushi --max-circulars 100`. Projected
+~$0.30 (Haiku) and ~$1 (Sonnet) for 100 rows.
+
+### Photometry/coords/time_offsets contaminate Vidushi-mode eval — **accepted**
+**Severity:** L. Vidushi gold only covers 4 fields. The comparator still scores
+the other ~7 fields, all gold-null → preds-FP. Failure browser is noisy but the
+headline F1 numbers are fine.
+**Decision:** acceptable; Sprint 4's hand-labeled-50 eval mode will populate all
+fields properly.
+
+### Mismatch semantics: MM = 1 FP + 1 FN — **resolved**
+**Severity:** L. Initial `_compare_scalar` emitted `FP` only on value mismatch.
+Standard IE convention double-counts (the model both hallucinated AND missed).
+Added `MM` outcome; aggregator increments both fp and fn for MM rows.
+**Where:** `circex/eval/metrics.py`.
+
+---
+
 ## Sprint 3 — LLM extractors
 
 ### Claude pricing constants may be stale — **open**
