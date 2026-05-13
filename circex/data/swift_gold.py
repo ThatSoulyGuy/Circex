@@ -50,7 +50,7 @@ class SwiftEvaluationRow:
 
 def _to_float(s: str) -> float | None:
     s = (s or "").strip()
-    if not s or s.lower() in ("nan", "none", "null"):
+    if not s or s.lower() in _NULL_SENTINELS:
         return None
     try:
         return float(s)
@@ -58,9 +58,14 @@ def _to_float(s: str) -> float | None:
         return None
 
 
+_NULL_SENTINELS: frozenset[str] = frozenset({
+    "nan", "none", "null", "no information", "n/a", "na", "-",
+})
+
+
 def _to_str(s: str) -> str | None:
     s = (s or "").strip()
-    return s if s and s.lower() not in ("nan", "none", "null") else None
+    return s if s and s.lower() not in _NULL_SENTINELS else None
 
 
 def load_swift_evaluation(path: Path = DEFAULT_REDSHIFT_CSV) -> Iterator[SwiftEvaluationRow]:

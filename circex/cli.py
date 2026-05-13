@@ -188,15 +188,109 @@ def subset_build(
     console.print(f"[green]wrote {len(subset)} stratified circulars to {out}[/]")
 
 
-@app.command()
-def eval(
-    extractors: str = typer.Option("all", "--extractors"),
-    gold: str = typer.Option(..., "--gold"),
-    report: str = typer.Option("reports/eval_v1.md", "--report"),
+@app.command(name="eval")
+def eval_cmd(
+    extractors: str = typer.Option(
+        "regex",
+        "--extractors",
+        help="Comma-separated: regex,claude-haiku,claude-sonnet,ollama. 'all' = all four.",
+    ),
+    gold: str = typer.Option(
+        "vidushi", "--gold", help="vidushi | path/to/labels/dir"
+    ),
+    report: Path = typer.Option(Path("reports/eval_v1.md"), "--report"),
+    max_circulars: int = typer.Option(
+        500, "--max-circulars",
+        help="Cap to keep API costs bounded for vidushi-gold runs.",
+    ),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
+    seed: int = typer.Option(42, "--seed"),
 ) -> None:
-    """Run the four-way evaluation harness. (Sprint 4)"""
-    console.print(f"[yellow]not yet implemented[/]: eval {extractors=} {gold=} {report=}")
-    raise typer.Exit(code=2)
+    """Run the four-way evaluation harness against gold and emit a markdown report."""
+    from circex.data.archive import iter_circulars
+    from circex.eval.report import (
+        ExtractorReport,
+        evaluate_extractor,
+        write_report,
+    )
+    from circex.eval.runner import run_extractor
+    from circex.eval.vidushi_adapter import load_vidushi_eval
+    from circex.extract.protocol import Circular
+
+    # ---- resolve gold + which circulars to evaluate ----
+    if gold == "vidushi":
+        eval_set = load_vidushi_eval()
+        gold_extractions = eval_set.gold[:max_circulars]
+        rng = __import__("random").Random(seed)
+        sampled_rows = eval_set.rows[:max_circulars]
+        ids = [r.circular_id for r in sampled_rows]
+        records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
+        circulars = [
+            Circular.from_record(records[cid])
+            for cid in ids
+            if cid in records
+        ]
+        # Trim gold to circulars we actually loaded.
+        loaded_ids = {c.circular_id for c in circulars}
+        gold_extractions = [g for g in gold_extractions if g.circular_id in loaded_ids]
+        vidushi_pred = [
+            p for p in eval_set.predicted[:max_circulars] if p.circular_id in loaded_ids
+        ]
+        del rng
+    else:
+        # Hand-label gold dir.
+        gold_dir = Path(gold)
+        if not gold_dir.is_dir():
+            console.print(f"[red]error:[/] {gold!r} is not 'vidushi' or a directory")
+            raise typer.Exit(code=2)
+        gold_extractions = []
+        for path in sorted(gold_dir.glob("*.label.json")):
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            gold_extractions.append(CircularExtraction.model_validate(payload))
+        ids = [g.circular_id for g in gold_extractions]
+        records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
+        circulars = [
+            Circular.from_record(records[g.circular_id])
+            for g in gold_extractions
+            if g.circular_id in records
+        ]
+        vidushi_pred = []
+
+    if not circulars:
+        console.print("[red]error:[/] no circulars available to evaluate")
+        raise typer.Exit(code=2)
+
+    # ---- resolve extractor list ----
+    if extractors == "all":
+        extractor_names = ["regex", "claude-haiku", "claude-sonnet", "ollama"]
+    else:
+        extractor_names = [e.strip() for e in extractors.split(",")]
+
+    reports: list[ExtractorReport] = []
+
+    for name in extractor_names:
+        try:
+            ext = _build_extractor(name, cache_db if name != "regex" else None)
+        except Exception as exc:  # noqa: BLE001
+            console.print(f"[yellow]skipping {name}: {exc}[/]")
+            continue
+
+        console.print(f"[blue]running {name} on {len(circulars)} circulars…[/]")
+        results, stats = run_extractor(ext, circulars)
+        console.print(
+            f"  {stats.n_succeeded}/{stats.n_total} OK, "
+            f"cost=${stats.cost_usd:.4f}, failed={stats.n_failed}"
+        )
+        reports.append(
+            evaluate_extractor(ext.extractor_id, results, gold_extractions)
+        )
+
+    # Add Vidushi-predicted column for the Vidushi-gold case.
+    if vidushi_pred:
+        reports.append(evaluate_extractor("vidushi-mistral", vidushi_pred, gold_extractions))
+
+    write_report(reports, report)
+    console.print(f"[green]wrote {report}[/]")
 
 
 @app.command()
