@@ -21,6 +21,12 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
+      # circex.taxonomy reads YAML files directly from this clone (see README:
+      # "Why is tdtax an optional extra"). Five test files + the regex
+      # classification matcher depend on this being present.
+      - name: Fetch timedomain-taxonomy
+        run: git clone --depth 1 https://github.com/skyportal/timedomain-taxonomy references/timedomain-taxonomy
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
