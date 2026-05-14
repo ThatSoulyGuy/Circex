@@ -42,6 +42,7 @@ full design.
 | Use Ollama (open-source) | [Recipe D2](#recipe-d2--use-ollama-mistral-7b) |
 | Run as an MCP server for another tool to query | [Recipe E](#recipe-e--run-as-an-mcp-server) |
 | Ask natural-language questions ("what's the redshift of GRB X?") | [Recipe F](#recipe-f--natural-language-demo) |
+| Visualize how much better one extractor is than another | [Recipe H](#recipe-h--visualize-extractor-comparisons) |
 | Hand-label circulars for the gold set | [Recipe G](#recipe-g--hand-label-circulars) |
 | Install from scratch on a fresh machine | [Installation](#installation) |
 
@@ -286,6 +287,56 @@ Multi-tool questions work too:
 ```powershell
 python demo/cli_client.py --question "what photometry do we have for GRB 990123, and what's the classification?"
 ```
+
+## Recipe H — Visualize extractor comparisons
+
+Add `--plot` to `circex eval` and you get a 2-panel PNG: top panel = grouped
+F1 bars per field across all extractors, bottom panel = Δ vs a chosen baseline.
+
+```powershell
+# Install the optional plot extra (matplotlib)
+pip install matplotlib
+
+# Generate. The --plot-baseline arg controls what the bottom panel measures
+# improvement against — default is regex-v1, but for the Vidushi comparison
+# use vidushi-mistral so positive bars = "we beat her".
+circex eval --extractors regex --gold vidushi --max-circulars 500 `
+  --report reports/eval_v1.md `
+  --plot   reports/eval_v1.png `
+  --plot-baseline vidushi-mistral
+```
+
+Output (regex vs Vidushi's published Mistral-7B baseline, 500 rows):
+
+![Example: regex vs Vidushi](docs/images/eval_example_regex_vs_vidushi.png)
+
+**How to read it:**
+
+- **Top panel** — F1 per field, side-by-side bars per extractor. Numeric labels
+  above each bar. Hatched "n/a" bars mean the extractor didn't try (e.g., the
+  regex baseline doesn't extract telescope names) OR the gold set has no
+  support for that field.
+- **Bottom panel** — `F1(extractor) − F1(baseline)` per field. Positive means
+  the extractor beats the baseline; negative means it loses. The bigger the
+  bar, the bigger the gap.
+
+**With Claude/Ollama added** (once you've set `$ANTHROPIC_API_KEY` per Recipe D):
+
+```powershell
+circex eval --extractors regex,claude-haiku,claude-sonnet,ollama `
+  --gold data/labels/hand_v1 `
+  --report reports/eval_full.md `
+  --plot   reports/eval_full.png `
+  --plot-baseline regex-v1
+```
+
+Now the top panel shows **5 bars per field** (regex, Haiku, Sonnet, Ollama,
+vidushi-mistral when available), and the bottom panel shows how much each LLM
+beats the regex baseline on every field — including the hard ones regex can't
+do (multi-row photometry tables, in-prose classification).
+
+**Cost-aware reading**: pair the chart with the markdown report's "Cost &
+latency" table to see whether a +0.1 F1 gain is worth +$50 of tokens.
 
 ## Recipe G — Hand-label circulars
 

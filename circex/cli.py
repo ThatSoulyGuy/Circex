@@ -199,6 +199,14 @@ def eval_cmd(
         "vidushi", "--gold", help="vidushi | path/to/labels/dir"
     ),
     report: Path = typer.Option(Path("reports/eval_v1.md"), "--report"),
+    plot: Path | None = typer.Option(
+        None, "--plot",
+        help="Optional PNG path; writes a 2-panel F1 + Δ-vs-baseline figure.",
+    ),
+    plot_baseline: str = typer.Option(
+        "regex-v1", "--plot-baseline",
+        help="Extractor ID to use as the baseline in the Δ panel.",
+    ),
     max_circulars: int = typer.Option(
         500, "--max-circulars",
         help="Cap to keep API costs bounded for vidushi-gold runs.",
@@ -291,6 +299,17 @@ def eval_cmd(
 
     write_report(reports, report)
     console.print(f"[green]wrote {report}[/]")
+
+    if plot is not None:
+        from circex.eval.plot import plot_eval
+        try:
+            n = len(circulars)
+            title = f"gold={gold}, n={n}"
+            plot_eval(reports, plot, baseline_id=plot_baseline, title_suffix=title)
+            console.print(f"[green]wrote {plot}[/]")
+        except ImportError as exc:
+            console.print(f"[red]{exc}[/]")
+            raise typer.Exit(code=2) from exc
 
 
 @app.command()

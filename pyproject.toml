@@ -35,7 +35,11 @@ dependencies = [
 taxonomy = [
     "tdtax>=0.1",
 ]
+plot = [
+    "matplotlib>=3.9",
+]
 dev = [
+    "matplotlib>=3.9",
     "pytest>=8.3",
     "pytest-asyncio>=0.24",
     "pytest-cov>=5.0",
