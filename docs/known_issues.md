@@ -196,6 +196,45 @@ Added `MM` outcome; aggregator increments both fp and fn for MM rows.
 
 ---
 
+## Sprint 5 — MCP server + worker
+
+### ExtractionStore concurrent-access required WAL mode — **resolved**
+**Severity:** M. Initial store opened SQLite in default rollback-journal mode.
+Running `circex index` while a `circex serve` worker held an open read
+connection to the same file crashed the worker (silent connection close, no
+log entry).
+**Fix:** `PRAGMA journal_mode=WAL` + `synchronous=NORMAL` at connection open.
+WAL allows multiple readers + one writer.
+**Where:** `circex/server/store.py`.
+
+### TS LeanMCP bridge is a stub — **open**
+**Severity:** M. Sprint 5 ships `leanmcp_bridge/README.md` + the new socket-
+based `python_bridge.ts` + a pinned `package.json` (`@leanmcp/{core,cli}` 0.5.0,
+typescript 5.6.3). `mcp/gcn/index.ts` (tool definitions) and `main.ts` (LeanMCP
+HTTP server) still need to be copied from the predecessor and adapted to the
+7-tool set. `npm install` + `npm run dev` is a user step.
+**How to complete:** see `leanmcp_bridge/README.md` "TODO: port from the
+predecessor". The Python worker is the source of truth — the TS layer is the
+MCP shim.
+
+### Demo CLI's call_tool reads first newline only — **accepted**
+**Severity:** L. `demo/cli_client.py` accumulates bytes until the first `\n`
+and treats that as the full response. For pathologically large responses that
+cross many TCP packets without a newline, this would deadlock; in practice the
+worker emits one JSON line then awaits the next request.
+**Decision:** acceptable for v1; document.
+**Where:** `demo/cli_client.py`.
+
+### `find_counterparts` indexes by primary event only — **open**
+**Severity:** L. The store indexes each extraction by its FIRST event_name.
+Counterparts whose event_name lists the GW ID as the SECOND name (e.g.,
+`["AT2017gfo", "GW170817"]`) won't be found by `find_counterparts("GW170817")`.
+**Fix candidate:** add a many-to-one event_name → circular_id index table, OR
+normalize the event_name list and store all entries.
+**Where:** `circex/server/store.py` (`_primary_event_name`).
+
+---
+
 ## Schema / labeling-spec gaps surfaced
 
 (These are open issues the hand-labeling exercise is expected to uncover more

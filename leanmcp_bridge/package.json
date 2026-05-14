@@ -1,0 +1,23 @@
+{
+  "name": "circex-leanmcp-bridge",
+  "version": "0.1.0",
+  "description": "TypeScript LeanMCP bridge to the Circex Python worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "leanmcp dev",
+    "build": "leanmcp build",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@leanmcp/core": "0.5.0",
+    "@leanmcp/cli": "0.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.5.0",
+    "typescript": "5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

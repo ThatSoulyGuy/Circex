@@ -295,22 +295,97 @@ def eval_cmd(
 
 @app.command()
 def serve(
-    worker: bool = typer.Option(False, "--worker"),
-    ingest: bool = typer.Option(False, "--ingest"),
+    host: str = typer.Option("127.0.0.1", "--host"),
+    port: int = typer.Option(8765, "--port"),
+    store_path: Path = typer.Option(
+        Path("data/extractions.sqlite"), "--store",
+        help="SQLite file backing the extraction store.",
+    ),
+    db_path: Path = typer.Option(
+        Path("data/circex.sqlite"), "--db",
+        help="SQLite FTS5 file for search_gcn_circulars.",
+    ),
+    default_extractor: str = typer.Option(
+        "regex", "--extractor",
+        help="On-the-fly extractor for extract_properties cache misses.",
+    ),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
 ) -> None:
-    """Run the long-lived Python worker or the ingestion daemon. (Sprint 5)"""
-    console.print(f"[yellow]not yet implemented[/]: serve {worker=} {ingest=}")
-    raise typer.Exit(code=2)
+    """Run the long-lived Python worker (TCP). The TS LeanMCP bridge talks to it."""
+    import asyncio as _asyncio
+
+    from circex.server.worker import serve as _serve
+
+    extractor = (
+        _build_extractor(default_extractor, cache_db if default_extractor != "regex" else None)
+        if default_extractor
+        else None
+    )
+    console.print(
+        f"[green]starting worker on {host}:{port}[/] "
+        f"(store={store_path}, extractor={default_extractor})"
+    )
+    try:
+        _asyncio.run(_serve(
+            store_path=store_path,
+            host=host,
+            port=port,
+            db_path=db_path if db_path.exists() else None,
+            default_extractor=extractor,
+        ))
+    except KeyboardInterrupt:
+        console.print("[yellow]worker stopped[/]")
 
 
 @app.command()
 def index(
-    backfill: bool = typer.Option(False, "--backfill"),
-    max_cost: float = typer.Option(0.0, "--max-cost"),
+    circulars: Path = typer.Option(
+        Path("data/labels/hand_v1"), "--circulars",
+        help="subset.json or directory of *.label.json files to backfill from",
+    ),
+    extractor: str = typer.Option("regex", "--extractor"),
+    store_path: Path = typer.Option(Path("data/extractions.sqlite"), "--store"),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
+    backfill: bool = typer.Option(
+        True, "--backfill/--no-backfill",
+        help="Run the extractor on every circular and persist to the extraction store.",
+    ),
+    max_cost: float = typer.Option(10.0, "--max-cost"),
 ) -> None:
-    """Index circulars into the SQLite database; optionally backfill extractions. (Sprint 5)"""
-    console.print(f"[yellow]not yet implemented[/]: index {backfill=} {max_cost=}")
-    raise typer.Exit(code=2)
+    """Backfill the extraction store: walks circulars, extracts, persists."""
+    from circex.data.archive import iter_circulars
+    from circex.data.subset import load_subset
+    from circex.eval.runner import run_extractor
+    from circex.extract.protocol import Circular
+    from circex.server.store import ExtractionStore
+
+    if not backfill:
+        console.print("[yellow]--no-backfill given; nothing to do[/]")
+        raise typer.Exit(code=0)
+
+    if circulars.is_file() and circulars.suffix == ".json":
+        ids = [s.circular_id for s in load_subset(circulars)]
+    elif circulars.is_dir():
+        ids = sorted(int(p.stem.split(".")[0]) for p in circulars.glob("*.label.json"))
+    else:
+        console.print(f"[red]error:[/] {circulars} is not a subset.json or label dir")
+        raise typer.Exit(code=2)
+
+    ext = _build_extractor(extractor, cache_db if extractor != "regex" else None)
+    records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
+    inputs = [Circular.from_record(records[cid]) for cid in ids if cid in records]
+
+    console.print(
+        f"[blue]indexing {len(inputs)} circulars with {extractor} (max_cost=${max_cost})[/]"
+    )
+    results, stats = run_extractor(ext, inputs, max_usd=max_cost)
+    with ExtractionStore(store_path) as store:
+        for result in results:
+            store.put(result)
+    console.print(
+        f"[green]persisted {len(results)}/{stats.n_total} extractions to {store_path}[/] "
+        f"(cost=${stats.cost_usd:.4f}, failed={stats.n_failed})"
+    )
 
 
 @app.command()
