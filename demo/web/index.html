@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Circex — GCN Optical Circular Explorer</title>
+<style>
+  :root {
+    --bg: #0b1020; --panel: #141a2e; --panel2: #1c2440;
+    --ink: #e8ecf6; --muted: #8a93ad; --accent: #5aa9ff; --good: #34d399;
+    --bad: #f87171; --border: #2a3354;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font: 15px/1.55 ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--ink);
+  }
+  header {
+    padding: 22px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: .3px; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  #health {
+    margin-left: auto; font-size: 13px; padding: 4px 10px; border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  #health.up { color: var(--good); border-color: #1f6b52; }
+  #health.down { color: var(--bad); border-color: #7a2f2f; }
+  main { max-width: 980px; margin: 0 auto; padding: 26px 28px 60px; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-bottom: 20px;
+  }
+  label { display: block; font-size: 12px; color: var(--muted);
+          text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+  select, input {
+    width: 100%; padding: 10px 12px; background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 8px; color: var(--ink);
+    font: inherit;
+  }
+  .row { display: grid; grid-template-columns: 240px 1fr auto; gap: 14px;
+         align-items: end; }
+  button {
+    padding: 10px 22px; background: var(--accent); color: #04122b;
+    border: 0; border-radius: 8px; font-weight: 650; cursor: pointer;
+    font: inherit;
+  }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .hint { color: var(--muted); font-size: 12.5px; margin-top: 10px; }
+  .examples { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .chip {
+    font-size: 12.5px; padding: 5px 11px; border-radius: 999px;
+    background: var(--panel2); border: 1px solid var(--border);
+    color: var(--ink); cursor: pointer;
+  }
+  .chip:hover { border-color: var(--accent); }
+  h2 { font-size: 15px; margin: 0 0 14px; color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px;
+       text-transform: uppercase; letter-spacing: .5px; }
+  .kv { display: grid; grid-template-columns: 180px 1fr; gap: 4px 16px;
+        font-size: 14px; }
+  .kv div:nth-child(odd) { color: var(--muted); }
+  pre {
+    background: #080c18; border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; overflow-x: auto; font-size: 12.5px; color: #cdd6f4;
+  }
+  .err { color: var(--bad); }
+  .pill { font-size: 11px; padding: 2px 8px; border-radius: 999px;
+          background: var(--panel2); border: 1px solid var(--border);
+          color: var(--muted); margin-left: 8px; }
+  .empty { color: var(--muted); font-style: italic; }
+  footer { color: var(--muted); font-size: 12px; text-align: center;
+           padding: 20px; border-top: 1px solid var(--border); }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Circex</h1>
+  <span class="sub">GCN optical-circular structured-extraction explorer</span>
+  <span id="health">checking worker…</span>
+</header>
+
+<main>
+  <div class="card">
+    <div class="row">
+      <div>
+        <label for="tool">Tool</label>
+        <select id="tool">
+          <option value="extract_properties">extract_properties (by circular id)</option>
+          <option value="get_redshift" selected>get_redshift (by event)</option>
+          <option value="get_photometry">get_photometry (by event)</option>
+          <option value="get_classification">get_classification (by event)</option>
+          <option value="find_counterparts">find_counterparts (by GW id)</option>
+          <option value="search_gcn_circulars">search_gcn_circulars (free text)</option>
+        </select>
+      </div>
+      <div>
+        <label id="arglabel" for="arg">Event name</label>
+        <input id="arg" placeholder="GRB 990123" value="GRB 990123" />
+      </div>
+      <div><button id="run">Run</button></div>
+    </div>
+    <div class="examples" id="examples"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="card" id="resultCard" style="display:none">
+    <h2 id="resultTitle">Result</h2>
+    <div id="result"></div>
+  </div>
+</main>
+
+<footer>
+  Circex worker proxied via the local HTTP bridge ·
+  <a href="../../README.md">README</a> ·
+  <a href="../../docs/WRITEUP.md">write-up</a>
+</footer>
+
+<script>
+const TOOL_META = {
+  extract_properties:   { label: "Circular id", ph: "216",          key: "circular_id", num: true },
+  get_redshift:         { label: "Event name",  ph: "GRB 990123",   key: "event" },
+  get_photometry:       { label: "Event name",  ph: "GRB 990123",   key: "event" },
+  get_classification:   { label: "Event name",  ph: "GRB 990123",   key: "event" },
+  find_counterparts:    { label: "GW event id", ph: "GW170817",     key: "gw_event_id" },
+  search_gcn_circulars: { label: "Query text",  ph: "kilonova spectrum", key: "query" },
+};
+const EXAMPLES = {
+  extract_properties:   ["216", "21505", "33123"],
+  get_redshift:         ["GRB 990123", "GRB 230307A"],
+  get_photometry:       ["GRB 990123", "GRB 971214"],
+  get_classification:   ["GRB 990123"],
+  find_counterparts:    ["GW170817"],
+  search_gcn_circulars: ["kilonova spectrum", "spectroscopic redshift"],
+};
+
+const $ = (id) => document.getElementById(id);
+
+function syncTool() {
+  const meta = TOOL_META[$("tool").value];
+  $("arglabel").textContent = meta.label;
+  $("arg").placeholder = meta.ph;
+  $("arg").value = meta.ph;
+  const ex = $("examples");
+  ex.innerHTML = "";
+  (EXAMPLES[$("tool").value] || []).forEach((v) => {
+    const c = document.createElement("span");
+    c.className = "chip"; c.textContent = v;
+    c.onclick = () => { $("arg").value = v; run(); };
+    ex.appendChild(c);
+  });
+  $("hint").textContent = meta.num
+    ? "Any circular id in the archive (1–40506). First call extracts on demand; cached after."
+    : "Reads from the extraction store. Run `circex index` first to pre-populate, or it extracts on demand.";
+}
+
+async function health() {
+  const el = $("health");
+  try {
+    const r = await fetch("/api/health");
+    const j = await r.json();
+    if (j.worker === "up") { el.textContent = "● worker up"; el.className = "up"; }
+    else { el.textContent = "● worker down — run: circex serve --port 8765"; el.className = "down"; }
+  } catch { el.textContent = "● bridge unreachable"; el.className = "down"; }
+}
+
+function renderResult(tool, data) {
+  const card = $("resultCard"), out = $("result");
+  card.style.display = "block";
+  $("resultTitle").textContent = tool;
+  out.innerHTML = "";
+
+  if (data === null || (Array.isArray(data) && data.length === 0)) {
+    out.innerHTML = '<div class="empty">No data for that query. Try a different event, or pre-populate the store with <code>circex index</code>.</div>';
+    return;
+  }
+
+  if (tool === "get_photometry" && Array.isArray(data)) {
+    out.appendChild(photTable(data));
+    return;
+  }
+  if (tool === "get_redshift" && data) {
+    out.appendChild(kv(data));
+    return;
+  }
+  if (tool === "get_classification" && data) {
+    out.appendChild(kv(data));
+    return;
+  }
+  if (tool === "extract_properties" && data) {
+    out.appendChild(extractionView(data));
+    return;
+  }
+  const pre = document.createElement("pre");
+  pre.textContent = JSON.stringify(data, null, 2);
+  out.appendChild(pre);
+}
+
+function kv(obj) {
+  const d = document.createElement("div");
+  d.className = "kv";
+  for (const [k, v] of Object.entries(obj)) {
+    const kk = document.createElement("div"); kk.textContent = k;
+    const vv = document.createElement("div"); vv.textContent = v ?? "—";
+    d.appendChild(kk); d.appendChild(vv);
+  }
+  return d;
+}
+
+function photTable(rows) {
+  const t = document.createElement("table");
+  t.innerHTML = "<tr><th>filter</th><th>mag</th><th>err</th><th>limit</th>"
+    + "<th>system</th><th>telescope</th><th>instrument</th></tr>";
+  rows.forEach((r) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.filter ?? "—"}</td><td>${r.mag ?? "—"}</td>`
+      + `<td>${r.mag_error ?? "—"}</td><td>${r.limiting_mag ?? "—"}</td>`
+      + `<td>${r.mag_system ?? "—"}</td><td>${r.telescope ?? "—"}</td>`
+      + `<td>${r.instrument ?? "—"}</td>`;
+    t.appendChild(tr);
+  });
+  return t;
+}
+
+function extractionView(ex) {
+  const wrap = document.createElement("div");
+  const head = document.createElement("div");
+  head.className = "kv";
+  head.innerHTML =
+    `<div>circular_id</div><div>${ex.circular_id}</div>` +
+    `<div>event</div><div>${ex.event ? JSON.stringify(ex.event.event_name) : "—"}</div>` +
+    `<div>redshift</div><div>${ex.redshift ? ex.redshift.redshift : "—"}</div>` +
+    `<div>classification</div><div>${ex.classification ? ex.classification.classification : "—"}</div>` +
+    `<div>extractor</div><div>${ex.extraction_meta?.extractor ?? "—"}` +
+      (ex.extraction_meta?.cost_usd ? ` <span class="pill">$${ex.extraction_meta.cost_usd.toFixed(4)}</span>` : "") +
+      `</div>`;
+  wrap.appendChild(head);
+  if (ex.photometry && ex.photometry.length) {
+    const h = document.createElement("h2");
+    h.style.marginTop = "18px";
+    h.textContent = `photometry (${ex.photometry.length} rows)`;
+    wrap.appendChild(h);
+    wrap.appendChild(photTable(ex.photometry));
+  }
+  const det = document.createElement("details");
+  det.style.marginTop = "16px";
+  det.innerHTML = "<summary style='cursor:pointer;color:var(--muted)'>full JSON</summary>";
+  const pre = document.createElement("pre");
+  pre.textContent = JSON.stringify(ex, null, 2);
+  det.appendChild(pre);
+  wrap.appendChild(det);
+  return wrap;
+}
+
+async function run() {
+  const tool = $("tool").value;
+  const meta = TOOL_META[tool];
+  let val = $("arg").value.trim();
+  if (!val) return;
+  const args = {};
+  args[meta.key] = meta.num ? parseInt(val, 10) : val;
+
+  const btn = $("run");
+  btn.disabled = true; btn.textContent = "…";
+  try {
+    const r = await fetch("/api/tool", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tool, arguments: args }),
+    });
+    const j = await r.json();
+    if (!r.ok || j.ok === false || j.error) {
+      $("resultCard").style.display = "block";
+      $("resultTitle").textContent = tool;
+      $("result").innerHTML = `<div class="err">${j.error || "request failed"}</div>`;
+    } else {
+      renderResult(tool, j.result);
+    }
+  } catch (e) {
+    $("resultCard").style.display = "block";
+    $("result").innerHTML = `<div class="err">${e}</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = "Run";
+  }
+}
+
+$("tool").onchange = syncTool;
+$("run").onclick = run;
+$("arg").addEventListener("keydown", (e) => { if (e.key === "Enter") run(); });
+syncTool();
+health();
+setInterval(health, 8000);
+</script>
+</body>
+</html>

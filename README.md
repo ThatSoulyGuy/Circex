@@ -43,7 +43,9 @@ full design.
 | Run as an MCP server for another tool to query | [Recipe E](#recipe-e--run-as-an-mcp-server) |
 | Ask natural-language questions ("what's the redshift of GRB X?") | [Recipe F](#recipe-f--natural-language-demo) |
 | Visualize how much better one extractor is than another | [Recipe H](#recipe-h--visualize-extractor-comparisons) |
+| Click around in a browser UI | [Recipe I](#recipe-i--browser-front-end) |
 | Hand-label circulars for the gold set | [Recipe G](#recipe-g--hand-label-circulars) |
+| Read the how-it-works + results summary | [docs/WRITEUP.md](docs/WRITEUP.md) |
 | Install from scratch on a fresh machine | [Installation](#installation) |
 
 ---
@@ -337,6 +339,33 @@ do (multi-row photometry tables, in-prose classification).
 
 **Cost-aware reading**: pair the chart with the markdown report's "Cost &
 latency" table to see whether a +0.1 F1 gain is worth +$50 of tokens.
+
+## Recipe I — Browser front end
+
+A zero-dependency web UI for clicking around the tools — useful for demos and
+for would-be users who don't want a terminal.
+
+```powershell
+# Shell 1 — the worker (same as Recipe E)
+circex serve --extractor regex --port 8765 --store data/extractions.sqlite
+
+# Shell 2 — the HTTP bridge (stdlib only, no new deps)
+python demo/web/serve.py
+```
+
+Open <http://127.0.0.1:8080>. Pick a tool, type an event name or circular id
+(example chips are provided), hit Run. The page shows a live worker-health
+badge, renders photometry as a table, and has a "full JSON" disclosure for
+everything.
+
+Architecture: the browser can't speak the worker's raw TCP protocol, so
+`demo/web/serve.py` is a ~150-line `http.server` shim that proxies
+`POST /api/tool` to the worker. It binds to `127.0.0.1` only, serves exactly
+one static file, and allow-lists the 7 tools (the allow-list is unit-tested to
+stay in sync with the worker's registry).
+
+For a real SkyPortal-style integration you'd use the TS LeanMCP bridge instead;
+this is the "could-be users can interact with it" demo path.
 
 ## Recipe G — Hand-label circulars
 
