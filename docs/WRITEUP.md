@@ -120,8 +120,8 @@ end-to-end. The regex-vs-Vidushi result above is reproducible with one command.
 **Pending (needs a human, not more code):**
 
 - **Live LLM columns.** `circex eval --extractors regex,claude-haiku,claude-sonnet,ollama`
-  needs `ANTHROPIC_API_KEY` (and a local Ollama). Projected cost ~$0.30 for
-  100 rows of Haiku; full optical backfill ~$20.
+  needs `ANTHROPIC_API_KEY` (and a local Ollama). Projected cost ~\$0.30 for
+  100 rows of Haiku; full optical backfill ~\$20.
 - **Hand-labeled gold (50 circulars).** Required to score the ~7 fields beyond
   the four Vidushi covered (photometry tables, coords, classification,
   spectroscopy, time offsets) — i.e. exactly the fields where regex is
