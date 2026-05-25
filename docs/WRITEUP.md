@@ -186,9 +186,8 @@ appended to the conversation. The prompt template is otherwise shared
 across providers; the per-provider differences live entirely in the
 extractor classes that wrap them.
 
-LLM responses are cached in SQLite keyed on
-$(\text{extractor\_id}, \text{model\_id}, \text{prompt\_version},
-\text{circular\_id}, \text{sha1}(\text{body}))$. Bumping the prompt version
+LLM responses are cached in SQLite keyed on $extractor\_{id}, model\_{id}, prompt\_{version}, circular\_{id}, sha1(body)$.
+Bumping the prompt version
 invalidates cache entries cleanly. In practice this means iterating on the
 prompt does not re-pay for unchanged circulars, which matters for cost
 reasons when the corpus is 18,600 circulars long.
@@ -227,8 +226,8 @@ JSON-line TCP protocol on localhost: `extract_properties`, `get_redshift`,
 `get_photometry`, `get_classification`, `find_counterparts`,
 `search_gcn_circulars` (FTS5-backed), and `fetch_gcn_circulars`. Tool
 results are read from a SQLite extraction store keyed on
-$(\text{circular\_id}, \text{extractor\_id}, \text{model\_id},
-\text{prompt\_version})$; on store miss with a configured default
+$circular\_{id}, extractor\_{id}, model\_{id},
+prompt\_{version}$; on store miss with a configured default
 extractor, the worker extracts on demand and persists the result. The
 store is opened in Write-Ahead-Logged mode so that the indexer can backfill
 new extractions concurrently with the worker serving live queries. A
