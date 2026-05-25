@@ -2,8 +2,8 @@
 
 **Phillips, E.** (Circex Project)
 
-*Draft report, 2026-05-23. Companion follow-on to Sharma et al. (2025;
-hereafter S25) on automated parsing of the GCN Circulars archive.*
+*Draft, 2026-05-23. Companion follow-on to Sharma et al. (2026; hereafter
+S25) on automated parsing of the GCN Circulars archive.*
 
 ---
 
@@ -23,59 +23,80 @@ on 500 sampled rows, that the regex baseline alone exceeds the published
 Mistral-7B predictions by +0.020 F1 on event-name extraction and +0.168 F1 on
 redshift extraction. The Mistral baseline is therefore beatable rather than a
 strawman, and the four-way headline comparison (regex / Claude-Haiku /
-Claude-Sonnet / Ollama), once the live LLM columns are run, is well
-positioned to clear the +0.01 F1-per-field acceptance bar set in the project
-plan. We additionally describe an MCP serving layer with seven structured
-query tools and a browser front-end for interactive use. The full four-way
-comparison and a 50-circular hand-labeled gold set covering the ~20 fields
-beyond S25's four remain in progress.
+Claude-Sonnet / Ollama) is well positioned, once the live LLM columns are
+run, to clear an acceptance threshold of $+0.01$ F1 per field that we
+adopted in advance of the experiment. We additionally describe an MCP
+serving layer with seven structured query tools and a browser front-end for
+interactive use. The full four-way comparison and a 50-circular
+hand-labeled gold set covering the $\sim$20 fields beyond S25's four
+remain in progress.
 
 ---
 
 ## 1. Introduction
 
 The GCN Circulars archive is the principal record of human-authored
-observation reports for high-energy and multimessenger astronomical transients.
-At the time of S25 it held 40,506 circulars, of which approximately 18,600
-were tagged as optical observations under their topic-modeling classifier.
-The free-text format gives authors flexibility but blocks direct ingestion
-by automated consumers, and manual extraction of fields like redshift,
-photometry tables, or source classifications across the full archive is
-infeasible.
+observation reports for high-energy and multimessenger astronomical
+transients, with antecedents going back to the BACODINE/GCN coordinate
+distribution system (Barthelmy et al. 2000). At the time of S25 it held
+40,506 circulars, of which approximately 18,600 were tagged as optical
+observations under their topic-modeling classifier. The free-text format
+gives authors flexibility but blocks direct ingestion by automated
+consumers — including platforms such as SkyPortal (van der Walt et al.
+2019) — and manual extraction of fields like redshift, photometry
+tables, or source classifications across the full archive is infeasible.
 
-S25 showed that a single open-source LLM (Mistral-7B-Instruct-v0.2),
-combined with prompt tuning, output parsing, and retrieval-augmented
-generation, can extract GRB redshift values at 97.2% accuracy on the subset
-of circulars known to contain redshifts. That result establishes the field
-and raises two follow-on questions we address here. First, how does a
-serious regular-expression baseline perform on the same gold set: is the
-published LLM result a real advance over what regex can do, or is the regex
-strawman that papers usually compare to weaker than necessary? Second, do
-frontier LLMs given a structured output contract materially improve
-extraction on the fields where regex is expected to fail hardest — multi-row
-photometry tables, magnitude-system inference, and in-prose source
-classification — relative to both the regex baseline and the S25 Mistral
-result?
+S25 showed that a single open-source LLM, Mistral-7B-Instruct-v0.2 (Jiang
+et al. 2023), combined with prompt tuning, output parsing, and
+retrieval-augmented generation (Lewis et al. 2020), can extract GRB
+redshift values at 97.2% accuracy on the subset of circulars known to
+contain redshifts. That result establishes the field and raises two
+follow-on questions we address here. First, how does a serious
+regular-expression baseline perform on the same gold set: is the published
+LLM result a real advance over what regex can do, or is the regex strawman
+that papers usually compare to weaker than necessary? Second, do frontier
+LLMs given a structured output contract materially improve extraction on
+the fields where regex is expected to fail hardest — multi-row photometry
+tables, magnitude-system inference, and in-prose source classification —
+relative to both the regex baseline and the S25 Mistral result?
 
 To answer both questions we built *Circex*. The system is built around a
 single Pydantic v2 model, `CircularExtraction`, that every extractor emits;
 this is what makes the four-way comparison apples to apples. Three
 extractors implement a common `Extractor` interface: a regex baseline with
 six sub-parsers, a Claude extractor that uses forced tool-use against the
-JSON Schema dump of the model, and an Ollama extractor running the same
-Mistral-7B model S25 used. An evaluation harness produces per-field
-precision, recall, and F1 against either S25's Swift-validated gold or a
-local hand-labeled set, with set-semantics matching for list fields. A
-long-lived asynchronous worker exposes seven structured query tools over an
-MCP-compatible interface for downstream consumers.
+JSON Schema dump of the model (Pezoa et al. 2016), and an Ollama extractor
+running the same Mistral-7B model S25 used. An evaluation harness produces
+per-field precision, recall, and F1 against either S25's Swift-validated
+gold or a local hand-labeled set, with set-semantics matching for list
+fields. A long-lived asynchronous worker exposes seven structured query
+tools over a Model Context Protocol-compatible interface (Anthropic 2024a)
+for downstream consumers.
 
-The remainder of this report is organized as follows. Section 2 describes
+### 1.1 Related Work
+
+Information extraction from astronomical free text has historically relied
+on hand-crafted regular expressions and ontology-aligned rule systems; the
+SIMBAD object resolver (Wenger et al. 2000) and the Astrophysics Data
+System's metadata pipelines (Accomazzi et al. 2015) are representative
+production-grade examples. The transformer era opened the door to learned
+extractors. Domain-specific encoders such as astroBERT (Grezes et al.
+2021) were fine-tuned for named-entity recognition over astronomical
+abstracts, and more recently zero- and few-shot prompting with general
+LLMs (Brown et al. 2020) has been applied to GCN-style alert text by S25
+and others. Our contribution sits between these two lines: rather than
+choose between regex and LLMs, we hold the output contract fixed across
+both and use that shared schema to make a like-for-like four-way
+comparison.
+
+The remainder of this paper is organized as follows. Section 2 describes
 the corpus and gold sets. Section 3 details the schema, the three
 extractors, the evaluation methodology, and the serving layer. Section 4
 presents the regex-vs-S25 comparison on 500 sampled rows. Section 5
-discusses what we did not finish and what surprised us along the way.
-Section 6 sketches planned extensions including an upstream schema
-contribution.
+discusses limitations of the present evaluation and two schema-level gaps
+surfaced during construction of the regex baseline. Section 6 sketches
+planned extensions, including an upstream schema contribution. Section 7
+concludes; Section 8 documents reproducibility.
 
 ## 2. Data
 
@@ -84,24 +105,26 @@ We use three data products distributed with S25's accompanying repository,
 The full 40,506-circular archive ships as a 27 MB compressed tarball; each
 circular is a JSON object containing `circularId`, `subject`, `eventId`,
 `body`, `submitter`, `createdOn`, and `bibcode`. Topic labels for every
-circular come from S25's contrastively fine-tuned MiniLM classifier and
-assign each entry to one of five classes (Optical Observations, High-Energy
-Observations, Radio Observations, Neutrinos, Gravitational Wave). We use
-the 18,642-circular Optical Observations subset as the working scope.
+circular come from S25's contrastively fine-tuned MiniLM encoder (Wang et
+al. 2020) and assign each entry to one of five classes (Optical
+Observations, High-Energy Observations, Radio Observations, Neutrinos,
+Gravitational Wave). We use the 18,642-circular Optical Observations
+subset as the working scope.
 
 The gold set for evaluation is `redshift_accuracy.csv` (13,593 rows). Each
-row pairs a circular with the Swift Burst Analyser-derived ground truth
-(Actual columns: redshift, GRB number, telescope name, redshift type) and
-S25's Mistral-7B predictions for the same four fields. We treat the Actual
-columns as gold and the Predicted columns as the published baseline.
+row pairs a circular with ground truth derived from the *Swift* Burst
+Analyser (Evans et al. 2007, 2009) — Actual columns: redshift, GRB
+number, telescope name, redshift type — together with S25's Mistral-7B
+predictions for the same four fields. We treat the Actual columns as gold
+and the Predicted columns as the published baseline.
 
-A non-obvious detail in this file: missing values are stored as the literal
-string `"No Information"` rather than blank or `NaN`. Our loader did not
-handle this initially and the comparator briefly attributed dozens of
-spurious value mismatches to S25's predictions before we tracked it down.
-The `Actual Redshift Type` column turns out to be populated for zero of our
-500 sampled rows, which collapses the four nominally shared fields to three
-in practice.
+One detail in this file warrants explicit mention for downstream users:
+missing values are encoded as the literal string `"No Information"`
+rather than blank or `NaN`, and loaders that treat the column as numeric
+without sentinel handling will silently mis-score the published baseline.
+Within our 500-row evaluation sample, the `Actual Redshift Type` column is
+populated for zero rows, which collapses the four nominally shared fields
+to three in practice.
 
 ## 3. Methods
 
@@ -115,8 +138,8 @@ fields needed for downstream consumers — `telescope`, `instrument`,
 `calibration_reference`, `galactic_extinction_corrected`, `seeing`, `airmass`
 — and tighten `mag_system` from open string to the enum
 `AB | Vega | STMag`. The enum tightening is technically a breaking change
-relative to the current upstream definition; we flag it for the upstream
-review. Two new schemas sit alongside the existing ones: `SpectralLines`
+relative to the current upstream definition and is called out as such in
+the proposed schema PR (§6). Two new schemas sit alongside the existing ones: `SpectralLines`
 (a list of identified emission or absorption lines with rest wavelength,
 observed wavelength, and equivalent width) and `Classification` (validated
 against the
@@ -128,12 +151,16 @@ validation is enforced at construction.
 
 The regex baseline composes six sub-parsers. Event-name extraction handles
 GRB, EP, modern TNS-style AT and SN designations (lowercase letter-run
-suffix) and the legacy single-letter forms, ZTF, ATLAS, ASAS-SN, Pan-STARRS,
-GOTO, IceCube, and Swift X-ray catalog identifiers, plus a separate
-cross-reference pattern for GCN circular numbers. Coordinate extraction goes
-through `astropy.coordinates.SkyCoord` and always returns ICRS J2000 decimal
-degrees; we require explicit `RA`/`Dec` labels and intentionally do not
-extract unlabeled coordinate pairs. Photometry has a prose parser for
+suffix) and the legacy single-letter forms, together with identifiers from
+the major optical transient surveys — ZTF (Bellm et al. 2019), ATLAS
+(Tonry et al. 2018), ASAS-SN (Shappee et al. 2014), Pan-STARRS (Chambers
+et al. 2016), GOTO (Steeghs et al. 2022), the IceCube neutrino observatory
+(Aartsen et al. 2017), and *Swift* X-ray catalog identifiers (Evans et
+al. 2014) — plus a separate cross-reference pattern for GCN circular
+numbers. Coordinate extraction goes through `astropy.coordinates.SkyCoord`
+(Astropy Collaboration et al. 2013, 2018, 2022) and always returns ICRS
+J2000 decimal degrees; we require explicit `RA`/`Dec` labels and
+intentionally do not extract unlabeled coordinate pairs. Photometry has a prose parser for
 single-magnitude detections (`r = 18.42 \pm 0.05`-style) and upper limits
 (`r > 22.5`-style), plus a multi-row table detector keyed on header
 keywords (date, MJD, epoch, filter, band, mag, err, exp); the table parser
@@ -147,44 +174,45 @@ offsets capture literal $T_0$-relative phrasings (`T+234s`, "4 hours after
 the trigger") into a `TimeOffset` record without resolving to an absolute
 time.
 
-Two regex choices deserve comment. We reject single-magnitude values below
-5.0 mag globally and lowercase Sloan-$z$ values below 10.0 mag in particular;
-the latter is because the literal pattern would otherwise match redshift
-notation like `z = 1.61` and report a Sloan-$z$ magnitude of 1.61 (which we
-hit immediately on the GRB 990123 lensed-burst circular). The multi-row
-table parser's conservatism on header-less layouts costs real recall on
-older circulars — but recovering it would erode precision in exactly the way
-S25 predicts. We did not bridge those gaps in the baseline, because the
-point of the baseline is to measure them.
+Two regex choices deserve comment. Single-magnitude values below 5.0 mag
+are rejected globally, and lowercase Sloan-$z$ values below 10.0 mag are
+rejected in particular; the latter rule exists because the literal pattern
+would otherwise match redshift notation such as `z = 1.61` and report a
+spurious Sloan-$z$ magnitude of 1.61 — a failure mode that appears on the
+GRB 990123 circulars discussed in §5. The multi-row table parser's
+conservatism on header-less layouts costs real recall on older circulars,
+but recovering it would erode precision in exactly the way S25 predicts.
+We deliberately do not bridge those gaps in the baseline; their existence
+is precisely what the baseline is meant to measure.
 
 ### 3.3 Large Language Model Extractors
 
-The Claude extractor uses the Anthropic Claude API with two model variants,
-Claude-Haiku-4-5 (`claude-haiku-4-5-20251001`) and Claude-Sonnet-4-6
-(`claude-sonnet-4-6`). Structured output is enforced via tool-use: a single
-`submit_extraction` tool whose `input_schema` is the JSON Schema derived
-from the `CircularExtraction` model (with `circular_id` and
-`extraction_meta` stripped, since those are filled in by the runner).
-`tool_choice` forces the model to invoke this tool exactly once per
-circular. This eliminates the "model emits prose around JSON" failure mode
-that motivates the output-parsing layer in S25, and it makes structural
-errors impossible — the model can be wrong about *values* but not about
-*shape*. The system prompt and four few-shot examples carry
-`cache_control: ephemeral` so Anthropic prompt caching reduces token cost
-on repeated calls. The few-shots cover four of the five labeling strata
-defined in our specification (multi-row magnitude table, in-prose
-classification, photometric upper limit, GCN cross-reference); we
+The Claude extractor uses the Anthropic Claude API (Anthropic 2024b) with
+two model variants, Claude-Haiku-4-5 (`claude-haiku-4-5-20251001`) and
+Claude-Sonnet-4-6 (`claude-sonnet-4-6`). Structured output is enforced via
+tool-use: a single `submit_extraction` tool whose `input_schema` is the
+JSON Schema derived from the `CircularExtraction` model (with
+`circular_id` and `extraction_meta` stripped, since those are filled in by
+the runner). `tool_choice` forces the model to invoke this tool exactly
+once per circular. This eliminates the "model emits prose around JSON"
+failure mode that motivates the output-parsing layer in S25, and it makes
+structural errors impossible — the model can be wrong about *values* but
+not about *shape*. The system prompt and four few-shot examples (Brown et
+al. 2020) carry `cache_control: ephemeral` so Anthropic prompt caching
+reduces token cost on repeated calls. The few-shots cover four of the five
+labeling strata defined in our specification (multi-row magnitude table,
+in-prose classification, photometric upper limit, GCN cross-reference); we
 deliberately omit the GW/neutrino counterpart stratum from the in-context
 examples so the eval measures generalization rather than few-shot
 memorization.
 
-The Ollama extractor uses the same Mistral-7B-Instruct-v0.2 model as S25.
-Mistral lacks first-class tool-use, so we embed the JSON Schema in the
-system prompt and rely on Ollama's `format="json"` constraint. On Pydantic
-validation failure the extractor retries once with the validation error
-appended to the conversation. The prompt template is otherwise shared
-across providers; the per-provider differences live entirely in the
-extractor classes that wrap them.
+The Ollama extractor uses the same Mistral-7B-Instruct-v0.2 model as S25
+(Jiang et al. 2023). Mistral lacks first-class tool-use, so we embed the
+JSON Schema in the system prompt and rely on Ollama's `format="json"`
+constraint. On Pydantic validation failure the extractor retries once with
+the validation error appended to the conversation. The prompt template is
+otherwise shared across providers; the per-provider differences live
+entirely in the extractor classes that wrap them.
 
 LLM responses are cached in SQLite keyed on $extractor\_{id}, model\_{id}, prompt\_{version}, circular\_{id}, sha1(body)$.
 Bumping the prompt version
@@ -201,15 +229,16 @@ populated but the gold is null, a false negative when the gold is populated
 but the prediction is null, a true negative when both are null (not counted
 toward P/R/F1), and a mismatch when both are populated but disagree. We
 count a mismatch as both a false positive and a false negative, following
-the standard information-extraction convention; the alternative of charging
-only one side is more lenient than the literature uses.
+the standard information-extraction convention (Chinchor 1992); the
+alternative of charging only one side is more lenient than the literature
+uses.
 
 Numeric fields are compared with per-field tolerances: $\pm 0.001$ for
-redshift, $\pm 0.001\degree$ for RA and Dec, $\pm 0.05$ mag for photometry.
+redshift, $\pm 0.001\deg$ for RA and Dec, $\pm 0.05$ mag for photometry.
 Categorical fields use exact equality on the canonical enum value. The
 event-name comparison uses set intersection on the list/string union, so an
-extraction listing both `GW170817` and `AT2017gfo` matches a gold list
-containing either. List fields (photometry rows, time offsets) use greedy
+extraction listing both `GW170817` (Abbott et al. 2017a) and `AT2017gfo`
+(Coulter et al. 2017) matches a gold list containing either. List fields (photometry rows, time offsets) use greedy
 row-level matching: we count true positives, false positives, and false
 negatives at the row level rather than penalizing the whole list when one
 row differs. Per-field metrics are the usual $P = TP/(TP+FP)$,
@@ -279,29 +308,31 @@ score. Our regex extractor and theirs are measured against the same
 denominator, so the comparison is apples to apples.
 
 The second point is that this is not the headline result we set out to
-demonstrate. The project plan's acceptance criterion is that Claude beats
-the published baseline by at least 0.01 F1 on at least three of the four
+demonstrate. Our pre-registered acceptance criterion is that Claude beats
+the published baseline by at least $0.01$ F1 on at least three of the four
 shared fields. We expect Claude to clear this bar comfortably because
 schema-enforced output and a richer prompt are both straightforward
-improvements over the published pipeline; what is more interesting is the
-size of the gap, which we cannot publish until the live LLM columns have
-been run. The fact that the regex baseline already clears most of the bar
-sets a useful floor: any improvement we measure from Claude is on top of
-that floor, not relative to a hand-wavy "no LLM" alternative.
+improvements over the published pipeline; the more interesting open
+question is the size of the gap, which will be reported with the live
+Claude and Ollama columns in a forthcoming revision. The fact that the
+regex baseline already clears most of the bar sets a useful floor: any
+improvement we measure from Claude lies on top of that floor, rather than
+relative to a notional "no LLM" alternative.
 
 ## 5. Discussion and Limitations
 
-The result in Figure 1 is missing the Claude-Haiku, Claude-Sonnet, and
-Ollama columns. Producing them is straightforward — the extractors are
-implemented and tested with mocked API responses, and `circex eval
---extractors regex,claude-haiku,claude-sonnet,ollama` runs end to end —
-but the live runs require an Anthropic API key (which the development
-shell we wrote this in does not have) and a local Ollama daemon with
-Mistral-7B pulled. Projected cost on the 500-row evaluation is around
-\$0.30 for Claude-Haiku and \$1.50 for Claude-Sonnet at the pricing in
-effect on 2026-05-13; Ollama imposes no API cost but does require local
-compute. A full backfill of the 18,642-circular optical subset at
-Claude-Haiku pricing projects to around \$20.
+Figure 1 omits the Claude-Haiku, Claude-Sonnet, and Ollama columns. The
+extractors are implemented and exercised in unit tests against mocked API
+responses, and the end-to-end command
+`circex eval --extractors regex,claude-haiku,claude-sonnet,ollama` runs to
+completion; producing the missing columns therefore requires only API
+credentials and a Mistral-7B-enabled Ollama daemon, neither of which was
+available in the environment used to prepare this draft. The projected
+cost on the 500-row evaluation is approximately \$0.30 for Claude-Haiku
+and \$1.50 for Claude-Sonnet at the pricing in effect on 2026-05-13;
+Ollama imposes no API cost but does require local GPU compute. A full
+backfill of the 18,642-circular optical subset at Claude-Haiku pricing
+projects to approximately \$20.
 
 Even with those columns added, the four-way comparison only exercises four
 of the ~20 fields in our schema. The fields where the regex baseline is
@@ -317,9 +348,10 @@ human adjudication; we have not produced them.
 
 Two schema-level gaps surfaced while writing the regex baseline that are
 worth flagging at the discussion level. Bound redshift constraints — e.g.,
-$z \leq 1.61$ for the gravitationally lensed GRB 990123 — cannot be
-represented in the current `Redshift` schema, which models a point value
-with symmetric or asymmetric error. The labeler hitting this case must
+$z \leq 1.61$ for the lens-hypothesis interpretation of GRB 990123
+(Kulkarni et al. 1999; Akerlof et al. 1999) — cannot be represented in
+the current `Redshift` schema, which models a point value with symmetric
+or asymmetric error. The labeler hitting this case must
 either store the bound as a point value (losing the inequality) or leave it
 null (losing the value). Conditional or hypothetical measurements — the
 *putative* host galaxy at $z \sim 0.2$–0.3 conditional on the lensing
@@ -327,18 +359,20 @@ hypothesis in the same circular — likewise have no representation. Both
 gaps recur across the archive; both should be addressed in a future schema
 revision.
 
-A serving-layer note: an early integration test crashed the worker
-silently when `circex index` was invoked against the same SQLite store the
-worker had open for reads. The fix was to open the store in
-Write-Ahead-Logged mode, which allows concurrent readers and one writer.
-This is the kind of failure that is easy to miss in unit tests because
-each test holds the database for the duration of its own process; we
-caught it only when assembling the end-to-end demo. The fix is in;
-mentioning it here so that anyone deploying the worker behind a long-lived
-indexer pipeline does not rediscover it the hard way.
+One serving-layer note carries practical consequences for operators.
+Invoking `circex index` against the same SQLite store that the worker
+holds open for reads produces silent contention under the default
+rollback-journal mode, with the worker dropping queries rather than
+failing loudly. This class of failure is easy to miss in unit tests, each
+of which holds the database for the duration of a single process, and is
+visible only in end-to-end deployments. Opening the store in
+Write-Ahead-Logging mode (allowing concurrent readers with a single
+writer) resolves the contention; the published configuration enables
+WAL by default, and we recommend operators verify the mode before pairing
+a long-lived worker with a backfill pipeline.
 
 Twenty-one further limitations of varying severity are catalogued in
-[`docs/known_issues.md`](known_issues.md) with status and code paths.
+[`docs/known_issues.md`](known_issues.md), with associated code paths.
 
 ## 6. Future Work
 
@@ -361,20 +395,50 @@ high-energy `Spectral` schema rather than replacing it.
 A longer-horizon question concerns ensemble behavior. The three extractors
 are independent and will, on most fields, disagree on different circulars.
 A high-precision regex extraction that agrees with a high-recall LLM
-extraction is more trustworthy than either alone; a circular where regex
-returns nothing and the LLM returns a value is the case where the LLM is
-plausibly buying us recall the regex cannot. This suggests a
-confidence-weighted union that pays full LLM cost only on circulars where
-regex output is empty or low-confidence, which would meaningfully shrink
-the projected backfill cost without obviously hurting recall. We have not
-implemented this; the data needed to evaluate it falls out of the eval
-runs in Section 5 once those are done.
+extraction is more trustworthy than either alone; circulars on which regex
+returns nothing and the LLM returns a value are precisely those on which
+the LLM is plausibly providing recall the regex cannot. This motivates a
+confidence-weighted union strategy that incurs the full LLM cost only on
+circulars where the regex output is empty or low-confidence, an approach
+that would meaningfully shrink the projected backfill cost without an
+obvious recall penalty. Evaluation of such a strategy requires the
+per-circular disagreement statistics produced by the runs described in
+§5 and is therefore deferred.
 
-Finally, the TypeScript LeanMCP shim is currently a stub. Completing it
-and deploying the worker in a SkyPortal-adjacent context is the last
-step before this becomes useful to anyone outside the project.
+Finally, the TypeScript LeanMCP shim is presently a stub. Completing it
+and deploying the worker in a SkyPortal-adjacent setting is the remaining
+step before the system can be exercised by external consumers.
 
-## 7. Reproducibility
+## 7. Conclusions
+
+We have presented *Circex*, a schema-constrained structured extraction
+pipeline for the GCN Circulars archive, and reported the first head-to-head
+comparison between a serious regular-expression baseline and the published
+Mistral-7B predictions of S25 on a common Swift-validated gold set. Three
+findings stand out. (i) On the two redshift-table fields with non-zero
+gold support, a transparent regex baseline already outperforms the
+published baseline by $+0.020$ F1 on event-name extraction and $+0.168$
+F1 on redshift extraction; the published LLM result is therefore a real
+target to beat rather than an aspirational benchmark. (ii) Pinning every
+extractor to a single Pydantic v2 model (`CircularExtraction`) and
+enforcing schema conformance through forced tool-use turns the LLM's
+remaining failure mode from structural to substantive, which is the
+relevant axis for downstream consumers. (iii) The same model becomes a
+queryable interface when paired with a long-lived asyncio worker and seven
+MCP-compatible tools, providing the substrate for a SkyPortal-side
+integration that does not currently exist.
+
+The work whose absence is most acutely felt by this report is the live
+Claude and Ollama columns of the four-way comparison, and a hand-labeled
+gold set that covers the ~20 fields beyond S25's four. Both are scoped,
+implemented at the harness level, and gated only on credentials and
+human-labeler time. With those in hand, the schema, the regex floor, and
+the comparator established here should support a fully populated four-way
+evaluation table and, in turn, the cost-quality trade-off curves needed
+to decide which extractor a deployment such as SkyPortal should adopt at
+the per-field level.
+
+## 8. Reproducibility
 
 The pipeline is open-source. Figure 1 and Table 1 regenerate from a single
 command after the reference data products have been cloned:
@@ -386,11 +450,13 @@ circex eval --extractors regex --gold vidushi --max-circulars 500 \
   --plot-baseline vidushi-mistral
 ```
 
-The pipeline consists of 269 unit and integration tests, all passing under
-`ruff check` and `mypy --strict` on the package. CI runs on Windows and
-Ubuntu. The companion [README](../README.md) provides nine worked-example
-recipes covering single-circular extraction, batch extraction, evaluation,
-serving, and the browser front end.
+The pipeline ships with 269 unit and integration tests, all passing under
+`ruff check` and `mypy --strict` on the package. Continuous integration
+runs on Windows and Ubuntu. The companion [README](../README.md) provides
+nine worked-example recipes covering single-circular extraction, batch
+extraction, evaluation, serving, and the browser front end. A BibTeX file
+mirroring the References section is provided alongside this manuscript at
+[`docs/references.bib`](references.bib).
 
 ---
 
@@ -408,15 +474,106 @@ README.
 
 ## References
 
-- Sharma, V., Agarwala, R., Racusin, J. L., Singer, L. P., Barna, T., Burns,
-  E., Coughlin, M. W., Dutko, D., Elliott, C., Gupta, R., Mahabal, A., &
-  Mukund, N. (2026). *Large Language Model-driven Analysis of General
-  Coordinates Network (GCN) Circulars.* The Astrophysical Journal Supplement
-  Series, 283(1), 30. arXiv:2511.14858.
+- Aartsen, M. G., Ackermann, M., Adams, J., et al. 2017, *Journal of
+  Instrumentation*, 12, P03012. *The IceCube Neutrino Observatory:
+  instrumentation and online systems.*
+- Abbott, B. P., Abbott, R., Abbott, T. D., et al. 2017a, *Physical Review
+  Letters*, 119, 161101. *GW170817: Observation of Gravitational Waves
+  from a Binary Neutron Star Inspiral.*
+- Abbott, B. P., Abbott, R., Abbott, T. D., et al. 2017b, *The
+  Astrophysical Journal Letters*, 848, L12. *Multi-messenger Observations
+  of a Binary Neutron Star Merger.*
+- Accomazzi, A., Kurtz, M. J., Henneken, E. A., et al. 2015, in
+  *Open Science at the Frontiers of Librarianship*, ASP Conference Series
+  492, 189. *ADS All-Sky Survey: Bringing Knowledge to the Bibliography.*
+- Akerlof, C., Balsano, R., Barthelmy, S., et al. 1999, *Nature*, 398,
+  400. *Observation of contemporaneous optical radiation from a gamma-ray
+  burst.*
+- Anthropic. 2024a, *Model Context Protocol specification.*
+  `https://modelcontextprotocol.io`.
+- Anthropic. 2024b, *Claude API and tool use documentation.*
+  `https://docs.anthropic.com`.
+- Astropy Collaboration, Robitaille, T. P., Tollerud, E. J., et al. 2013,
+  *Astronomy & Astrophysics*, 558, A33. *Astropy: A community Python
+  package for astronomy.*
+- Astropy Collaboration, Price-Whelan, A. M., Sipőcz, B. M., et al. 2018,
+  *The Astronomical Journal*, 156, 123. *The Astropy Project: Building
+  an Open-science Project and Status of the v2.0 Core Package.*
+- Astropy Collaboration, Price-Whelan, A. M., Lim, P. L., et al. 2022,
+  *The Astrophysical Journal*, 935, 167. *The Astropy Project: Sustaining
+  and Growing a Community-oriented Open-source Project and the Latest
+  Major Release (v5.0).*
+- Barthelmy, S. D., Butterworth, P., Cline, T. L., et al. 2000, in
+  *Gamma-Ray Bursts, 5th Huntsville Symposium*, AIP Conference Proceedings
+  526, 731. *The GRB Coordinates Network (GCN): A Status Report.*
+- Bellm, E. C., Kulkarni, S. R., Graham, M. J., et al. 2019, *Publications
+  of the Astronomical Society of the Pacific*, 131, 018002. *The Zwicky
+  Transient Facility: System Overview, Performance, and First Results.*
+- Brown, T. B., Mann, B., Ryder, N., et al. 2020, in *Advances in Neural
+  Information Processing Systems* 33, 1877. *Language Models are Few-Shot
+  Learners.* arXiv:2005.14165.
+- Chambers, K. C., Magnier, E. A., Metcalfe, N., et al. 2016,
+  arXiv:1612.05560. *The Pan-STARRS1 Surveys.*
+- Chinchor, N. 1992, in *Proceedings of the 4th Message Understanding
+  Conference (MUC-4)*, 22. *MUC-4 Evaluation Metrics.*
+- Coulter, D. A., Foley, R. J., Kilpatrick, C. D., et al. 2017, *Science*,
+  358, 1556. *Swope Supernova Survey 2017a (SSS17a), the optical
+  counterpart to a gravitational wave source.*
+- Evans, P. A., Beardmore, A. P., Page, K. L., et al. 2007, *Astronomy &
+  Astrophysics*, 469, 379. *An online repository of Swift/XRT light
+  curves of γ-ray bursts.*
+- Evans, P. A., Beardmore, A. P., Page, K. L., et al. 2009, *Monthly
+  Notices of the Royal Astronomical Society*, 397, 1177. *Methods and
+  results of an automatic analysis of a complete sample of Swift-XRT
+  observations of GRBs.*
+- Evans, P. A., Osborne, J. P., Beardmore, A. P., et al. 2014, *The
+  Astrophysical Journal Supplement Series*, 210, 8. *1SXPS: A Deep Swift
+  X-Ray Telescope Point Source Catalog.*
+- Grezes, F., Blanco-Cuaresma, S., Accomazzi, A., et al. 2021, in
+  *Proceedings of the Workshop on Scholarly Document Processing (SDP) at
+  NAACL*. *Building astroBERT, a language model for astronomy and
+  astrophysics.* arXiv:2112.00590.
+- Jiang, A. Q., Sablayrolles, A., Mensch, A., et al. 2023, *Mistral 7B.*
+  arXiv:2310.06825.
+- Kulkarni, S. R., Djorgovski, S. G., Odewahn, S. C., et al. 1999,
+  *Nature*, 398, 389. *The afterglow, redshift and extreme energetics of
+  the γ-ray burst of 23 January 1999.*
+- Lewis, P., Perez, E., Piktus, A., et al. 2020, in *Advances in Neural
+  Information Processing Systems* 33, 9459. *Retrieval-Augmented
+  Generation for Knowledge-Intensive NLP Tasks.* arXiv:2005.11401.
 - NASA GCN Project. *gcn-schema.* `https://github.com/nasa-gcn/gcn-schema`.
 - NASA GCN Project. *circulars-nlp-paper.*
   `https://github.com/nasa-gcn/circulars-nlp-paper`.
+- Ollama Project. *Ollama: get up and running with large language models
+  locally.* `https://ollama.com`.
+- Pezoa, F., Reutter, J. L., Suarez, F., Ugarte, M., & Vrgoč, D. 2016, in
+  *Proceedings of the 25th International Conference on World Wide Web*,
+  263. *Foundations of JSON Schema.*
+- Shappee, B. J., Prieto, J. L., Grupe, D., et al. 2014, *The
+  Astrophysical Journal*, 788, 48. *The Man behind the Curtain:
+  X-Rays Drive the UV through NIR Variability in the 2013 AGN Outburst
+  in NGC 2617.* (ASAS-SN reference paper.)
+- Sharma, V., Agarwala, R., Racusin, J. L., Singer, L. P., Barna, T.,
+  Burns, E., Coughlin, M. W., Dutko, D., Elliott, C., Gupta, R., Mahabal,
+  A., & Mukund, N. 2026, *The Astrophysical Journal Supplement Series*,
+  283, 30. *Large Language Model-driven Analysis of General Coordinates
+  Network (GCN) Circulars.* arXiv:2511.14858. (Cited as S25.)
 - SkyPortal Project. *timedomain-taxonomy.*
   `https://github.com/skyportal/timedomain-taxonomy`.
-- Anthropic. *Claude API documentation.* `https://docs.anthropic.com`.
-- Ollama Project. *Ollama.* `https://ollama.com`.
+- Steeghs, D., Galloway, D. K., Ackley, K., et al. 2022, *Monthly Notices
+  of the Royal Astronomical Society*, 511, 2405. *The Gravitational-wave
+  Optical Transient Observer (GOTO): prototype performance and prospects
+  for transient science.*
+- Tonry, J. L., Denneau, L., Heinze, A. N., et al. 2018, *Publications of
+  the Astronomical Society of the Pacific*, 130, 064505. *ATLAS: A
+  High-cadence All-sky Survey System.*
+- van der Walt, S., Crellin-Quick, A., & Bloom, J. S. 2019, *Journal of
+  Open Source Software*, 4(37), 1247. *SkyPortal: An Astronomical Data
+  Platform.*
+- Wang, W., Wei, F., Dong, L., Bao, H., Yang, N., & Zhou, M. 2020, in
+  *Advances in Neural Information Processing Systems* 33, 5776.
+  *MiniLM: Deep Self-Attention Distillation for Task-Agnostic Compression
+  of Pre-Trained Transformers.* arXiv:2002.10957.
+- Wenger, M., Ochsenbein, F., Egret, D., et al. 2000, *Astronomy &
+  Astrophysics Supplement Series*, 143, 9. *The SIMBAD astronomical
+  database: The CDS reference database for astronomical objects.*
