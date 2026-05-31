@@ -59,8 +59,9 @@ class RegexExtractor(Extractor):
             # into circular.body are recorded; eventId / subject sources are not
             # addressable by a body offset.
             body_matches = extract_matches_with_positions(body)
+            primary_norm = primary_event_raw.replace(" ", "")
             for name, start, end in body_matches:
-                if name == primary_event_raw or name.replace(" ", "") == primary_event_raw.replace(" ", ""):
+                if name == primary_event_raw or name.replace(" ", "") == primary_norm:
                     provenance["event"] = Span(start=start, end=end, snippet=body[start:end])
                     break
 
