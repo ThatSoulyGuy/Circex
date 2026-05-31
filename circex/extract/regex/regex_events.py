@@ -48,13 +48,18 @@ GCN_XREF_PATTERN = re.compile(
 
 def extract_gcn_xrefs(text: str) -> list[int]:
     """Return all GCN Circular cross-reference IDs from text, deduplicated, in order."""
+    return [cid for cid, _, _ in extract_gcn_xrefs_with_positions(text)]
+
+
+def extract_gcn_xrefs_with_positions(text: str) -> list[tuple[int, int, int]]:
+    """As extract_gcn_xrefs, returning (cid, start, end) tuples per first occurrence."""
     seen: set[int] = set()
-    out: list[int] = []
+    out: list[tuple[int, int, int]] = []
     for match in GCN_XREF_PATTERN.finditer(text):
         cid = int(match.group(1))
         if cid not in seen:
             seen.add(cid)
-            out.append(cid)
+            out.append((cid, match.start(), match.end()))
     return out
 
 
@@ -74,22 +79,27 @@ def normalize_event(event: str | None) -> str | None:
 
 def extract_matches(text: str) -> list[str]:
     """Find all event-like identifiers in text. Returns deduplicated, ordered by position."""
-    found: list[tuple[int, str]] = []
+    return [name for name, _, _ in extract_matches_with_positions(text)]
+
+
+def extract_matches_with_positions(text: str) -> list[tuple[str, int, int]]:
+    """As extract_matches, but each entry is (normalized_name, start, end)."""
+    found: list[tuple[int, int, str]] = []
 
     for pattern in EVENT_PATTERNS:
         for match in re.finditer(pattern, text, flags=re.IGNORECASE):
             raw = match.group(1)
             norm = normalize_event(raw)
             if norm:
-                found.append((match.start(), norm))
+                found.append((match.start(), match.end(), norm))
     found.sort(key=lambda x: x[0])
 
-    results: list[str] = []
+    results: list[tuple[str, int, int]] = []
     seen: set[str] = set()
-    for _, norm in found:
+    for start, end, norm in found:
         if norm not in seen:
             seen.add(norm)
-            results.append(norm)
+            results.append((norm, start, end))
     return results
 
 
@@ -103,22 +113,36 @@ def extract_events(record: dict[str, Any]) -> tuple[str | None, list[str], str]:
         all_events: all normalized events found
         source: one of {"eventId", "subject", "body", "none"}
     """
+    raw, all_events, source, _, _ = extract_events_with_position(record)
+    return raw, all_events, source
+
+
+def extract_events_with_position(
+    record: dict[str, Any],
+) -> tuple[str | None, list[str], str, int, int]:
+    """As extract_events, plus (start, end) of the primary match in its source string.
+
+    Offsets are valid only when source is "subject" or "body". When source is
+    "eventId" or "none", start and end are returned as -1, -1.
+    """
     event_id = clean_text(record.get("eventId"))
     if event_id:
         event_norm = normalize_event(event_id)
-        return event_id, ([event_norm] if event_norm else []), "eventId"
+        return event_id, ([event_norm] if event_norm else []), "eventId", -1, -1
 
     subject = clean_text(record.get("subject"))
-    subject_matches = extract_matches(subject)
-    if subject_matches:
-        return subject_matches[0], subject_matches, "subject"
+    subj_matches = extract_matches_with_positions(subject)
+    if subj_matches:
+        name, start, end = subj_matches[0]
+        return name, [m[0] for m in subj_matches], "subject", start, end
 
     body = clean_text(record.get("body"))
-    body_matches = extract_matches(body)
+    body_matches = extract_matches_with_positions(body)
     if body_matches:
-        return body_matches[0], body_matches, "body"
+        name, start, end = body_matches[0]
+        return name, [m[0] for m in body_matches], "body", start, end
 
-    return None, [], "none"
+    return None, [], "none", -1, -1
 
 
 def extract_event_from_query(query: str) -> str | None:

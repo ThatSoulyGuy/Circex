@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 
-from circex.schema import Redshift, RedshiftMeasure, RedshiftType
+from circex.schema import Redshift, RedshiftMeasure, RedshiftType, Span
 
 _Z_RE = re.compile(
     r"\bz\s*[=~≈]\s*(\d+\.\d+)(?:\s*±\s*(\d+\.\d+))?",
@@ -49,6 +49,12 @@ def _classify_type(context: str) -> RedshiftType | None:
 
 def parse_redshift(text: str) -> Redshift | None:
     """Return a Redshift if the text contains z = X.XXX or 'redshift of X.XXX'."""
+    result = parse_redshift_with_span(text)
+    return result[0] if result is not None else None
+
+
+def parse_redshift_with_span(text: str) -> tuple[Redshift, Span] | None:
+    """Same as parse_redshift, but also return a Span pointing at the z-match."""
     match = _Z_RE.search(text) or _ALT_RE.search(text)
     if not match:
         return None
@@ -63,13 +69,15 @@ def parse_redshift(text: str) -> Redshift | None:
         if err_str:
             err = float(err_str)
 
-    start = max(0, match.start() - _CONTEXT_WINDOW)
-    end = min(len(text), match.end() + _CONTEXT_WINDOW)
-    context = text[start:end]
+    ctx_start = max(0, match.start() - _CONTEXT_WINDOW)
+    ctx_end = min(len(text), match.end() + _CONTEXT_WINDOW)
+    context = text[ctx_start:ctx_end]
 
-    return Redshift(
+    redshift = Redshift(
         redshift=z,
         redshift_error=err,
         redshift_measure=_classify_measure(context),
         redshift_type=_classify_type(context),
     )
+    span = Span(start=match.start(), end=match.end(), snippet=match.group(0))
+    return redshift, span

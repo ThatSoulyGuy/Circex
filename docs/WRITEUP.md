@@ -147,6 +147,21 @@ against the
 controlled vocabulary, which contains 175 canonical class names). Output
 validation is enforced at construction.
 
+Alongside the value-bearing fields, `CircularExtraction` carries an optional
+`provenance` map from dotted field path to a `Span(start, end, snippet)`
+record giving character offsets back into the circular body. The convention
+is object-level keys for nested singletons (e.g., `"redshift"`,
+`"localization"`) and indexed keys for list items (`"photometry[0]"`),
+with leaf-level keys (`"redshift.redshift"`, `"photometry[0].mag"`)
+permitted where an extractor can attribute more precisely. `provenance` is
+operationally distinct from `extraction_meta`: the former describes the
+*data* (where each value came from in the source text) and the latter
+describes the *run* (model, tokens, cost). The field is Circex-internal —
+unlike the extended `Photometry`, `Classification`, and `SpectralLines`
+schemas, it is not part of the upstream gcn-schema PR — but it is the
+mechanism by which downstream consumers can audit any extracted value
+without re-reading the source by hand.
+
 ### 3.2 Regular-Expression Baseline
 
 The regex baseline composes six sub-parsers. Event-name extraction handles
@@ -185,6 +200,14 @@ but recovering it would erode precision in exactly the way S25 predicts.
 We deliberately do not bridge those gaps in the baseline; their existence
 is precisely what the baseline is meant to measure.
 
+Every sub-parser additionally exposes the `(start, end)` of the regex
+match it consumed, which the composing extractor aggregates into the
+`provenance` map described in §3.1. Object-level spans are emitted for
+each of `event`, `redshift`, `classification`, `localization`,
+`follow_up`, and one span per `photometry[i]` / `time_offsets[i]` list
+entry, with each span's `snippet` carrying the literal `body[start:end]`
+substring for round-trip verification.
+
 ### 3.3 Large Language Model Extractors
 
 The Claude extractor uses the Anthropic Claude API (Anthropic 2024b) with
@@ -204,7 +227,13 @@ labeling strata defined in our specification (multi-row magnitude table,
 in-prose classification, photometric upper limit, GCN cross-reference); we
 deliberately omit the GW/neutrino counterpart stratum from the in-context
 examples so the eval measures generalization rather than few-shot
-memorization.
+memorization. The system prompt also instructs the model to populate the
+`provenance` map of §3.1, preferring leaf-level keys (e.g.,
+`"redshift.redshift"` pointing at the exact `z = X` substring) where one
+contiguous phrase justifies the value; one of the four few-shots
+demonstrates the pattern, and the constraint that
+`body[start:end] == snippet` lets a downstream consumer reject any
+extraction whose offsets do not resolve.
 
 The Ollama extractor uses the same Mistral-7B-Instruct-v0.2 model as S25
 (Jiang et al. 2023). Mistral lacks first-class tool-use, so we embed the
@@ -247,6 +276,11 @@ $R = TP/(TP+FN)$, $F_1 = 2PR/(P+R)$.
 Fields with zero non-null gold values across the evaluation set report
 support zero and are excluded from the headline plot. This is more common
 than it sounds; see Section 2.
+
+The comparator currently scores values only; the `provenance` map of §3.1
+opens a second axis on which extractors can be graded (does the cited span
+in fact justify the value?), which is the subject of an extension
+discussed in §6.
 
 ### 3.5 Serving Layer
 
@@ -397,13 +431,25 @@ are independent and will, on most fields, disagree on different circulars.
 A high-precision regex extraction that agrees with a high-recall LLM
 extraction is more trustworthy than either alone; circulars on which regex
 returns nothing and the LLM returns a value are precisely those on which
-the LLM is plausibly providing recall the regex cannot. This motivates a
-confidence-weighted union strategy that incurs the full LLM cost only on
-circulars where the regex output is empty or low-confidence, an approach
-that would meaningfully shrink the projected backfill cost without an
-obvious recall penalty. Evaluation of such a strategy requires the
-per-circular disagreement statistics produced by the runs described in
-§5 and is therefore deferred.
+the LLM is plausibly providing recall the regex cannot. The `provenance`
+spans of §3.1 sharpen this further: two extractors that report the same
+value *and the same source span* meaningfully co-witness the claim, whereas
+agreement on the value with disagreement on the span is a flag for review.
+This motivates a confidence-weighted union strategy that incurs the full
+LLM cost only on circulars where the regex output is empty or
+low-confidence, an approach that would meaningfully shrink the projected
+backfill cost without an obvious recall penalty. Evaluation of such a
+strategy requires the per-circular disagreement statistics produced by the
+runs described in §5 and is therefore deferred.
+
+A second extension uses provenance to grade *attribution* alongside
+*values*. The §3.4 comparator currently rewards correct values regardless
+of which substring the extractor cited as evidence; an attribution score
+would additionally check that the cited span overlaps a hand-labeled
+evidence span, penalizing extractors that arrive at the right answer for
+the wrong reason. Producing this score requires evidence spans on the
+50-circular hand-labeled gold set, which is in the same labeling pass
+discussed in §5 and is therefore on the same critical path.
 
 Finally, the TypeScript LeanMCP shim is presently a stub. Completing it
 and deploying the worker in a SkyPortal-adjacent setting is the remaining
@@ -423,10 +469,12 @@ target to beat rather than an aspirational benchmark. (ii) Pinning every
 extractor to a single Pydantic v2 model (`CircularExtraction`) and
 enforcing schema conformance through forced tool-use turns the LLM's
 remaining failure mode from structural to substantive, which is the
-relevant axis for downstream consumers. (iii) The same model becomes a
-queryable interface when paired with a long-lived asyncio worker and seven
-MCP-compatible tools, providing the substrate for a SkyPortal-side
-integration that does not currently exist.
+relevant axis for downstream consumers; the same model carries an optional
+`provenance` map that grounds each extracted value at a `(start, end)`
+range in the source text, allowing audit without re-reading the circular.
+(iii) The same model becomes a queryable interface when paired with a
+long-lived asyncio worker and seven MCP-compatible tools, providing the
+substrate for a SkyPortal-side integration that does not currently exist.
 
 The work whose absence is most acutely felt by this report is the live
 Claude and Ollama columns of the four-way comparison, and a hand-labeled

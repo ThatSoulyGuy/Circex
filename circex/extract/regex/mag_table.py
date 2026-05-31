@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 from typing import Final
 
-from circex.schema import MagSystem, PhotometryExt
+from circex.schema import MagSystem, PhotometryExt, Span
 
 # Filter classification.
 _SLOAN: Final[frozenset[str]] = frozenset({"u", "g", "r", "i", "z", "y"})
@@ -71,25 +71,30 @@ def _plausible_mag(filter_name: str, mag: float) -> bool:
 
 def parse_single_mags(text: str) -> list[PhotometryExt]:
     """Extract single-row magnitude mentions ('r = 18.42 ± 0.05', 'R > 22.5')."""
-    rows: list[PhotometryExt] = []
+    return [p for p, _ in parse_single_mags_with_spans(text)]
+
+
+def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
+    """Same as parse_single_mags, plus per-row Spans into the source text."""
+    rows: list[tuple[PhotometryExt, Span]] = []
 
     for match in _DETECTION_RE.finditer(text):
         filter_name = match.group("filter")
-        # Reject obviously-not-a-filter false positives (e.g., "M = 1.5" in cosmology context).
         if filter_name not in _KNOWN_FILTERS:
             continue
         mag = float(match.group("mag"))
         if not _plausible_mag(filter_name, mag):
             continue
         err = float(match.group("err")) if match.group("err") else None
-        rows.append(
+        rows.append((
             PhotometryExt(
                 filter=filter_name,
                 mag=mag,
                 mag_error=err,
                 mag_system=infer_mag_system(filter_name),
-            )
-        )
+            ),
+            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+        ))
 
     for match in _UPPER_LIMIT_RE.finditer(text):
         filter_name = match.group("filter")
@@ -97,14 +102,15 @@ def parse_single_mags(text: str) -> list[PhotometryExt]:
             continue
         limit = float(match.group("limit"))
         sigma = float(match.group("sigma")) if match.group("sigma") else None
-        rows.append(
+        rows.append((
             PhotometryExt(
                 filter=filter_name,
                 limiting_mag=limit,
                 limiting_mag_sigma=sigma,
                 mag_system=infer_mag_system(filter_name),
-            )
-        )
+            ),
+            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+        ))
 
     return rows
 
@@ -155,8 +161,17 @@ def parse_mag_table(text: str) -> list[PhotometryExt]:
     "we measured r = 18.42" is NOT picked up here (use parse_single_mags). This
     parser is the one that the PDF expects to lose on irregular table layouts.
     """
-    rows: list[PhotometryExt] = []
-    lines = text.splitlines()
+    return [p for p, _ in parse_mag_table_with_spans(text)]
+
+
+def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
+    """Same as parse_mag_table, plus per-row Spans covering each data line."""
+    rows: list[tuple[PhotometryExt, Span]] = []
+    # Use keepends=True so we can compute absolute offsets for each line.
+    lines = text.splitlines(keepends=True)
+    line_offsets: list[int] = [0]
+    for line in lines:
+        line_offsets.append(line_offsets[-1] + len(line))
 
     i = 0
     while i < len(lines):
@@ -173,7 +188,6 @@ def parse_mag_table(text: str) -> list[PhotometryExt]:
         header_fields = [f for f in _COLUMN_SPLIT_RE.split(line.strip()) if f]
         expected = len(header_fields)
 
-        # Scan downward for consecutive data rows.
         j = i + 1
         while j < len(lines) and _looks_like_table_row(lines[j], expected):
             data_fields = [f for f in _COLUMN_SPLIT_RE.split(lines[j].strip()) if f]
@@ -196,14 +210,18 @@ def parse_mag_table(text: str) -> list[PhotometryExt]:
                         err = float(err_token)
                     except ValueError:
                         err = None
-                rows.append(
+                row_start = line_offsets[j]
+                row_text = lines[j].rstrip("\r\n")
+                row_end = row_start + len(row_text)
+                rows.append((
                     PhotometryExt(
                         filter=filter_token,
                         mag=mag,
                         mag_error=err,
                         mag_system=infer_mag_system(filter_token),
-                    )
-                )
+                    ),
+                    Span(start=row_start, end=row_end, snippet=row_text),
+                ))
             j += 1
         i = j if j > i + 1 else i + 1
 

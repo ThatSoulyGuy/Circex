@@ -16,6 +16,8 @@ import re
 import astropy.units as u
 from astropy.coordinates import SkyCoord
 
+from circex.schema import Span
+
 # Capture both halves of an RA/Dec pair in one go.
 # Group 1 = RA, group 2 = Dec.
 _PAIR_RE = re.compile(
@@ -57,6 +59,14 @@ def _parse_one_dec(token: str) -> str:
 
 def parse_coords(text: str) -> tuple[float, float] | None:
     """Find the first RA/Dec pair in text and return (ra_deg, dec_deg) ICRS J2000."""
+    result = parse_coords_with_span(text)
+    return result[0] if result is not None else None
+
+
+def parse_coords_with_span(
+    text: str,
+) -> tuple[tuple[float, float], Span] | None:
+    """Same as parse_coords, but also return a Span covering the RA/Dec match."""
     match = _PAIR_RE.search(text)
     if not match:
         return None
@@ -64,8 +74,6 @@ def parse_coords(text: str) -> tuple[float, float] | None:
     ra_token = _parse_one_ra(match.group("ra"))
     dec_token = _parse_one_dec(match.group("dec"))
 
-    # Heuristic: if either token contains h/m/s/d/' or colons, treat as sexagesimal;
-    # otherwise treat as decimal degrees.
     sexagesimal = bool(re.search(r"[hHmMsSdDoO':\"°]", ra_token + dec_token))
 
     try:
@@ -78,4 +86,5 @@ def parse_coords(text: str) -> tuple[float, float] | None:
     except Exception:
         return None
 
-    return float(coord.ra.deg), float(coord.dec.deg)
+    span = Span(start=match.start(), end=match.end(), snippet=match.group(0))
+    return (float(coord.ra.deg), float(coord.dec.deg)), span

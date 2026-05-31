@@ -11,18 +11,26 @@ import time
 from typing import Final
 
 from circex.extract.protocol import Circular, Extractor
-from circex.extract.regex.classification import parse_classification
-from circex.extract.regex.coords import parse_coords
-from circex.extract.regex.dates import parse_time_offsets
-from circex.extract.regex.mag_table import parse_mag_table, parse_single_mags
-from circex.extract.regex.redshift import parse_redshift
-from circex.extract.regex.regex_events import extract_events, extract_gcn_xrefs
+from circex.extract.regex.classification import parse_classification_with_span
+from circex.extract.regex.coords import parse_coords_with_span
+from circex.extract.regex.dates import parse_time_offsets_with_spans
+from circex.extract.regex.mag_table import (
+    parse_mag_table_with_spans,
+    parse_single_mags_with_spans,
+)
+from circex.extract.regex.redshift import parse_redshift_with_span
+from circex.extract.regex.regex_events import (
+    extract_events,
+    extract_gcn_xrefs_with_positions,
+    extract_matches_with_positions,
+)
 from circex.schema import (
     CircularExtraction,
     Event,
     ExtractionMeta,
     FollowUp,
     Localization,
+    Span,
 )
 
 REGEX_EXTRACTOR_ID: Final[str] = "regex-v1"
@@ -39,6 +47,7 @@ class RegexExtractor(Extractor):
         started = time.perf_counter()
         body = circular.body
         subject = circular.subject
+        provenance: dict[str, Span] = {}
 
         # ---- event identification ----
         record = {"eventId": circular.event_id, "subject": subject, "body": body}
@@ -46,29 +55,69 @@ class RegexExtractor(Extractor):
         event: Event | None = None
         if primary_event_raw:
             event = Event(event_name=primary_event_raw)
+            # Try to ground the primary event in body text. Only spans that point
+            # into circular.body are recorded; eventId / subject sources are not
+            # addressable by a body offset.
+            body_matches = extract_matches_with_positions(body)
+            for name, start, end in body_matches:
+                if name == primary_event_raw or name.replace(" ", "") == primary_event_raw.replace(" ", ""):
+                    provenance["event"] = Span(start=start, end=end, snippet=body[start:end])
+                    break
 
         # ---- GCN cross-references → follow_up ----
-        xrefs = extract_gcn_xrefs(body)
+        xref_hits = extract_gcn_xrefs_with_positions(body)
         follow_up: FollowUp | None = None
-        if xrefs:
+        if xref_hits:
+            xref_ids = [cid for cid, _, _ in xref_hits]
             follow_up = FollowUp(
-                reference={"gcn_circulars": ",".join(str(x) for x in xrefs)},
+                reference={"gcn_circulars": ",".join(str(x) for x in xref_ids)},
+            )
+            # Provenance: span the entire range from the first to the last xref.
+            first_start = xref_hits[0][1]
+            last_end = xref_hits[-1][2]
+            provenance["follow_up"] = Span(
+                start=first_start, end=last_end, snippet=body[first_start:last_end]
             )
 
         # ---- localization ----
         localization: Localization | None = None
-        if (coords := parse_coords(body)) is not None:
-            ra, dec = coords
+        coord_hit = parse_coords_with_span(body)
+        if coord_hit is not None:
+            (ra, dec), loc_span = coord_hit
             localization = Localization(ra=ra, dec=dec)
+            provenance["localization"] = loc_span
 
         # ---- photometry: prefer table over prose ----
-        table_rows = parse_mag_table(body)
-        photometry = table_rows if table_rows else parse_single_mags(body)
+        table_hits = parse_mag_table_with_spans(body)
+        if table_hits:
+            photometry = [row for row, _ in table_hits]
+            for idx, (_, span) in enumerate(table_hits):
+                provenance[f"photometry[{idx}]"] = span
+        else:
+            single_hits = parse_single_mags_with_spans(body)
+            photometry = [row for row, _ in single_hits]
+            for idx, (_, span) in enumerate(single_hits):
+                provenance[f"photometry[{idx}]"] = span
 
-        # ---- redshift, classification, time offsets ----
-        redshift = parse_redshift(body)
-        classification = parse_classification(body)
-        time_offsets = parse_time_offsets(body)
+        # ---- redshift ----
+        redshift = None
+        z_hit = parse_redshift_with_span(body)
+        if z_hit is not None:
+            redshift, z_span = z_hit
+            provenance["redshift"] = z_span
+
+        # ---- classification ----
+        classification = None
+        cls_hit = parse_classification_with_span(body)
+        if cls_hit is not None:
+            classification, cls_span = cls_hit
+            provenance["classification"] = cls_span
+
+        # ---- time offsets ----
+        offset_hits = parse_time_offsets_with_spans(body)
+        time_offsets = [t for t, _ in offset_hits]
+        for idx, (_, span) in enumerate(offset_hits):
+            provenance[f"time_offsets[{idx}]"] = span
 
         latency_ms = (time.perf_counter() - started) * 1000.0
 
@@ -81,6 +130,7 @@ class RegexExtractor(Extractor):
             photometry=photometry,
             classification=classification,
             redshift=redshift,
+            provenance=provenance,
             extraction_meta=ExtractionMeta(
                 extractor=REGEX_EXTRACTOR_ID,
                 latency_ms=latency_ms,

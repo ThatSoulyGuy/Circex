@@ -21,7 +21,7 @@ from typing import Any, TypedDict
 from circex.extract.protocol import Circular
 from circex.schema import CircularExtraction
 
-PROMPT_V1 = "2026-05-13"
+PROMPT_V1 = "2026-05-30"
 
 
 class Message(TypedDict):
@@ -57,6 +57,18 @@ canonical name ("Ia"). If you are not confident, leave null.
 - The reporter is the *alerting party*, NOT the photometry telescope. Most \
 optical observation circulars do not need to populate reporter.
 - DO NOT populate `extraction_meta`. The harness sets it.
+- PROVENANCE: for every field you populate, also add an entry to `provenance` \
+keyed by the dotted field path that points at the source-text span you used. \
+The value is `{"start": <int>, "end": <int>, "snippet": <str>}` where `start` \
+and `end` are character offsets into the circular body and `snippet` is the \
+literal `body[start:end]` substring. Prefer leaf-level keys when one specific \
+phrase justifies the value (e.g., `"redshift.redshift"` pointing at \
+`"z = 0.215"`, `"photometry[0].mag"` pointing at `"20.42"`); fall back to \
+object-level keys (`"redshift"`, `"photometry[0]"`) when a single contiguous \
+range covers the whole subobject. Omit `provenance` entries for fields you do \
+not populate. If you cannot localize a value to a contiguous span (e.g., it \
+was inferred from a discontinuous combination of phrases), leave it out of \
+`provenance` rather than guessing offsets.
 
 OUTPUT: exactly one call to `submit_extraction` with the structured object."""
 
@@ -100,7 +112,7 @@ Seeing was 1.1 arcsec; airmass 1.3.""",
             ],
         },
     ),
-    # 2) In-prose classification + redshift.
+    # 2) In-prose classification + redshift, with leaf-level provenance.
     (
         """AT2024xyz: classification as a Type Ic-BL supernova
 
@@ -115,6 +127,12 @@ of a Ic-BL supernova. Host galaxy emission lines yield z = 0.215 +/- 0.001.""",
                 "redshift_error": 0.001,
                 "redshift_measure": "spectroscopic",
                 "redshift_type": "host",
+            },
+            "provenance": {
+                "event": {"start": 0, "end": 9, "snippet": "AT2024xyz"},
+                "classification": {"start": 136, "end": 141, "snippet": "Ic-BL"},
+                "redshift.redshift": {"start": 186, "end": 195, "snippet": "z = 0.215"},
+                "redshift.redshift_error": {"start": 200, "end": 205, "snippet": "0.001"},
             },
         },
     ),

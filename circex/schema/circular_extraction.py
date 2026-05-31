@@ -17,12 +17,30 @@ from circex.schema.localization import Localization
 from circex.schema.photometry import PhotometryExt
 from circex.schema.redshift import Redshift
 from circex.schema.reporter import Reporter
+from circex.schema.span import Span
 from circex.schema.spectral_lines import SpectralLines
 from circex.schema.time_offset import TimeOffset
 
 
 class CircularExtraction(BaseModel):
-    """Structured extraction from one GCN circular."""
+    """Structured extraction from one GCN circular.
+
+    The optional `provenance` field maps dotted field paths to character-offset
+    spans into `Circular.body`. The convention is:
+
+    - Object-level keys for nested singletons: ``"event"``, ``"redshift"``,
+      ``"localization"``, ``"classification"``, ``"follow_up"``, ``"datetime"``.
+    - Indexed keys for list items: ``"photometry[0]"``, ``"time_offsets[2]"``.
+    - Leaf-level keys are also permitted, allowing finer attribution when an
+      extractor can support it: ``"redshift.redshift"``, ``"localization.ra"``,
+      ``"photometry[0].mag"``. The regex baseline emits object-level keys; the
+      LLM extractors are prompted to emit leaf-level keys where they can.
+
+    `provenance` is operationally distinct from `extraction_meta`: the former
+    describes the *data* (where a value came from in the source text); the
+    latter describes the *run* (which extractor, what model, how much it cost).
+    Downstream consumers can ignore `provenance` entirely without loss of value.
+    """
 
     circular_id: int = Field(description="Integer GCN circular ID.")
 
@@ -62,8 +80,18 @@ class CircularExtraction(BaseModel):
         description="Who issued the alert (do NOT conflate with photometry.telescope).",
     )
 
+    provenance: dict[str, Span] = Field(
+        default_factory=dict,
+        description=(
+            "Per-field pointers back into Circular.body, keyed by dotted field "
+            "path. Object-level keys (e.g., 'redshift', 'photometry[0]') are the "
+            "v1 convention; leaf-level keys (e.g., 'redshift.redshift') are "
+            "permitted. Empty by default; extractors populate what they can."
+        ),
+    )
+
     extraction_meta: ExtractionMeta = Field(
-        description="Extraction provenance: model, prompt version, tokens, cost, latency."
+        description="Extraction run metadata: model, prompt version, tokens, cost, latency."
     )
 
     model_config = {"populate_by_name": True}

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import re
 
-from circex.schema import Classification
+from circex.schema import Classification, Span
 from circex.taxonomy import alias_to_canonical
 
 
@@ -37,6 +37,14 @@ def parse_classification(text: str) -> Classification | None:
 
     Longest-alias-first ordering means 'Ic-BL' wins over 'Ic' when both could match.
     """
+    result = parse_classification_with_span(text)
+    return result[0] if result is not None else None
+
+
+def parse_classification_with_span(
+    text: str,
+) -> tuple[Classification, Span] | None:
+    """Same as parse_classification, plus a Span pointing at the alias match."""
     match = _alias_pattern().search(text)
     if not match:
         return None
@@ -44,6 +52,8 @@ def parse_classification(text: str) -> Classification | None:
     if canonical is None:
         return None
     try:
-        return Classification(classification=canonical)
+        cls = Classification(classification=canonical)
     except ValueError:
         return None
+    span = Span(start=match.start(), end=match.end(), snippet=match.group(0))
+    return cls, span

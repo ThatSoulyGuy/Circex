@@ -16,6 +16,7 @@ from circex.schema.localization import Localization
 from circex.schema.photometry import CalibrationReference, MagSystem, PhotometryExt
 from circex.schema.redshift import Redshift, RedshiftMeasure, RedshiftType
 from circex.schema.reporter import Messenger, Reporter, SpectralBandUnit
+from circex.schema.span import Span
 from circex.schema.spectral_lines import SpectralLine, SpectralLines
 from circex.schema.time_offset import TimeOffset, TimeOffsetUnit
 
@@ -35,6 +36,7 @@ __all__ = [
     "RedshiftMeasure",
     "RedshiftType",
     "Reporter",
+    "Span",
     "SpectralBandUnit",
     "SpectralLine",
     "SpectralLines",
