@@ -294,9 +294,14 @@ prompt\_{version}$; on store miss with a configured default
 extractor, the worker extracts on demand and persists the result. The
 store is opened in Write-Ahead-Logged mode so that the indexer can backfill
 new extractions concurrently with the worker serving live queries. A
-TypeScript LeanMCP shim (currently a stub) is the eventual MCP front for
-SkyPortal-style consumers; a stdlib-only HTTP bridge with a
-single-file HTML front-end is provided for interactive demonstration.
+TypeScript LeanMCP front-end (`leanmcp_bridge/`) sits on top of the worker
+and speaks the streamable-HTTP MCP protocol on port 3001, forwarding each
+tool call over the persistent TCP socket to the Python worker on 8765; the
+seven tools are declared as decorated methods on a single `GcnService`
+class, with per-tool input schemas auto-generated from TypeScript class
+properties via `@leanmcp/core`'s `classToJsonSchemaWithConstraints`. A
+stdlib-only HTTP bridge with a single-file HTML front-end is also provided
+for interactive demonstration without an MCP client in the loop.
 
 ## 4. Results
 
@@ -451,9 +456,13 @@ the wrong reason. Producing this score requires evidence spans on the
 50-circular hand-labeled gold set, which is in the same labeling pass
 discussed in §5 and is therefore on the same critical path.
 
-Finally, the TypeScript LeanMCP shim is presently a stub. Completing it
-and deploying the worker in a SkyPortal-adjacent setting is the remaining
-step before the system can be exercised by external consumers.
+The TypeScript LeanMCP front-end is now functional end-to-end: an MCP
+client that hits `tools/list` against `http://localhost:3001/mcp` gets the
+seven tools back with their JSON Schemas, and `tools/call` routes through
+to the Python worker over the persistent TCP socket. What remains is
+deploying it in a SkyPortal-adjacent setting and adding integration tests
+on the TypeScript side; the Python worker is already covered by the
+existing `tests/server/` suite.
 
 ## 7. Conclusions
 

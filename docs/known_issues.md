@@ -142,12 +142,15 @@ claude-haiku --circulars data/labels/hand_v1 --out runs/claude_haiku_v1` —
 expected to produce 50 valid extraction files for ~$0.05 total.
 **Where:** N/A (user action).
 
-### Ollama JSON-mode repair retry covers only first failure — **open**
-**Severity:** L. If the repair retry ALSO produces an invalid JSON or a
-schema-violating object, `_call_with_repair` re-raises. No second repair.
-**Decision:** acceptable for v1; Mistral-7B's JSON mode is usually reliable.
-Sprint 4 metrics will surface if this is a real problem.
-**Where:** `circex/extract/llm/ollama.py`.
+### Ollama JSON-mode repair retry covers only first failure — **resolved (with caveats)**
+**Severity:** L. If the repair retry ALSO produces invalid JSON or a
+schema-violating object, the extractor used to re-raise and crash the eval
+run. Sprint 6 (Ollama-eval session) hit this on ~5–10% of dense circulars
+and made the extractor fail-soft: on a second failure, log a warning and
+return an empty extraction so the eval scores it as null-output (which is
+the right F1 signal — model failure, not pipeline failure).
+**Where:** `circex/extract/llm/ollama.py` (`extract` try/except around
+`_call_with_repair`).
 
 ---
 
@@ -207,15 +210,23 @@ log entry).
 WAL allows multiple readers + one writer.
 **Where:** `circex/server/store.py`.
 
-### TS LeanMCP bridge is a stub — **open**
-**Severity:** M. Sprint 5 ships `leanmcp_bridge/README.md` + the new socket-
-based `python_bridge.ts` + a pinned `package.json` (`@leanmcp/{core,cli}` 0.5.0,
-typescript 5.6.3). `mcp/gcn/index.ts` (tool definitions) and `main.ts` (LeanMCP
-HTTP server) still need to be copied from the predecessor and adapted to the
-7-tool set. `npm install` + `npm run dev` is a user step.
-**How to complete:** see `leanmcp_bridge/README.md` "TODO: port from the
-predecessor". The Python worker is the source of truth — the TS layer is the
-MCP shim.
+### TS LeanMCP bridge is a stub — **resolved**
+**Severity:** M (was). Sprint 6 completed the bridge: `main.ts` boots a
+streamable-HTTP MCP server on :3001, `mcp/gcn/index.ts` declares a
+`GcnService` class with `@Tool`-decorated methods for all 7 tools, and
+`mcp/gcn/input_schema.ts` carries decorated input classes whose schemas
+are auto-generated at boot via `classToJsonSchemaWithConstraints`. End-to-end
+flow verified: `tools/list` returns all 7 tools with correct
+`properties`/`required`/types; `tools/call` with no Python worker running
+returns a clean MCP error frame rather than crashing.
+**Load-bearing gotcha:** `tsconfig.json` must set
+`useDefineForClassFields: true`; otherwise declared-but-not-assigned class
+fields don't materialize on the runtime instance and the schema generator
+emits empty `properties: {}` for every tool. Documented in
+`leanmcp_bridge/README.md`.
+**Pinned versions corrected:** package.json originally listed
+`@leanmcp/{core,cli}` at `0.5.0` (which doesn't exist on npm); now pinned
+to `^0.4.7` (core, current latest) and `^0.5.12` (cli).
 
 ### Demo CLI's call_tool reads first newline only — **accepted**
 **Severity:** L. `demo/cli_client.py` accumulates bytes until the first `\n`
@@ -232,6 +243,94 @@ Counterparts whose event_name lists the GW ID as the SECOND name (e.g.,
 **Fix candidate:** add a many-to-one event_name → circular_id index table, OR
 normalize the event_name list and store all entries.
 **Where:** `circex/server/store.py` (`_primary_event_name`).
+
+---
+
+## Sprint 6 — provenance + LeanMCP completion + Ollama eval pilot
+
+### Ollama default model tag `mistral:7b-instruct-v0.2` not pullable — **resolved**
+**Severity:** H (was — would crash every Ollama run on a clean install).
+The bare `mistral:7b-instruct-v0.2` is not a pullable tag in the Ollama
+registry; only quantizations are (`-fp16`, `-q2` … `-q8`, `-q4_K_M`, etc.).
+The previous `DEFAULT_OLLAMA_MODEL` produced 404s on every call.
+**Fix:** default changed to `mistral:7b-instruct-v0.2-q4_K_M` (the standard
+balanced choice, ~4 GB, near-FP16 quality on the eval), with
+`CIRCEX_OLLAMA_MODEL` env override for users who want a different
+quantization (e.g., `-fp16` for closest-to-S25 fidelity on machines with
+enough VRAM).
+**Where:** `circex/extract/llm/ollama.py` (`DEFAULT_OLLAMA_MODEL`).
+
+### Mistral-7B produces schema-non-conforming JSON in three patterns — **resolved (with sanitizer)**
+**Severity:** H (was — extractions failed on ~30% of dense circulars).
+Across the 50-row Ollama eval pilot, Mistral-7B regularly produced JSON
+that parsed cleanly but tripped strict Pydantic validation in three specific
+ways:
+
+1. Malformed provenance entries — `{"start": 0, "end": 69}` missing the
+   `snippet` field, or `provenance.<key>: null` where the schema requires
+   a `Span` dict.
+2. The `{"X": {"X": null}}` shape on optional nested objects — the model
+   includes the parent shape with all-null leaves instead of setting the
+   parent to `null`.
+3. `follow_up.reference.gcn_circulars` arriving as a list of dicts
+   `[{"event_name": "..."}, ...]` instead of the comma-joined string the
+   schema requires.
+
+Additionally, the model emits classification values that aren't canonical
+class names (e.g., `"HLTG"`) — these fail the `Classification` model's
+custom validator.
+
+**Fix:** `OllamaExtractor._sanitize_payload` (new) runs before strict
+validation and:
+- drops provenance entries that can't form a valid `Span`, recomputing
+  the snippet from `body[start:end]` when the model omits or corrupts it;
+- collapses `{"X": {"X": null}}` to `"X": null`;
+- coerces `follow_up.reference.gcn_circulars` list-of-anything to a
+  comma-joined string;
+- normalizes classification aliases through `normalize_classification`,
+  dropping the field to null when no canonical mapping exists.
+
+The repair retry still fires on schema breaks the sanitizer can't fix
+(genuine type errors, etc.), so the comparator-quality F1 signal is
+preserved.
+
+**Where:** `circex/extract/llm/ollama.py` (`_sanitize_payload`,
+`_parse_validate`).
+
+### Mistral-7B latency on Apple Silicon — **accepted**
+**Severity:** L (operational note). The 50-row Ollama eval pilot measured
+p50 = 29.5 s/circular, p95 = 215.6 s/circular on an M-series Mac with
+Q4_K_M weights. The long-tail is the repair retry firing on circulars
+where the first attempt fails validation. Total wall-clock for the 50-row
+pilot was ~55 minutes (~66 s/circular average). At that rate a full
+500-row eval projects to **~9 hours**, not the ~40 minutes initially
+quoted (which extrapolated from the fastest few smoke-test circulars).
+**Decision:** Apple Silicon is too slow for the full 500-row eval; queued
+for the user's bigger desktop. Handoff details in `~/.claude/projects/.../memory/handoff_ollama_500_row_eval.md`.
+**Where:** N/A (hardware bottleneck).
+
+### Mac Homebrew `ollama` formula is missing `llama-server` — **accepted (documented)**
+**Severity:** L (one-time install gotcha). On macOS the
+`brew install ollama` formula ships a CLI client but not the
+`llama-server` runtime binary; the daemon then errors with
+`llama-server binary not found` on every generate. The correct install on
+Mac is `brew install --cask ollama-app` (or download the Mac app directly
+from ollama.com), which bundles the binary at
+`/Applications/Ollama.app/Contents/Resources/llama-server`. Linux and
+Windows installers are complete out of the box.
+**Where:** documented in `README.md` Recipe D2 and in
+`leanmcp_bridge/README.md`. Not a code issue.
+
+### Sparse gold in first ~50 rows of `redshift_accuracy.csv` — **accepted**
+**Severity:** L (eval methodology). The first 50 rows of the
+13,593-row Swift-validated gold set happened to hit a region where only
+2/50 had populated event-name and redshift gold (vs. ~400/500 and ~383/500
+respectively in the full 500-row sample documented in the writeup). The
+50-row Ollama pilot is therefore useful as a smoke test but the F1
+numbers (n=2 support) are not publishable.
+**Decision:** the headline four-way comparison must come from the 500-row
+run (or larger). The 50-row pilot is committed-but-flagged as preliminary.
+**Where:** `reports/eval_50_regex_ollama.md`.
 
 ---
 

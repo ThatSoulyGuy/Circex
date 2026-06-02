@@ -71,8 +71,10 @@ Get-Content runs/regex_v1/000216.extraction.json
 ```
 
 That last command prints structured JSON for GCN circular #216 — GRB 990123,
-the gravitationally lensed burst. Event name, photometry rows, redshift, GCN
-cross-references, all extracted from prose by the regex baseline.
+the lens-hypothesis burst. Event name, photometry rows, redshift, GCN
+cross-references — and now a `provenance` map giving the character span in
+the source text for each populated value — all extracted from prose by the
+regex baseline.
 
 ---
 
@@ -200,9 +202,18 @@ circex serve --extractor claude-haiku --port 8765 --store data/extractions.sqlit
 One-time:
 
 ```powershell
-# Install Ollama (https://ollama.com), then:
-ollama pull mistral:7b-instruct-v0.2     # ~4 GB
-ollama serve                              # leave running
+# Install Ollama (https://ollama.com). On Mac the Homebrew formula ships
+# only the CLI; you also need the .app bundle for the llama-server binary:
+#   brew install --cask ollama-app
+# On Linux/Windows the standard installer is complete.
+
+# Pull a quantization (the bare `mistral:7b-instruct-v0.2` is NOT a pullable
+# tag — only quantized variants are). Q4_K_M is the balanced choice
+# (~4 GB, near-FP16 quality, runs well on Apple Silicon and modest GPUs).
+ollama pull mistral:7b-instruct-v0.2-q4_K_M    # ~4 GB
+
+# Start the daemon (the .app does this automatically on Mac).
+ollama serve
 ```
 
 Then:
@@ -212,15 +223,31 @@ circex extract --extractor ollama --circulars data/labels/hand_v1 --out runs/oll
 ```
 
 Same shape as Claude but cost = $0 and latency depends on local hardware.
-This is the apples-to-apples comparison to Vidushi/Sharma 2025 (she used the
-same model).
+This is the apples-to-apples comparison to Vidushi/Sharma 2026 (she used the
+same model architecture; quantization differs).
+
+**Picking a quantization:** the default tag is `mistral:7b-instruct-v0.2-q4_K_M`.
+Override with the `CIRCEX_OLLAMA_MODEL` env var to pick a different one:
+`-fp16` if you have ≥16 GB of VRAM (closest to S25's setup), `-q8` as a
+middle ground, `-q2` for the smallest footprint. Pull the chosen tag first.
+
+**Mistral failure modes are handled gracefully.** The OllamaExtractor
+post-processes the model's JSON before validation to recover from common
+Mistral-7B output quirks (malformed `provenance` entries, the
+`{"X": {"X": null}}` shape on nullable nested objects, list-of-dicts where
+the schema expects a comma-joined string, classification aliases like
+`"SNIa"` normalized to canonical `"Ia"`, etc.). On the rare circular where
+both attempts still fail, the extractor logs a warning and returns an
+empty extraction — the eval scores that as null-output (F1 reflects model
+quality), rather than crashing the run.
 
 ## Recipe E — Run as an MCP server
 
 The Python worker speaks a JSON-line protocol on a local TCP port. Any
-language with a TCP client can call it; the included TS LeanMCP bridge
-(stub in [`leanmcp_bridge/`](leanmcp_bridge/)) translates that to MCP so
-SkyPortal can consume.
+language with a TCP client can call it; the included TS LeanMCP bridge in
+[`leanmcp_bridge/`](leanmcp_bridge/) translates that to MCP over
+streamable HTTP so MCP clients (SkyPortal, MCP Inspector, the Anthropic
+Computer-Use SDK) can consume it directly.
 
 **Boot the worker:**
 
@@ -255,6 +282,33 @@ $client.Close()
 
 Python clients can use `demo/cli_client.py` as a reference; it's ~30 lines of
 `socket.create_connection` + JSON.
+
+**Via the TS LeanMCP bridge** (recommended for any real MCP client):
+
+```bash
+# Shell 1 — Python worker (as above)
+circex serve --extractor regex --port 8765 --store data/extractions.sqlite
+
+# Shell 2 — TypeScript MCP front-end
+cd leanmcp_bridge/
+npm install
+npm run dev               # boots streamable-HTTP MCP server on :3001
+```
+
+MCP clients connect to `http://localhost:3001/mcp`. Health check at
+`http://localhost:3001/health`. The 7 tools are auto-registered with full
+JSON Schemas; verify with:
+
+```bash
+curl -sS -X POST http://localhost:3001/mcp \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json, text/event-stream' \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{}}'
+```
+
+See [`leanmcp_bridge/README.md`](leanmcp_bridge/README.md) for the full
+architecture, env vars, and an explanation of the `useDefineForClassFields`
+gotcha that's load-bearing for schema generation.
 
 **Pre-populate the store** (so `get_*` queries don't trigger extractions):
 
@@ -364,8 +418,9 @@ Architecture: the browser can't speak the worker's raw TCP protocol, so
 one static file, and allow-lists the 7 tools (the allow-list is unit-tested to
 stay in sync with the worker's registry).
 
-For a real SkyPortal-style integration you'd use the TS LeanMCP bridge instead;
-this is the "could-be users can interact with it" demo path.
+For a real SkyPortal-style integration use the TS LeanMCP bridge instead
+(Recipe E); this browser front-end is the "could-be users can interact
+with it" demo path.
 
 ## Recipe G — Hand-label circulars
 
@@ -412,8 +467,18 @@ class CircularExtraction(BaseModel):
     classification: Classification | None # canonical taxonomy class
     redshift: Redshift | None            # z, error, measure, type
     reporter: Reporter | None            # alerting mission/instrument
+    provenance: dict[str, Span]          # dotted field path -> (start, end, snippet)
     extraction_meta: ExtractionMeta      # model, tokens, cost, latency, cache_hit
 ```
+
+`provenance` is a Circex-internal addition (not part of the upstream PR)
+that maps dotted field paths (`"redshift"`, `"photometry[0]"`, or
+leaf-level `"redshift.redshift"`) to character-offset spans into the
+source `Circular.body`. The regex baseline emits object-level spans; the
+LLM extractors are prompted for leaf-level. Every span carries a `snippet`
+equal to `body[start:end]` for round-trip verification — a downstream
+consumer that re-fetches the circular can confirm the offsets still
+resolve to the same text.
 
 JSON Schema artifacts for the upstream `nasa-gcn/gcn-schema` PR are dumped to
 `schemas/` via `circex schema-dump`.
@@ -437,11 +502,11 @@ circex/
 └── taxonomy.py    # time-domain-taxonomy YAML loader
 
 demo/cli_client.py   # standalone tool client + Claude-orchestrated NL demo
-leanmcp_bridge/      # TS LeanMCP shim (stub — see leanmcp_bridge/README.md)
+leanmcp_bridge/      # TS LeanMCP front-end (MCP server on :3001, npm-managed)
 schemas/             # JSON Schema artifacts for upstream PR
 docs/                # labeling spec, prompt deltas, known issues, runbooks
 reports/             # eval + cost-projection outputs
-tests/               # 282 tests; pytest tests/ -q
+tests/               # 284 tests; pytest tests/ -q
 references/          # 4 upstream repos, gitignored
 ```
 
@@ -516,9 +581,9 @@ do **not** need `tdtax` installed; just the `references/` clone.
 ### Verifying the install
 
 ```powershell
-pytest -q                          # expect: 282 passed
+pytest -q                          # expect: 284 passed
 ruff check .                       # expect: All checks passed!
-mypy circex                        # expect: Success: no issues found in 59 source files
+mypy circex                        # expect: Success: no issues found in 61 source files
 circex --help                      # expect: lists the 9 commands above
 ```
 
@@ -534,21 +599,24 @@ circex --help                      # expect: lists the 9 commands above
 | Sprint 3 | Claude (Haiku/Sonnet, tool-use) + Ollama (Mistral-7B, JSON-mode) extractors, prompt v1, SQLite LLM cache | `c18b3a5` |
 | Sprint 4 | Four-way eval harness; regex beats Vidushi by +0.02 / +0.17 F1 on her 2 measurable fields | `92eac45` |
 | Sprint 5 | Long-lived TCP worker, 7 MCP tools, ExtractionStore (WAL), demo CLI, TS bridge stub | `e67693e` |
+| Sprint 6 | Span-level provenance end-to-end; TS LeanMCP bridge completed (no longer a stub); Ollama extractor sanitizer + fail-soft + correct pullable default tag; 50-row pilot Ollama eval | _uncommitted_ |
 
-282 tests passing. Ruff + mypy strict clean.
+284 tests passing. Ruff + mypy strict clean.
 
 ### Known issues and open items
 
-See [`docs/known_issues.md`](docs/known_issues.md) (21 entries across all
-sprints with severity, status, and code paths). The major open items:
+See [`docs/known_issues.md`](docs/known_issues.md) for the full catalogue
+with severity, status, and code paths. The major open items:
 
 - **Hand-label the 50 staged templates** (Recipe G). Required for the full ~9-field eval.
-- **Live LLM eval columns** — run with `$ANTHROPIC_API_KEY` set (Recipe D).
-- **TS LeanMCP bridge** — full port from `references/GCNMCP/leanmcp_bridge/` is
-  pending (`npm install` + adapt `mcp/gcn/index.ts`); see
-  [`leanmcp_bridge/README.md`](leanmcp_bridge/README.md).
+- **Live LLM eval columns** — Claude eval columns still need a run with
+  `$ANTHROPIC_API_KEY` set (Recipe D). Ollama has run on 50 rows;
+  the full 500-row column is queued for a faster box.
 - **Upstream license audit** — fill in [`docs/upstream_licenses.md`](docs/upstream_licenses.md).
 - **Lower/upper-bound redshifts** (`z ≤ 1.61`) — schema doesn't model bounds yet.
+- **TS-side bridge integration tests** — the streamable-HTTP MCP front-end
+  is wired and `tools/list` returns full schemas, but Node-side tests
+  against a mocked TCP worker don't exist yet.
 
 ---
 
@@ -558,7 +626,7 @@ sprints with severity, status, and code paths). The major open items:
   (12 pages — goals, schema mapping, 5-phase work plan, decision log).
 - **The sprint execution plan**:
   [`~/.claude/plans/come-up-with-a-unified-hopper.md`](~/.claude/plans/come-up-with-a-unified-hopper.md).
-- **Prompt deltas vs Vidushi/Sharma 2025**: [`docs/prompt_deltas.md`](docs/prompt_deltas.md).
+- **Prompt deltas vs Vidushi/Sharma 2026**: [`docs/prompt_deltas.md`](docs/prompt_deltas.md).
 - **Consistency-pass runbook (A–F)**: [`docs/consistency_passes_runbook.md`](docs/consistency_passes_runbook.md).
 
 ---
@@ -606,9 +674,9 @@ Other upstream references (not vendored; read at runtime via
 `references/`):
 
 - [nasa-gcn/gcn-schema](https://github.com/nasa-gcn/gcn-schema) — output JSON Schema target. Circex will submit an upstream PR for the `Photometry` extension and the new `SpectralLines` / `Classification` schemas.
-- [nasa-gcn/circulars-nlp-paper](https://github.com/nasa-gcn/circulars-nlp-paper) — Sharma et al. 2025: the 40,506-circular archive, topic labels, 13,593-row redshift gold + Vidushi's Mistral-7B baseline predictions.
+- [nasa-gcn/circulars-nlp-paper](https://github.com/nasa-gcn/circulars-nlp-paper) — Sharma et al. 2026: the 40,506-circular archive, topic labels, 13,593-row redshift gold + Vidushi's Mistral-7B baseline predictions.
 - [skyportal/timedomain-taxonomy](https://github.com/skyportal/timedomain-taxonomy) — 175-class controlled vocabulary for `Classification`.
-- Background paper: Sharma et al. 2025, [arXiv:2511.14858](https://arxiv.org/abs/2511.14858).
+- Background paper: Sharma et al. 2026, *ApJS* 283, 30, [arXiv:2511.14858](https://arxiv.org/abs/2511.14858).
 
 ## License
 

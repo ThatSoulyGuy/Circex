@@ -1,4 +1,4 @@
-# Prompt Deltas vs Vidushi/Sharma 2025
+# Prompt Deltas vs Vidushi/Sharma 2026
 
 Reference: `references/circulars-nlp-paper/information-extraction/redshift_extraction.ipynb`
 and `references/circulars-nlp-paper/figures/Fig6_sample_prompt.pdf`.
@@ -68,6 +68,34 @@ deliberately UNSEEN in the prompt so the eval measures generalization, not
 few-shot memorization.
 **Why:** without few-shots, format errors (esp. mag tables) dominated early
 prototype runs.
+
+### 7. Span-level provenance grounding (PROMPT_V1 = `2026-05-30`)
+**She:** no source-text grounding; each extracted value is unanchored.
+**We:** the system prompt now requires every populated field to also appear
+in a `provenance: dict[str, Span]` map keyed by dotted field path
+(`"redshift"`, `"photometry[0]"`) or — preferred — leaf field path
+(`"redshift.redshift"`, `"photometry[0].mag"`). Each `Span` is
+`{start, end, snippet}` with `snippet == body[start:end]` so a downstream
+consumer can round-trip-verify the offsets. Few-shot #2 (AT2024xyz / Ic-BL /
+z = 0.215) demonstrates the leaf-level pattern with four verified spans
+(`event` → "AT2024xyz", `classification` → "Ic-BL", `redshift.redshift` →
+"z = 0.215", `redshift.redshift_error` → "0.001").
+
+The prompt also instructs the model to omit entries it cannot localize to
+a single contiguous range (e.g., a value inferred from a disjoint
+combination of phrases), rather than guess offsets.
+
+**Why:** grounding turns the extractor from "trust the JSON" into "show
+your work." Downstream operators (SkyPortal, eval graders, the hand-label
+audit pass) can verify any claim without re-reading the prose, and a future
+attribution-scoring extension to the eval becomes possible (does the cited
+span actually justify the value, not just is the value correct).
+
+**Cache impact:** bumping `PROMPT_V1` from `2026-05-13` to `2026-05-30`
+invalidated the previous LLM cache entries cleanly. The provenance
+instructions add ~300 tokens to the system text; for a 7B model like
+Mistral this measurably increases prompt-eval latency on small machines
+(see `docs/known_issues.md` for the observed p50/p95 on Apple Silicon).
 
 ---
 

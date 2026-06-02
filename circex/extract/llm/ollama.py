@@ -10,6 +10,7 @@ Cost is always None (open-source local model). Latency is wall-clock.
 from __future__ import annotations
 
 import json
+import os
 import time
 from typing import Any
 
@@ -27,10 +28,16 @@ from circex.extract.llm.prompt import (
 )
 from circex.extract.protocol import Circular, Extractor
 from circex.schema import CircularExtraction, ExtractionMeta
+from circex.taxonomy import normalize_classification
 
 log = structlog.get_logger(__name__)
 
-DEFAULT_OLLAMA_MODEL = "mistral:7b-instruct-v0.2"
+# The bare `mistral:7b-instruct-v0.2` is not a pullable tag in the Ollama
+# registry; the v0.2 variants are all quantizations. Q4_K_M is the standard
+# balanced choice (~4 GB, near-FP16 quality). Override with CIRCEX_OLLAMA_MODEL.
+DEFAULT_OLLAMA_MODEL = os.environ.get(
+    "CIRCEX_OLLAMA_MODEL", "mistral:7b-instruct-v0.2-q4_K_M"
+)
 
 
 class OllamaExtractor(Extractor):
@@ -75,14 +82,26 @@ class OllamaExtractor(Extractor):
         chunk_results: list[CircularExtraction] = []
 
         for chunk in chunks:
-            payload = self._call_with_repair(
-                Circular(
-                    circular_id=circular.circular_id,
-                    subject=circular.subject,
-                    body=chunk,
-                    event_id=circular.event_id,
+            try:
+                payload = self._call_with_repair(
+                    Circular(
+                        circular_id=circular.circular_id,
+                        subject=circular.subject,
+                        body=chunk,
+                        event_id=circular.event_id,
+                    )
                 )
-            )
+            except (ValidationError, json.JSONDecodeError) as exc:
+                # Mistral-7B regularly emits structurally-broken JSON or
+                # schema-non-conforming objects on dense circulars even after
+                # repair. Treat that as a null extraction so the eval scores it
+                # as a model failure rather than crashing the whole run.
+                log.warning(
+                    "ollama_extract_failed",
+                    circular_id=circular.circular_id,
+                    error=str(exc)[:300],
+                )
+                payload = {}
             payload["circular_id"] = circular.circular_id
             payload.setdefault(
                 "extraction_meta",
@@ -140,7 +159,7 @@ class OllamaExtractor(Extractor):
         )
         first_content = first["message"]["content"]
         try:
-            return self._parse_and_strip_meta(first_content)
+            return self._parse_validate(first_content, circular.body)
         except (ValidationError, json.JSONDecodeError) as exc:
             error_message = str(exc)
             log.warning("ollama_repair_retry", error=error_message)
@@ -159,7 +178,17 @@ class OllamaExtractor(Extractor):
         second = self._client.chat(
             model=self._model_id, messages=messages, format="json"
         )
-        return self._parse_and_strip_meta(second["message"]["content"])
+        return self._parse_validate(second["message"]["content"], circular.body)
+
+    def _parse_validate(self, content: str, body: str) -> dict[str, Any]:
+        """Parse, sanitize, then trial-validate. Raises on hard schema failures."""
+        payload = self._parse_and_strip_meta(content)
+        payload = self._sanitize_payload(payload, body=body)
+        trial = dict(payload)
+        trial.setdefault("circular_id", 0)
+        trial.setdefault("extraction_meta", {"extractor": "trial"})
+        CircularExtraction.model_validate(trial)
+        return payload
 
     @staticmethod
     def _parse_and_strip_meta(content: str) -> dict[str, Any]:
@@ -168,9 +197,80 @@ class OllamaExtractor(Extractor):
         if not isinstance(loaded, dict):
             raise json.JSONDecodeError("expected JSON object, got non-dict", content, 0)
         payload: dict[str, Any] = dict(loaded)
-        trial = dict(payload)
-        trial.setdefault("circular_id", 0)
-        trial.setdefault("extraction_meta", {"extractor": "trial"})
-        CircularExtraction.model_validate(trial)
         payload.pop("extraction_meta", None)
+        return payload
+
+    @staticmethod
+    def _sanitize_payload(payload: dict[str, Any], body: str) -> dict[str, Any]:
+        """Tolerant fixups for common small-model output quirks.
+
+        Applied to the post-LLM JSON before strict Pydantic validation:
+        - drop provenance entries that can't form a valid Span (missing or
+          non-int offsets, out-of-range offsets); recompute snippet from
+          body[start:end] when the model omits or corrupts it
+        - collapse `{"X": {"X": null}}` to `"X": null` (a common Mistral
+          shape-confusion on optional nested objects)
+        - coerce `follow_up.reference.gcn_circulars` list-of-anything to a
+          comma-joined string (the schema expects str | float)
+        """
+        # --- provenance ---
+        prov = payload.get("provenance")
+        if isinstance(prov, dict):
+            cleaned: dict[str, dict[str, Any]] = {}
+            for key, val in prov.items():
+                if not isinstance(val, dict):
+                    continue
+                start = val.get("start")
+                end = val.get("end")
+                if not (isinstance(start, int) and isinstance(end, int)):
+                    continue
+                if start < 0 or end <= start or end > len(body):
+                    continue
+                snippet = val.get("snippet")
+                if not isinstance(snippet, str) or snippet != body[start:end]:
+                    snippet = body[start:end]
+                cleaned[key] = {"start": start, "end": end, "snippet": snippet}
+            payload["provenance"] = cleaned
+        else:
+            payload["provenance"] = {}
+
+        # --- nested-null collapse ---
+        for parent_key in ("classification", "redshift", "event", "follow_up", "localization"):
+            v = payload.get(parent_key)
+            if isinstance(v, dict):
+                non_null = {k: vv for k, vv in v.items() if vv not in (None, [], {}, "")}
+                if not non_null:
+                    payload[parent_key] = None
+
+        # --- classification: normalize aliases to canonical, drop unknown ---
+        cls = payload.get("classification")
+        if isinstance(cls, dict):
+            raw = cls.get("classification")
+            if isinstance(raw, str):
+                canonical = normalize_classification(raw)
+                if canonical is None:
+                    payload["classification"] = None
+                else:
+                    cls["classification"] = canonical
+
+        # --- follow_up.reference list coercion ---
+        fu = payload.get("follow_up")
+        if isinstance(fu, dict):
+            ref = fu.get("reference")
+            if isinstance(ref, dict):
+                for rk, rv in list(ref.items()):
+                    if isinstance(rv, list):
+                        flat: list[str] = []
+                        for item in rv:
+                            if isinstance(item, dict):
+                                for kk in ("id", "circular_id", "value", "name", "event_name"):
+                                    if kk in item and item[kk] is not None:
+                                        flat.append(str(item[kk]))
+                                        break
+                            elif item is not None:
+                                flat.append(str(item))
+                        ref[rk] = ",".join(flat) if flat else None
+                    elif rv is not None and not isinstance(rv, str | int | float):
+                        ref[rk] = str(rv)
+
         return payload
