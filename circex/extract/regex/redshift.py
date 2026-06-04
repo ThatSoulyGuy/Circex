@@ -18,6 +18,14 @@ _ALT_RE = re.compile(
     r"\b(?:redshift\s+(?:of\s+)?)(\d+\.\d+)",
     re.IGNORECASE,
 )
+# Bound-redshift phrasings the current Redshift schema cannot represent.
+# Examples: "z <= 1.61", "z =< 1.61", "z >= 0.2", "z < 2.5".
+# Per docs/labeling_spec.md, when one of these fires the extractor sets
+# redshift = None and appends the literal phrase to extraction_meta.notes.
+_Z_BOUND_RE = re.compile(
+    r"\bz\s*(<=?|>=?|=<|=>|≤|≥)\s*(\d+\.\d+)",
+    re.IGNORECASE,
+)
 
 # Context-window heuristics. Search ±200 chars around the redshift match.
 _CONTEXT_WINDOW = 200
@@ -51,6 +59,22 @@ def parse_redshift(text: str) -> Redshift | None:
     """Return a Redshift if the text contains z = X.XXX or 'redshift of X.XXX'."""
     result = parse_redshift_with_span(text)
     return result[0] if result is not None else None
+
+
+def parse_redshift_bound(text: str) -> tuple[str, Span] | None:
+    """Return (phrase, Span) for the first bound-redshift mention in `text`, or None.
+
+    Bound redshifts (e.g. "z <= 1.61") cannot be represented in the current
+    Redshift point-value schema. The composer in RegexExtractor writes the
+    matched phrase to extraction_meta.notes and records a "_redshift_bound"
+    provenance key; it does NOT populate Redshift.redshift.
+    """
+    match = _Z_BOUND_RE.search(text)
+    if not match:
+        return None
+    phrase = match.group(0)
+    span = Span(start=match.start(), end=match.end(), snippet=phrase)
+    return phrase, span
 
 
 def parse_redshift_with_span(text: str) -> tuple[Redshift, Span] | None:

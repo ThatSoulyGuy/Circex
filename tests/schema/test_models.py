@@ -128,3 +128,33 @@ def test_classification_accepts_canonical() -> None:
     # "Ia" is a canonical class in supernovae.yaml — use it directly.
     instance = Classification.model_validate({"classification": "Ia"})
     assert instance.classification == "Ia"
+
+
+# ---- is_detection inference (P1 #6) ----
+
+
+def test_is_detection_inferred_true_when_mag_present() -> None:
+    p = PhotometryExt(filter="r", mag=18.42, mag_error=0.05)
+    assert p.is_detection is True
+
+
+def test_is_detection_inferred_false_when_only_limiting_mag() -> None:
+    p = PhotometryExt(filter="r", limiting_mag=22.5, limiting_mag_sigma=3.0)
+    assert p.is_detection is False
+
+
+def test_is_detection_true_when_both_mag_and_limiting_present() -> None:
+    """A detection plus the night's depth — common pattern (e.g. VT)."""
+    p = PhotometryExt(filter="r", mag=20.1, limiting_mag=22.5)
+    assert p.is_detection is True
+
+
+def test_is_detection_stays_null_when_both_null() -> None:
+    p = PhotometryExt(filter="r")
+    assert p.is_detection is None
+
+
+def test_is_detection_explicit_value_preserved() -> None:
+    """Explicit is_detection overrides the inference (caller knows best)."""
+    p = PhotometryExt(filter="r", mag=18.0, is_detection=False)
+    assert p.is_detection is False

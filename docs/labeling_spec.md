@@ -139,10 +139,16 @@ identified lines. Each entry:
   and absorption lines were used, prefer whichever the circular emphasizes;
   open an issue if genuinely ambiguous.
 
-If the circular gives a lower limit like "z ≤ 1.61", capture as
-`redshift: 1.61` and add a note in the labeling adjudication log (see below)
-that this is an upper bound. The schema doesn't yet model bounds vs point
-measurements; flag it as a "known gap" if it recurs.
+**Bound redshifts** (e.g. "z ≤ 1.61", "z ≥ 0.2", "z =< 1.61" in older
+circulars): set `redshift: null` and append the literal phrase to
+`extraction_meta.notes` as `"redshift_bound: <phrase>"`. The regex
+extractor already populates this convention via `parse_redshift_bound`;
+the LLM extractors should follow the same rule (LLM prompt: when the
+text states only an inequality on z, leave redshift null and add the
+phrase to notes). A `_redshift_bound` provenance key points at the source
+phrase so downstream consumers can render it as a comment rather than a
+structured value. The schema-level fix (a `redshift_bound: Literal["upper",
+"lower","point"]` enum) is deferred to a v2 upstream PR.
 
 ### `reporter`
 The *alerting party*, not the photometry instrument. For optical observation

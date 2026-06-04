@@ -128,10 +128,18 @@ class ClaudeExtractor(Extractor):
                 )
             )
             payload["circular_id"] = circular.circular_id
-            payload.setdefault(
-                "extraction_meta",
-                {"extractor": self.extractor_id, "model_id": self._model_id},
-            )
+            # Preserve any `notes` Claude emitted (e.g. redshift_bound phrases)
+            # while overwriting the run-level fields. Notes flow through the
+            # chunker merge step back into the final extraction_meta.
+            llm_meta = payload.get("extraction_meta") or {}
+            llm_notes = llm_meta.get("notes", []) if isinstance(llm_meta, dict) else []
+            if not isinstance(llm_notes, list):
+                llm_notes = []
+            payload["extraction_meta"] = {
+                "extractor": self.extractor_id,
+                "model_id": self._model_id,
+                "notes": llm_notes,
+            }
             chunk_results.append(CircularExtraction.model_validate(payload))
 
             total_tokens_in += getattr(usage, "input_tokens", 0) or 0

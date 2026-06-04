@@ -84,3 +84,26 @@ def test_empty_body_produces_valid_extraction() -> None:
     r = RegexExtractor().extract(_circular(8, "", ""))
     assert r.circular_id == 8
     assert r.event is None and r.photometry == []
+
+
+def test_multi_event_body_emits_list() -> None:
+    """Multi-event circular (GW counterpart) should emit event_name as list."""
+    body = (
+        "Optical counterpart to GW170817 confirmed. We re-image AT2017gfo and "
+        "report new photometry."
+    )
+    r = RegexExtractor().extract(_circular(9, "AT2017gfo / GW170817 follow-up", body))
+    assert r.event is not None
+    assert isinstance(r.event.event_name, list)
+    # Both names are present (normalized: whitespace stripped).
+    assert "GW170817" in r.event.event_name
+    assert "AT2017GFO" in r.event.event_name
+
+
+def test_single_event_body_emits_string() -> None:
+    """Backward compatibility: single-event circulars keep emitting a string."""
+    body = "We observed GRB 230307A with the VLT."
+    r = RegexExtractor().extract(_circular(10, "GRB 230307A", body))
+    assert r.event is not None
+    assert isinstance(r.event.event_name, str)
+    assert r.event.event_name == "GRB230307A"

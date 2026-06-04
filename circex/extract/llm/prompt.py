@@ -21,7 +21,7 @@ from typing import Any, TypedDict
 from circex.extract.protocol import Circular
 from circex.schema import CircularExtraction
 
-PROMPT_V1 = "2026-05-30"
+PROMPT_V1 = "2026-06-04"
 
 
 class Message(TypedDict):
@@ -56,7 +56,13 @@ canonical name ("Ia"). If you are not confident, leave null.
 - GCN cross-references (e.g., "GCN #12345") populate `follow_up.reference`.
 - The reporter is the *alerting party*, NOT the photometry telescope. Most \
 optical observation circulars do not need to populate reporter.
-- DO NOT populate `extraction_meta`. The harness sets it.
+- DO NOT populate `extraction_meta` other than `notes` (see below).
+- BOUND REDSHIFTS: when the circular states only an inequality on z (e.g. \
+"z <= 1.61", "z =< 1.61", "z >= 0.2"), leave `redshift` as null AND append \
+the literal phrase to `extraction_meta.notes` as \
+`"redshift_bound: <verbatim phrase>"`. Add a `_redshift_bound` provenance \
+entry pointing at the source span. Never coerce a bound into the \
+Redshift point-value schema.
 - PROVENANCE: for every field you populate, also add an entry to `provenance` \
 keyed by the dotted field path that points at the source-text span you used. \
 The value is `{"start": <int>, "end": <int>, "snippet": <str>}` where `start` \

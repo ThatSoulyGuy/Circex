@@ -112,6 +112,8 @@ def merge_extractions(
 
     photometry_seen: dict[tuple[object, ...], PhotometryExt] = {}
     time_offsets_seen: dict[tuple[object, ...], TimeOffset] = {}
+    notes_seen: list[str] = []
+    provenance_seen: dict[str, object] = {}
 
     for e in extractions:
         event = _merge_scalar(event, e.event)
@@ -129,6 +131,18 @@ def merge_extractions(
         for t in e.time_offsets:
             key = _time_offset_key(t)
             time_offsets_seen.setdefault(key, t)
+        for note in e.extraction_meta.notes:
+            if note not in notes_seen:
+                notes_seen.append(note)
+        for path, span in e.provenance.items():
+            provenance_seen.setdefault(path, span)
+
+    # Carry per-chunk notes/provenance forward into the merged extraction's
+    # extraction_meta (the caller's `extraction_meta` provides the run-level
+    # fields like latency/tokens/cost; notes are content, not run-level).
+    merged_meta = extraction_meta.model_copy(
+        update={"notes": [*extraction_meta.notes, *notes_seen]}
+    )
 
     return CircularExtraction.model_validate(
         {
@@ -143,6 +157,7 @@ def merge_extractions(
             "spectroscopy": spectroscopy,
             "photometry": list(photometry_seen.values()),
             "time_offsets": list(time_offsets_seen.values()),
-            "extraction_meta": extraction_meta,
+            "provenance": provenance_seen,
+            "extraction_meta": merged_meta,
         }
     )

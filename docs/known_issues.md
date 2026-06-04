@@ -39,16 +39,26 @@ contains TODOs. Needs human to open each LICENSE and verify compatibility with
 Circex's MIT license.
 **Where:** `docs/upstream_licenses.md`.
 
-### Lower/upper-bound redshifts stored as point values — **open**
-**Severity:** M. Real circulars write `z ≤ 1.61`, `z ≥ 0.2`, `z ~ 0.3`. Our
-`Redshift` schema only models a point value + symmetric/asymmetric error. A
-labeler given `z ≤ 1.61` has to either store `redshift=1.61` (loses the bound
-semantics) or leave it null (loses the value).
-**Decision needed:** add `redshift_bound: Literal["upper","lower","point"] | None`
-to the schema OR define a labeling rule that stores upper-bounds as point with
-a flag in `extraction_meta` or notes.
+### Lower/upper-bound redshifts stored as point values — **resolved (v1 convention)**
+**Severity:** M (was). Real circulars write `z ≤ 1.61`, `z ≥ 0.2`, `z ~ 0.3`.
+The `Redshift` schema only models a point value + symmetric/asymmetric error.
+**Resolution (v1, agreed with ICARE):** the extractor sets `redshift: None`
+and appends the literal phrase to `ExtractionMeta.notes` as
+`"redshift_bound: <phrase>"`, with a `"_redshift_bound"` provenance entry
+pointing at the source span. Downstream consumers (SkyPortal, ICARE) read
+notes and render the bound as a comment rather than a structured value.
+The regex side is wired via `parse_redshift_bound`
+(`circex/extract/regex/redshift.py`) and `RegexExtractor`
+(`circex/extract/regex/extractor.py`). The LLM prompt should follow the
+same convention.
+**Schema-level fix deferred to v2:** add
+`redshift_bound: Literal["upper","lower","point"] | None` to
+`Redshift` so the bound has a typed home. Tracked for the next upstream
+gcn-schema PR.
 **First surfaced:** circular 216 (GRB 990123, "z =< 1.61").
-**Where:** `circex/schema/redshift.py`, `docs/labeling_spec.md`.
+**Where:** `circex/schema/extraction_meta.py` (`notes` field),
+`circex/extract/regex/redshift.py` (`parse_redshift_bound`),
+`docs/labeling_spec.md`.
 
 ### Initial 5k-ID pool was pre-2017 — **resolved**
 **Severity:** M. Stratification on the first 5000 optical IDs gave only 1

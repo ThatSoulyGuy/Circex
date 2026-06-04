@@ -36,6 +36,9 @@ EVENT_PATTERNS: list[str] = [
     r"\b(ICECUBE\s?-?\d+[A-Z]?)\b",
     # Swift X-ray catalog: SWIFT J1234.5+6789.0.
     r"\b(SWIFT\s?J\d+(?:\.\d+)?[+-]\d+(?:\.\d+)?)\b",
+    # Gravitational-wave: GW170817, GW190425, with optional sub-event suffix.
+    # Needed for the multimessenger (GW170817 + AT2017gfo) joint extraction.
+    r"\b(GW\s?\d{6}[a-z]?)\b",
 ]
 
 # GCN cross-reference: "GCN #12345", "GCN Circular 12345", "GCN Circ. #12345".

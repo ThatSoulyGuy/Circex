@@ -166,3 +166,48 @@ def test_extractor_classification_provenance() -> None:
     assert "classification" in r.provenance
     p = r.provenance["classification"]
     assert body[p.start:p.end] == p.snippet
+
+
+# ---- model_dump round-trip (P1 #7) ----
+
+
+def test_provenance_round_trips_through_model_dump_json() -> None:
+    """ICARE relies on copying spans into altdata.note; confirm wire format works."""
+    import json
+
+    body = "Host emission gives z = 0.198 spectroscopically."
+    r = RegexExtractor().extract(_circular(body))
+    wire = json.loads(r.model_dump_json())
+    assert wire["circular_id"] == 1
+    assert "provenance" in wire
+    assert "redshift" in wire["provenance"]
+    span = wire["provenance"]["redshift"]
+    assert {"start", "end", "snippet"} <= set(span.keys())
+    # Round-trip-stable: the snippet equals body[start:end] in the original text.
+    assert body[span["start"]:span["end"]] == span["snippet"]
+
+
+def test_provenance_round_trips_through_model_dump_then_validate() -> None:
+    """Dump → load → CircularExtraction.model_validate preserves provenance + circular_id."""
+    body = "We measure z = 0.5 from emission lines."
+    r = RegexExtractor().extract(_circular(body))
+    dumped = r.model_dump(mode="json")
+    from circex.schema import CircularExtraction
+
+    rebuilt = CircularExtraction.model_validate(dumped)
+    assert rebuilt.circular_id == r.circular_id
+    assert rebuilt.provenance.keys() == r.provenance.keys()
+    for key in rebuilt.provenance:
+        assert rebuilt.provenance[key].snippet == r.provenance[key].snippet
+
+
+def test_redshift_bound_provenance_round_trips() -> None:
+    """Bound-redshift case: notes + _redshift_bound provenance both survive dump."""
+    body = "Lower bound from absorption: z <= 1.61."
+    r = RegexExtractor().extract(_circular(body))
+    dumped = r.model_dump(mode="json")
+    assert dumped["redshift"] is None
+    assert dumped["extraction_meta"]["notes"] == ["redshift_bound: z <= 1.61"]
+    assert "_redshift_bound" in dumped["provenance"]
+    bound_span = dumped["provenance"]["_redshift_bound"]
+    assert body[bound_span["start"]:bound_span["end"]] == bound_span["snippet"]

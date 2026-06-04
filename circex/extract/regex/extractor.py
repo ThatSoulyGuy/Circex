@@ -18,7 +18,10 @@ from circex.extract.regex.mag_table import (
     parse_mag_table_with_spans,
     parse_single_mags_with_spans,
 )
-from circex.extract.regex.redshift import parse_redshift_with_span
+from circex.extract.regex.redshift import (
+    parse_redshift_bound,
+    parse_redshift_with_span,
+)
 from circex.extract.regex.regex_events import (
     extract_events,
     extract_gcn_xrefs_with_positions,
@@ -51,10 +54,17 @@ class RegexExtractor(Extractor):
 
         # ---- event identification ----
         record = {"eventId": circular.event_id, "subject": subject, "body": body}
-        primary_event_raw, _, _ = extract_events(record)
+        primary_event_raw, all_events, _ = extract_events(record)
         event: Event | None = None
         if primary_event_raw:
-            event = Event(event_name=primary_event_raw)
+            # Multi-event circulars (e.g. GW170817 + AT2017gfo) emit the full
+            # list so the AT/optical name doesn't get dropped — matches the
+            # Event.event_name `str | list[str]` schema and the LLM-extractor
+            # behavior demonstrated in few-shot #4.
+            name_value: str | list[str] = (
+                all_events if len(all_events) > 1 else primary_event_raw
+            )
+            event = Event(event_name=name_value)
             # Try to ground the primary event in body text. Only spans that point
             # into circular.body are recorded; eventId / subject sources are not
             # addressable by a body offset.
@@ -100,12 +110,23 @@ class RegexExtractor(Extractor):
             for idx, (_, span) in enumerate(single_hits):
                 provenance[f"photometry[{idx}]"] = span
 
-        # ---- redshift ----
+        # ---- redshift (point) ----
         redshift = None
         z_hit = parse_redshift_with_span(body)
         if z_hit is not None:
             redshift, z_span = z_hit
             provenance["redshift"] = z_span
+
+        # ---- redshift (bound) — schema gap, written to extraction_meta.notes ----
+        # Only fires when no point value was matched, to avoid double-counting
+        # the same circular's redshift line.
+        bound_notes: list[str] = []
+        if redshift is None:
+            bound_hit = parse_redshift_bound(body)
+            if bound_hit is not None:
+                phrase, bound_span = bound_hit
+                bound_notes.append(f"redshift_bound: {phrase}")
+                provenance["_redshift_bound"] = bound_span
 
         # ---- classification ----
         classification = None
@@ -135,5 +156,6 @@ class RegexExtractor(Extractor):
             extraction_meta=ExtractionMeta(
                 extractor=REGEX_EXTRACTOR_ID,
                 latency_ms=latency_ms,
+                notes=bound_notes,
             ),
         )

@@ -480,6 +480,15 @@ equal to `body[start:end]` for round-trip verification — a downstream
 consumer that re-fetches the circular can confirm the offsets still
 resolve to the same text.
 
+**Consuming spans downstream.** Both `model_dump(mode="json")` and
+`model_dump_json()` emit `circular_id`, `provenance`, and
+`extraction_meta` (with `notes`) verbatim — there's no privileged
+in-memory form. ICARE-style consumers can safely copy
+`extraction.provenance["redshift.redshift"]` into a SkyPortal
+`altdata.note`, or render `extraction_meta.notes` (which is where
+bound-redshift phrases like `"redshift_bound: z <= 1.61"` are routed
+when the schema can't represent the value as a scalar) as a comment.
+
 JSON Schema artifacts for the upstream `nasa-gcn/gcn-schema` PR are dumped to
 `schemas/` via `circex schema-dump`.
 

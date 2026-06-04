@@ -51,3 +51,41 @@ def test_classify_photometric() -> None:
 
 def test_no_match() -> None:
     assert parse_redshift("This circular has no redshift information.") is None
+
+
+# ---- bound redshifts (P2 #11) ----
+
+
+def test_parse_redshift_bound_upper() -> None:
+    from circex.extract.regex.redshift import parse_redshift_bound
+
+    result = parse_redshift_bound("Lower limit z <= 1.61 from absorption.")
+    assert result is not None
+    phrase, span = result
+    assert phrase == "z <= 1.61"
+    assert "1.61" in span.snippet
+
+
+def test_parse_redshift_bound_lower() -> None:
+    from circex.extract.regex.redshift import parse_redshift_bound
+
+    result = parse_redshift_bound("Constraint: z >= 0.2 for the host.")
+    assert result is not None
+    phrase, _ = result
+    assert phrase == "z >= 0.2"
+
+
+def test_parse_redshift_bound_legacy_notation() -> None:
+    """Old-style '=<' shows up in 1990s circulars (e.g. GRB 990123)."""
+    from circex.extract.regex.redshift import parse_redshift_bound
+
+    result = parse_redshift_bound("redshift z =< 1.61 (Kelson et al.)")
+    assert result is not None
+    phrase, _ = result
+    assert phrase == "z =< 1.61"
+
+
+def test_parse_redshift_bound_does_not_match_point_value() -> None:
+    from circex.extract.regex.redshift import parse_redshift_bound
+
+    assert parse_redshift_bound("z = 0.215 +/- 0.001") is None

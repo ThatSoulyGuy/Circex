@@ -42,3 +42,14 @@ class ExtractionMeta(BaseModel):
     cache_hit: bool = Field(
         default=False, description="True if served from the local LLM cache."
     )
+    notes: list[str] = Field(
+        default_factory=list,
+        description=(
+            "Free-form annotations from the extractor. Used for facts the "
+            "current schema cannot represent — most importantly bound redshifts "
+            "(e.g. \"z <= 1.61\") that the v1 Redshift model cannot encode. "
+            "Convention: when a bound is found, set redshift to None and append "
+            "the original phrasing here; downstream consumers should display "
+            "these as comments rather than treating them as structured values."
+        ),
+    )

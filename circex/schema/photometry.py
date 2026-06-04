@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 MagSystem = Literal["AB", "Vega", "STMag"]
 CalibrationReference = Literal["PS1", "SDSS", "APASS", "2MASS", "Gaia", "Other"]
@@ -74,3 +74,25 @@ class PhotometryExt(BaseModel):
         default=None,
         description="Airmass during the observation [dimensionless].",
     )
+
+    # ---- detection / non-detection flag ----
+    is_detection: bool | None = Field(
+        default=None,
+        description=(
+            "True if this row reports a measured magnitude; False if it reports only an "
+            "upper limit (non-detection). Inferred automatically when not set explicitly: "
+            "mag present ⇒ True, only limiting_mag present ⇒ False. When both are present "
+            "(a detection plus the night's depth), this is True. When both are null the "
+            "value is left null."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def _infer_is_detection(self) -> PhotometryExt:
+        """Auto-set is_detection when the caller leaves it null."""
+        if self.is_detection is None:
+            if self.mag is not None:
+                self.is_detection = True
+            elif self.limiting_mag is not None:
+                self.is_detection = False
+        return self
