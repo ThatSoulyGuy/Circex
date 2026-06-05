@@ -158,3 +158,18 @@ def test_is_detection_explicit_value_preserved() -> None:
     """Explicit is_detection overrides the inference (caller knows best)."""
     p = PhotometryExt(filter="r", mag=18.0, is_detection=False)
     assert p.is_detection is False
+
+
+def test_is_detection_survives_dump_and_revalidate() -> None:
+    """The inferred flag must round-trip through serialization (ICARE reads it)."""
+    p = PhotometryExt(filter="r", limiting_mag=22.5)
+    dumped = p.model_dump(mode="json")
+    assert dumped["is_detection"] is False
+    rebuilt = PhotometryExt.model_validate(dumped)
+    assert rebuilt.is_detection is False
+
+
+def test_is_detection_inferred_on_validate_from_raw_dict() -> None:
+    """An LLM/raw dict without is_detection gets it inferred at model_validate time."""
+    p = PhotometryExt.model_validate({"filter": "g", "mag": 19.1, "mag_system": "AB"})
+    assert p.is_detection is True

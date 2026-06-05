@@ -94,3 +94,23 @@ def test_raises_when_no_tool_use_block_in_response() -> None:
     ext = ClaudeExtractor(model_id="claude-haiku-4-5-20251001", client=client)
     with pytest.raises(ValueError, match="submit_extraction"):
         ext.extract(Circular(circular_id=1, subject="", body=""))
+
+
+def test_claude_preserves_llm_notes() -> None:
+    """A redshift_bound note in tool_use input survives into the final meta."""
+    client = _mock_anthropic(
+        {"redshift": None, "extraction_meta": {"notes": ["redshift_bound: z <= 1.61"]}}
+    )
+    ext = ClaudeExtractor(model_id="claude-haiku-4-5-20251001", client=client)
+    result = ext.extract(Circular(circular_id=216, subject="", body="z <= 1.61"))
+    assert "redshift_bound: z <= 1.61" in result.extraction_meta.notes
+    # Run-level fields are still set by the runner, not the model.
+    assert result.extraction_meta.extractor == ext.extractor_id
+    assert result.extraction_meta.model_id == "claude-haiku-4-5-20251001"
+
+
+def test_claude_no_notes_yields_empty_list() -> None:
+    client = _mock_anthropic({"event": {"event_name": "GRB X"}})
+    ext = ClaudeExtractor(model_id="claude-haiku-4-5-20251001", client=client)
+    result = ext.extract(Circular(circular_id=1, subject="", body="b"))
+    assert result.extraction_meta.notes == []

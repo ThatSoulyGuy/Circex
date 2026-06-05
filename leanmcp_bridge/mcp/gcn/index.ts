@@ -15,6 +15,7 @@ import { Tool } from "@leanmcp/core";
 import { callPythonTool, PythonBridgeError } from "../../bridge/python_bridge.js";
 import {
   ExtractPropertiesInput,
+  ExtractTextInput,
   FetchGcnCircularsInput,
   FindCounterpartsInput,
   GetClassificationInput,
@@ -48,6 +49,23 @@ export class GcnService {
   })
   async extract_properties(input: ExtractPropertiesInput): Promise<unknown> {
     return forward("extract_properties", { circular_id: input.circular_id });
+  }
+
+  @Tool({
+    description:
+      "Extract structured properties from a raw circular body, without an " +
+      "archive lookup. Use this for live circulars delivered over " +
+      "gcn.circulars (Kafka) that are not yet archived. Pass the real " +
+      "circular_id when known so re-delivered messages are served from cache " +
+      "rather than re-extracted.",
+    inputClass: ExtractTextInput,
+  })
+  async extract_text(input: ExtractTextInput): Promise<unknown> {
+    const args: Record<string, unknown> = { body: input.body };
+    if (input.circular_id !== undefined) args.circular_id = input.circular_id;
+    if (input.subject !== undefined) args.subject = input.subject;
+    if (input.event_id !== undefined) args.event_id = input.event_id;
+    return forward("extract_text", args);
   }
 
   @Tool({

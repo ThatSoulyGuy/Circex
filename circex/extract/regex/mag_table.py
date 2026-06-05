@@ -58,6 +58,26 @@ def infer_mag_system(filter_name: str) -> MagSystem | None:
     return None
 
 
+# Canonical-bandpass crosswalk (sncosmo / SkyPortal vocabulary). The raw filter
+# token is always kept on PhotometryExt.filter; this populates the sibling
+# `bandpass` field so downstream consumers (e.g. SkyPortal/ICARE) get a
+# normalized name. `clear`/`C` (unfiltered) have no canonical bandpass.
+_BANDPASS_CROSSWALK: Final[dict[str, str]] = {
+    # Sloan (AB)
+    "u": "sdssu", "g": "sdssg", "r": "sdssr", "i": "sdssi", "z": "sdssz",
+    "y": "ps1::y",
+    # Bessel (Vega)
+    "U": "bessellu", "B": "bessellb", "V": "bessellv", "R": "bessellr", "I": "besselli",
+    # 2MASS / NIR (Vega)
+    "J": "2massj", "H": "2massh", "K": "2massks", "Ks": "2massks",
+}
+
+
+def infer_bandpass(filter_name: str) -> str | None:
+    """Map a recognized filter token to its canonical bandpass name, or None."""
+    return _BANDPASS_CROSSWALK.get(filter_name)
+
+
 def _plausible_mag(filter_name: str, mag: float) -> bool:
     """Reject obvious non-photometric values (e.g., 'z = 1.61' for redshift).
 
@@ -92,6 +112,7 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                 mag=mag,
                 mag_error=err,
                 mag_system=infer_mag_system(filter_name),
+                bandpass=infer_bandpass(filter_name),
             ),
             Span(start=match.start(), end=match.end(), snippet=match.group(0)),
         ))
@@ -108,6 +129,7 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                 limiting_mag=limit,
                 limiting_mag_sigma=sigma,
                 mag_system=infer_mag_system(filter_name),
+                bandpass=infer_bandpass(filter_name),
             ),
             Span(start=match.start(), end=match.end(), snippet=match.group(0)),
         ))
@@ -219,6 +241,7 @@ def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                         mag=mag,
                         mag_error=err,
                         mag_system=infer_mag_system(filter_token),
+                        bandpass=infer_bandpass(filter_token),
                     ),
                     Span(start=row_start, end=row_end, snippet=row_text),
                 ))

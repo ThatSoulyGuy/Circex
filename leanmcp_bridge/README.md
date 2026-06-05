@@ -27,17 +27,22 @@ circex serve --worker  (Python, asyncio)
    circex/server/store.py         — SQLite ExtractionStore
 ```
 
-## The 7 tools
+## The 8 tools
 
 | Tool | Args | Returns |
 |---|---|---|
-| `extract_properties` | `{circular_id: int}` | full `CircularExtraction` |
+| `extract_properties` | `{circular_id: int}` | full `CircularExtraction` (archive lookup) |
+| `extract_text` | `{body: str, circular_id?: int, subject?: str, event_id?: str}` | full `CircularExtraction` (live path) |
 | `get_redshift` | `{event: str}` | `Redshift \| null` |
 | `get_photometry` | `{event: str}` | `list[PhotometryExt]` |
 | `get_classification` | `{event: str}` | `Classification \| null` |
 | `find_counterparts` | `{gw_event_id: str}` | `list[FollowUp]` |
 | `search_gcn_circulars` | `{query: str, event?: str, limit?: int}` | `list[SearchHit]` |
 | `fetch_gcn_circulars` | `{circular_ids: list[int]}` | `list[Circular]` |
+
+`extract_text` is the live-pipeline entry point — it extracts from a raw
+body without an archive lookup, for circulars delivered over gcn.circulars
+(Kafka) that aren't archived yet.
 
 ## Quickstart
 

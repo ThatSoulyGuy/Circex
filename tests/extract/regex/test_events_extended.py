@@ -40,6 +40,24 @@ def test_extract_goto_designation() -> None:
     assert any("GOTO" in m for m in matches)
 
 
+# ---- gravitational-wave designations (P2 #8) ----
+
+
+def test_extract_gw_designation() -> None:
+    assert "GW170817" in extract_matches("Counterpart to GW170817 confirmed.")
+
+
+def test_extract_gw_with_subevent_suffix() -> None:
+    assert "GW190425" in extract_matches("GW190425 localization updated.")
+
+
+def test_extract_gw_and_at_together() -> None:
+    """The multimessenger case: both names recovered, AT name not dropped."""
+    matches = extract_matches("Optical counterpart AT2017gfo to GW170817.")
+    assert "GW170817" in matches
+    assert "AT2017GFO" in matches
+
+
 # ---- GCN cross-refs ----
 
 

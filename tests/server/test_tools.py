@@ -91,3 +91,153 @@ def test_extract_properties_serves_from_store_when_cached(
     result = dispatch(populated_ctx, "extract_properties", {"circular_id": 1})
     assert result["circular_id"] == 1
     assert result["event"]["event_name"] == "GRB 240101A"
+
+
+# ---- extract_text (P0 #1) ----
+
+
+class _RecordingExtractor:
+    """Captures the Circular it was handed and returns a canned extraction."""
+
+    extractor_id = "regex-v1"
+    model_id = ""
+    prompt_version = ""
+
+    def __init__(self) -> None:
+        self.last_circular: object = None
+
+    def extract(self, circular: object) -> CircularExtraction:
+        self.last_circular = circular
+        cid = getattr(circular, "circular_id", 0)
+        return CircularExtraction(
+            circular_id=cid,
+            event=Event(event_name="GRB 250601A"),
+            extraction_meta=ExtractionMeta(extractor="regex-v1"),
+        )
+
+
+def test_extract_text_requires_default_extractor(populated_ctx: ToolContext) -> None:
+    populated_ctx.default_extractor = None
+    with pytest.raises(ValueError, match="requires a default extractor"):
+        dispatch(populated_ctx, "extract_text", {"body": "GRB 250601A z = 0.5"})
+
+
+def test_extract_text_requires_body(populated_ctx: ToolContext) -> None:
+    populated_ctx.default_extractor = _RecordingExtractor()
+    with pytest.raises(ValueError, match="body"):
+        dispatch(populated_ctx, "extract_text", {"subject": "no body here"})
+
+
+def test_extract_text_extracts_from_raw_body(populated_ctx: ToolContext) -> None:
+    ext = _RecordingExtractor()
+    populated_ctx.default_extractor = ext
+    result = dispatch(
+        populated_ctx,
+        "extract_text",
+        {
+            "circular_id": 99999,
+            "subject": "GRB 250601A",
+            "body": "z = 0.5",
+            "event_id": "GRB 250601A",
+        },
+    )
+    assert result["circular_id"] == 99999
+    assert result["event"]["event_name"] == "GRB 250601A"
+    # The body was forwarded verbatim into the Circular (no archive lookup).
+    assert getattr(ext.last_circular, "body") == "z = 0.5"
+    assert getattr(ext.last_circular, "event_id") == "GRB 250601A"
+
+
+def test_extract_text_persists_real_id_to_store(populated_ctx: ToolContext) -> None:
+    populated_ctx.default_extractor = _RecordingExtractor()
+    dispatch(populated_ctx, "extract_text", {"circular_id": 12345, "body": "GRB 250601A"})
+    stored = populated_ctx.store.get(circular_id=12345, extractor_id="regex-v1")
+    assert stored is not None
+    assert stored.circular_id == 12345
+
+
+def test_extract_text_sentinel_id_not_persisted(populated_ctx: ToolContext) -> None:
+    """circular_id defaults to 0; sentinel rows must not collide in the store."""
+    populated_ctx.default_extractor = _RecordingExtractor()
+    result = dispatch(populated_ctx, "extract_text", {"body": "GRB 250601A"})
+    assert result["circular_id"] == 0
+    # Nothing persisted under the sentinel id.
+    assert populated_ctx.store.get(circular_id=0, extractor_id="regex-v1") is None
+
+
+def test_extract_text_defaults_subject_and_event_id(populated_ctx: ToolContext) -> None:
+    ext = _RecordingExtractor()
+    populated_ctx.default_extractor = ext
+    dispatch(populated_ctx, "extract_text", {"body": "just a body"})
+    assert getattr(ext.last_circular, "subject") == ""
+    assert getattr(ext.last_circular, "event_id") is None
+
+
+def test_extract_text_rejects_non_int_circular_id(populated_ctx: ToolContext) -> None:
+    populated_ctx.default_extractor = _RecordingExtractor()
+    with pytest.raises(ValueError, match="circular_id"):
+        dispatch(populated_ctx, "extract_text", {"body": "b", "circular_id": "99"})
+
+
+def test_extract_text_rejects_non_str_subject(populated_ctx: ToolContext) -> None:
+    populated_ctx.default_extractor = _RecordingExtractor()
+    with pytest.raises(ValueError, match="subject"):
+        dispatch(populated_ctx, "extract_text", {"body": "b", "subject": 42})
+
+
+def test_extract_text_rejects_non_str_event_id(populated_ctx: ToolContext) -> None:
+    populated_ctx.default_extractor = _RecordingExtractor()
+    with pytest.raises(ValueError, match="event_id"):
+        dispatch(populated_ctx, "extract_text", {"body": "b", "event_id": 7})
+
+
+def test_extract_text_idempotent_via_caching_extractor(populated_ctx: ToolContext) -> None:
+    """Re-delivered Kafka message (same body+id) must not re-invoke the extractor.
+
+    Simulates the extractor's own LLM cache: a body-keyed cache means the
+    second call returns the first result without re-running extraction.
+    """
+
+    class _CachingExtractor:
+        extractor_id = "regex-v1"
+        model_id = ""
+        prompt_version = ""
+
+        def __init__(self) -> None:
+            self.calls = 0
+            self._cache: dict[tuple[int, str], CircularExtraction] = {}
+
+        def extract(self, circular: object) -> CircularExtraction:
+            key = (getattr(circular, "circular_id"), getattr(circular, "body"))
+            if key in self._cache:
+                return self._cache[key]
+            self.calls += 1
+            ex = CircularExtraction(
+                circular_id=getattr(circular, "circular_id"),
+                extraction_meta=ExtractionMeta(extractor="regex-v1"),
+            )
+            self._cache[key] = ex
+            return ex
+
+    ext = _CachingExtractor()
+    populated_ctx.default_extractor = ext
+    args = {"circular_id": 55555, "body": "duplicate kafka payload"}
+    dispatch(populated_ctx, "extract_text", args)
+    dispatch(populated_ctx, "extract_text", args)
+    assert ext.calls == 1  # second delivery served from the extractor's cache
+
+
+def test_extract_text_provenance_survives_to_serialized_output(
+    populated_ctx: ToolContext,
+) -> None:
+    """Real regex extractor through extract_text: provenance lands in the dict."""
+    from circex.extract.regex import RegexExtractor
+
+    populated_ctx.default_extractor = RegexExtractor()
+    result = dispatch(
+        populated_ctx,
+        "extract_text",
+        {"circular_id": 70000, "body": "Spectroscopy gives z = 0.198 for the host."},
+    )
+    assert "provenance" in result
+    assert "redshift" in result["provenance"]

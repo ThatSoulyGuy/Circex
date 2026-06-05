@@ -104,10 +104,11 @@ class OllamaExtractor(Extractor):
                 payload = {}
             payload["circular_id"] = circular.circular_id
             # Preserve any `notes` the LLM emitted (e.g. redshift_bound phrases)
-            # while overwriting the run-level fields. Notes flow through the
-            # merge step in chunker.py back into the final extraction_meta.
-            llm_meta = payload.get("extraction_meta") or {}
-            llm_notes = llm_meta.get("notes", []) if isinstance(llm_meta, dict) else []
+            # while overwriting the run-level fields. `_parse_and_strip_meta`
+            # stashes them under `_llm_notes` (the full extraction_meta is
+            # stripped because the runner owns it). Notes flow through the merge
+            # step in chunker.py back into the final extraction_meta.
+            llm_notes = payload.pop("_llm_notes", [])
             if not isinstance(llm_notes, list):
                 llm_notes = []
             payload["extraction_meta"] = {
@@ -200,12 +201,17 @@ class OllamaExtractor(Extractor):
 
     @staticmethod
     def _parse_and_strip_meta(content: str) -> dict[str, Any]:
-        """Parse JSON and validate against the input schema by trial-constructing."""
+        """Parse JSON, strip the runner-owned extraction_meta, but stash any
+        model-authored `notes` under `_llm_notes` so the caller can fold them
+        into the final extraction_meta (CircularExtraction ignores the extra
+        `_llm_notes` key during validation)."""
         loaded = json.loads(content)
         if not isinstance(loaded, dict):
             raise json.JSONDecodeError("expected JSON object, got non-dict", content, 0)
         payload: dict[str, Any] = dict(loaded)
-        payload.pop("extraction_meta", None)
+        meta = payload.pop("extraction_meta", None)
+        if isinstance(meta, dict) and isinstance(meta.get("notes"), list):
+            payload["_llm_notes"] = meta["notes"]
         return payload
 
     @staticmethod

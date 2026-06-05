@@ -59,3 +59,37 @@ def test_meta_populated_without_cost() -> None:
     result = ext.extract(Circular(circular_id=1, subject="", body=""))
     assert result.extraction_meta.cost_usd is None
     assert result.extraction_meta.latency_ms is not None
+
+
+# ---- notes preservation (P2 #11) ----
+
+
+def test_ollama_preserves_llm_notes() -> None:
+    """A redshift_bound note emitted by the model survives into the final meta."""
+    payload = {
+        "redshift": None,
+        "extraction_meta": {"notes": ["redshift_bound: z <= 1.61"]},
+    }
+    client = _mock_ollama(payload)
+    ext = OllamaExtractor(client=client)
+    result = ext.extract(Circular(circular_id=216, subject="", body="z <= 1.61"))
+    assert "redshift_bound: z <= 1.61" in result.extraction_meta.notes
+    # Run-level fields are still overwritten by the extractor, not the model.
+    assert result.extraction_meta.extractor == ext.extractor_id
+
+
+def test_ollama_handles_missing_notes_gracefully() -> None:
+    """No notes in the LLM payload → empty notes, no crash."""
+    client = _mock_ollama({"event": {"event_name": "GRB X"}})
+    ext = OllamaExtractor(client=client)
+    result = ext.extract(Circular(circular_id=1, subject="", body="b"))
+    assert result.extraction_meta.notes == []
+
+
+def test_ollama_ignores_non_list_notes() -> None:
+    """A malformed `notes` (string instead of list) is coerced to empty, not crashed."""
+    payload = {"event": {"event_name": "GRB X"}, "extraction_meta": {"notes": "oops"}}
+    client = _mock_ollama(payload)
+    ext = OllamaExtractor(client=client)
+    result = ext.extract(Circular(circular_id=1, subject="", body="b"))
+    assert result.extraction_meta.notes == []

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from circex.extract.regex.mag_table import (
+    infer_bandpass,
     infer_mag_system,
     parse_mag_table,
     parse_single_mags,
@@ -69,3 +70,57 @@ def test_parse_empty_when_no_table() -> None:
         "faded over the past 24 hours, consistent with previous reports."
     )
     assert parse_mag_table(text) == []
+
+
+# ---- bandpass crosswalk (P1 #4) ----
+
+
+def test_infer_bandpass_sloan() -> None:
+    assert infer_bandpass("u") == "sdssu"
+    assert infer_bandpass("g") == "sdssg"
+    assert infer_bandpass("r") == "sdssr"
+    assert infer_bandpass("i") == "sdssi"
+    assert infer_bandpass("z") == "sdssz"
+
+
+def test_infer_bandpass_y_is_panstarrs() -> None:
+    assert infer_bandpass("y") == "ps1::y"
+
+
+def test_infer_bandpass_bessel() -> None:
+    assert infer_bandpass("U") == "bessellu"
+    assert infer_bandpass("B") == "bessellb"
+    assert infer_bandpass("V") == "bessellv"
+    assert infer_bandpass("R") == "bessellr"
+    assert infer_bandpass("I") == "besselli"
+
+
+def test_infer_bandpass_nir() -> None:
+    assert infer_bandpass("J") == "2massj"
+    assert infer_bandpass("H") == "2massh"
+    assert infer_bandpass("K") == "2massks"
+    assert infer_bandpass("Ks") == "2massks"
+
+
+def test_infer_bandpass_unfiltered_is_none() -> None:
+    assert infer_bandpass("clear") is None
+    assert infer_bandpass("C") is None
+
+
+def test_single_mag_populates_bandpass() -> None:
+    rows = parse_single_mags("The OT is at r = 18.42 ± 0.05 mag.")
+    r_rows = [p for p in rows if p.filter == "r"]
+    assert r_rows and r_rows[0].bandpass == "sdssr"
+    # Raw filter token always retained.
+    assert r_rows[0].filter == "r"
+
+
+def test_table_rows_populate_bandpass() -> None:
+    text = """
+Date          Filter   Mag      Err
+2020-01-01    r        18.42    0.05
+2020-01-02    g        19.10    0.07
+""".strip()
+    rows = parse_mag_table(text)
+    by_filter = {p.filter: p.bandpass for p in rows}
+    assert by_filter == {"r": "sdssr", "g": "sdssg"}

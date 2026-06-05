@@ -17,6 +17,40 @@ export class ExtractPropertiesInput {
   circular_id!: number;
 }
 
+export class ExtractTextInput {
+  @SchemaConstraint({
+    description:
+      "Raw circular body text. The live-pipeline entry point: use this for " +
+      "circulars delivered over gcn.circulars (Kafka) that are not yet in the " +
+      "local archive, so an id-based lookup would fail.",
+    minLength: 1,
+  })
+  body!: string;
+
+  @Optional()
+  @SchemaConstraint({
+    description:
+      "Real GCN circular ID, when known. Pass it so the query store and LLM " +
+      "cache key on it (re-delivered messages are then served from cache, not " +
+      "re-billed). Omit or pass 0 when no ID is assigned yet.",
+    minimum: 0,
+  })
+  circular_id?: number;
+
+  @Optional()
+  @SchemaConstraint({
+    description: "Circular subject line, if available.",
+  })
+  subject?: string;
+
+  @Optional()
+  @SchemaConstraint({
+    description: "Associated event identifier from the broker, if any.",
+    minLength: 1,
+  })
+  event_id?: string;
+}
+
 export class GetRedshiftInput {
   @SchemaConstraint({
     description:

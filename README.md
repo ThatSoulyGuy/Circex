@@ -18,7 +18,7 @@ any tool query the extracted data.
 ┌─────────────────────────────────────────────────────────────┐
 │   circex serve  ────  asyncio TCP worker on :8765           │
 │   ────────────────────────────────────────────────────────  │
-│   7 tools  ◀──  Extraction store (SQLite, WAL)              │
+│   8 tools  ◀──  Extraction store (SQLite, WAL)              │
 │   regex / Claude / Ollama extractors (Extractor protocol)   │
 └──────────────┬──────────────────────────────────────────────┘
                │ on cache-miss: extract on demand
@@ -255,17 +255,26 @@ Computer-Use SDK) can consume it directly.
 circex serve --extractor regex --port 8765 --store data/extractions.sqlite
 ```
 
-**The 7 tools** the worker exposes:
+**The 8 tools** the worker exposes:
 
 | Tool | Arguments | Returns |
 |---|---|---|
-| `extract_properties` | `{circular_id: int}` | full `CircularExtraction` |
+| `extract_properties` | `{circular_id: int}` | full `CircularExtraction` (archive lookup) |
+| `extract_text` | `{body: str, circular_id?: int, subject?: str, event_id?: str}` | full `CircularExtraction` (live path, no archive lookup) |
 | `get_redshift` | `{event: str}` | `Redshift` or `null` |
 | `get_photometry` | `{event: str}` | `list[PhotometryExt]` |
 | `get_classification` | `{event: str}` | `Classification` or `null` |
 | `find_counterparts` | `{gw_event_id: str}` | `list[FollowUp]` |
 | `search_gcn_circulars` | `{query: str, event?: str, limit?: int}` | FTS5 hits |
 | `fetch_gcn_circulars` | `{circular_ids: list[int]}` | raw archive records |
+
+`extract_text` is the live-pipeline entry point: gcn.circulars (Kafka)
+delivers new circulars before they reach the local archive, so an id-based
+lookup would fail. Pass the body directly; pass the real `circular_id` when
+known so the query store and LLM cache key on it (re-delivered Kafka
+messages are then served from cache, not re-extracted). With no
+`circular_id` it defaults to `0` and the result is returned but not
+persisted to the query store.
 
 **Call from any language** — here's a raw socket example in PowerShell:
 
@@ -296,7 +305,7 @@ npm run dev               # boots streamable-HTTP MCP server on :3001
 ```
 
 MCP clients connect to `http://localhost:3001/mcp`. Health check at
-`http://localhost:3001/health`. The 7 tools are auto-registered with full
+`http://localhost:3001/health`. The 8 tools are auto-registered with full
 JSON Schemas; verify with:
 
 ```bash
@@ -415,7 +424,7 @@ everything.
 Architecture: the browser can't speak the worker's raw TCP protocol, so
 `demo/web/serve.py` is a ~150-line `http.server` shim that proxies
 `POST /api/tool` to the worker. It binds to `127.0.0.1` only, serves exactly
-one static file, and allow-lists the 7 tools (the allow-list is unit-tested to
+one static file, and allow-lists the 8 tools (the allow-list is unit-tested to
 stay in sync with the worker's registry).
 
 For a real SkyPortal-style integration use the TS LeanMCP bridge instead
@@ -488,6 +497,26 @@ in-memory form. ICARE-style consumers can safely copy
 `altdata.note`, or render `extraction_meta.notes` (which is where
 bound-redshift phrases like `"redshift_bound: z <= 1.61"` are routed
 when the schema can't represent the value as a scalar) as a comment.
+
+**Photometry detection flag + canonical bandpass.** Each `PhotometryExt`
+row carries `is_detection` (`True` if `mag` is present, `False` if only
+`limiting_mag` — i.e. a non-detection) and `bandpass`, a canonical
+sncosmo/SkyPortal filter name derived from the raw `filter` token (which
+is always retained). The **complete** set of `bandpass` values the regex
+extractor can emit is enumerable, so a downstream crosswalk can be proven
+exhaustive:
+
+| raw `filter` | `mag_system` | `bandpass` |
+|---|---|---|
+| `u` `g` `r` `i` `z` | AB | `sdssu` `sdssg` `sdssr` `sdssi` `sdssz` |
+| `y` | AB | `ps1::y` |
+| `U` `B` `V` `R` `I` | Vega | `bessellu` `bessellb` `bessellv` `bessellr` `besselli` |
+| `J` `H` `K` `Ks` | Vega | `2massj` `2massh` `2massks` `2massks` |
+| `clear` `C` | — | `null` (unfiltered) |
+
+The LLM extractors are prompted to follow the same vocabulary but may
+emit other recognized filters; an unmapped filter yields `bandpass: null`
+with the raw `filter` preserved (never silently dropped).
 
 JSON Schema artifacts for the upstream `nasa-gcn/gcn-schema` PR are dumped to
 `schemas/` via `circex schema-dump`.

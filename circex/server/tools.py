@@ -5,7 +5,8 @@ on-the-fly extraction with ctx.default_extractor (if configured). Tools return
 plain dicts/lists/scalars — the worker serializes them.
 
 Tools:
-  extract_properties(circular_id)         -> CircularExtraction
+  extract_properties(circular_id)         -> CircularExtraction  (archive lookup)
+  extract_text({circular_id?,subject,body,event_id?}) -> CircularExtraction  (live path)
   get_redshift(event)                     -> Redshift | None
   get_photometry(event)                   -> list[PhotometryExt]
   get_classification(event)               -> Classification | None
@@ -74,6 +75,62 @@ def extract_properties(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]
         raise ValueError(f"circular {circular_id} not found in archive")
     extraction = extractor.extract(Circular.from_record(records[0]))
     ctx.store.put(extraction)
+    return _serialize(extraction)
+
+
+# Sentinel circular_id for circulars with no assigned/known archive ID.
+_NO_ID = 0
+
+
+@tool("extract_text")
+def extract_text(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]:
+    """Extract structured properties from a raw circular body (not an archive ID).
+
+    This is the live-pipeline entry point: gcn.circulars (Kafka) delivers new
+    circulars before they land in the local archive, so an id-based lookup would
+    fail. The caller passes the body directly.
+
+    Args:
+        body:        required, the circular's free text.
+        circular_id: optional int; pass the real GCN ID when known so the store
+                     and LLM cache key on it. Defaults to 0 ("no archive id").
+        subject:     optional str, default "".
+        event_id:    optional str (the broker's associated event, if any).
+
+    Idempotency: the underlying extractor's LLM cache keys on
+    (extractor_id, model_id, prompt_version, circular_id, sha1(body)), so a
+    re-delivered Kafka message with the same body + circular_id is served from
+    cache and not re-billed. The result is persisted to the query store only
+    when circular_id != 0, to avoid sentinel rows colliding on the store's
+    primary key.
+    """
+    extractor = ctx.default_extractor
+    if extractor is None:
+        raise ValueError("extract_text requires a default extractor configured on the worker")
+
+    body = _require_str(args, "body")
+    circular_id = args.get("circular_id", _NO_ID)
+    if not isinstance(circular_id, int) or isinstance(circular_id, bool):
+        raise ValueError("argument 'circular_id' must be an integer when provided")
+    subject = args.get("subject") or ""
+    if not isinstance(subject, str):
+        raise ValueError("argument 'subject' must be a string when provided")
+    event_id = args.get("event_id")
+    if event_id is not None and not isinstance(event_id, str):
+        raise ValueError("argument 'event_id' must be a string when provided")
+
+    circular = Circular(
+        circular_id=circular_id,
+        subject=subject,
+        body=body,
+        event_id=event_id,
+    )
+    extraction = extractor.extract(circular)
+
+    # Persist only for real IDs; sentinel rows would collide on the store PK.
+    if circular_id != _NO_ID:
+        ctx.store.put(extraction)
+
     return _serialize(extraction)
 
 

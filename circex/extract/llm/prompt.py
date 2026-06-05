@@ -48,6 +48,11 @@ not stated. Never guess. Never fill in plausible defaults.
     Bessel filters (U, B, V, R, I) default to Vega.
     NIR filters (J, H, K, Ks) are Vega.
     Leave null when genuinely unstated and not inferable.
+- Canonical bandpass: also set `photometry[].bandpass` to the sncosmo/SkyPortal \
+name for the filter when recognizable. Sloan u/g/r/i/z -> sdss{u,g,r,i,z}; \
+y -> ps1::y; Bessel U/B/V/R/I -> bessell{u,b,v,r,i}; NIR J/H/K/Ks -> \
+2mass{j,h,ks}. Leave null for unfiltered/clear or unknown filters. Always keep \
+the raw `filter` string as written.
 - T+offset phrasings (e.g., "T+234s") are LITERAL captures in `time_offsets[]`; \
 do NOT resolve against the absolute trigger time.
 - Classification: must be a canonical class name from the time-domain taxonomy. \
@@ -106,15 +111,15 @@ Seeing was 1.1 arcsec; airmass 1.3.""",
             "circular_id": 0,
             "event": {"event_name": "GRB 240101A"},
             "photometry": [
-                {"filter": "r", "mag": 20.42, "mag_error": 0.05, "mag_system": "AB",
-                 "telescope": "NOT", "instrument": "ALFOSC", "calibration_reference": "PS1",
-                 "seeing": 1.1, "airmass": 1.3},
-                {"filter": "r", "mag": 20.55, "mag_error": 0.05, "mag_system": "AB",
-                 "telescope": "NOT", "instrument": "ALFOSC", "calibration_reference": "PS1",
-                 "seeing": 1.1, "airmass": 1.3},
-                {"filter": "g", "mag": 21.10, "mag_error": 0.07, "mag_system": "AB",
-                 "telescope": "NOT", "instrument": "ALFOSC", "calibration_reference": "PS1",
-                 "seeing": 1.1, "airmass": 1.3},
+                {"filter": "r", "bandpass": "sdssr", "mag": 20.42, "mag_error": 0.05,
+                 "mag_system": "AB", "telescope": "NOT", "instrument": "ALFOSC",
+                 "calibration_reference": "PS1", "seeing": 1.1, "airmass": 1.3},
+                {"filter": "r", "bandpass": "sdssr", "mag": 20.55, "mag_error": 0.05,
+                 "mag_system": "AB", "telescope": "NOT", "instrument": "ALFOSC",
+                 "calibration_reference": "PS1", "seeing": 1.1, "airmass": 1.3},
+                {"filter": "g", "bandpass": "sdssg", "mag": 21.10, "mag_error": 0.07,
+                 "mag_system": "AB", "telescope": "NOT", "instrument": "ALFOSC",
+                 "calibration_reference": "PS1", "seeing": 1.1, "airmass": 1.3},
             ],
         },
     ),
@@ -216,12 +221,34 @@ def build_messages(circular: Circular) -> list[Message]:
 
 
 def llm_input_schema() -> dict[str, Any]:
-    """JSON Schema for `submit_extraction` tool input — CircularExtraction minus
-    extraction_meta (which the runner fills in)."""
+    """JSON Schema for `submit_extraction` tool input.
+
+    CircularExtraction with `extraction_meta` reduced to a notes-only stub: the
+    runner fills the run-level fields (model, tokens, cost, latency), but the
+    model may populate `extraction_meta.notes` for facts the schema can't
+    represent — most importantly bound redshifts (`"redshift_bound: z <= 1.61"`).
+    Exposing the slot is what lets the bound-redshift convention actually reach
+    the model on both the Claude (tool-schema) and Ollama (embedded-schema) paths.
+    """
     schema = CircularExtraction.model_json_schema()
-    # Drop extraction_meta from properties + required.
     props = schema.get("properties", {})
-    props.pop("extraction_meta", None)
+    # Replace the full ExtractionMeta $ref with an inline notes-only object so
+    # the model can set notes but not the runner-owned fields.
+    props["extraction_meta"] = {
+        "type": "object",
+        "properties": {
+            "notes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": (
+                    "Annotations for facts the schema can't represent. For a "
+                    "bound redshift, leave `redshift` null and add "
+                    "\"redshift_bound: <verbatim phrase>\" here."
+                ),
+            }
+        },
+        "description": "Set ONLY `notes`; the runner fills the rest.",
+    }
     required = schema.get("required", [])
     schema["required"] = [k for k in required if k != "extraction_meta"]
     return schema

@@ -9,6 +9,7 @@ from circex.schema import (
     ExtractionMeta,
     PhotometryExt,
     Redshift,
+    Span,
     TimeOffset,
 )
 
@@ -106,3 +107,81 @@ def test_merge_invariant_single_chunk_equivalent() -> None:
     assert merged.circular_id == original.circular_id
     assert merged.event == original.event
     assert merged.photometry == original.photometry
+
+
+# ---- notes + provenance carry-forward through merge (P2 #11, P1 #7) ----
+
+
+def test_merge_carries_notes_from_chunks() -> None:
+    """Per-chunk extraction_meta.notes flow into the merged extraction."""
+    run_meta = ExtractionMeta(extractor="test")
+    chunk_a = CircularExtraction(
+        circular_id=1,
+        extraction_meta=ExtractionMeta(extractor="test", notes=["redshift_bound: z <= 1.61"]),
+    )
+    chunk_b = CircularExtraction(
+        circular_id=1,
+        extraction_meta=ExtractionMeta(extractor="test", notes=["something else"]),
+    )
+    merged = merge_extractions(1, [chunk_a, chunk_b], run_meta)
+    assert "redshift_bound: z <= 1.61" in merged.extraction_meta.notes
+    assert "something else" in merged.extraction_meta.notes
+
+
+def test_merge_dedupes_identical_notes() -> None:
+    run_meta = ExtractionMeta(extractor="test")
+    chunk_a = CircularExtraction(
+        circular_id=1,
+        extraction_meta=ExtractionMeta(extractor="test", notes=["dup"]),
+    )
+    chunk_b = CircularExtraction(
+        circular_id=1,
+        extraction_meta=ExtractionMeta(extractor="test", notes=["dup"]),
+    )
+    merged = merge_extractions(1, [chunk_a, chunk_b], run_meta)
+    assert merged.extraction_meta.notes.count("dup") == 1
+
+
+def test_merge_preserves_run_level_notes_from_caller_meta() -> None:
+    """Notes already on the caller-supplied run meta are kept, then chunk notes appended."""
+    run_meta = ExtractionMeta(extractor="test", notes=["run-level"])
+    chunk = CircularExtraction(
+        circular_id=1,
+        extraction_meta=ExtractionMeta(extractor="test", notes=["chunk-level"]),
+    )
+    merged = merge_extractions(1, [chunk], run_meta)
+    assert merged.extraction_meta.notes == ["run-level", "chunk-level"]
+
+
+def test_merge_carries_provenance_from_chunks() -> None:
+    run_meta = ExtractionMeta(extractor="test")
+    chunk_a = CircularExtraction(
+        circular_id=1,
+        provenance={"redshift": Span(start=0, end=9, snippet="z = 0.215")},
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    chunk_b = CircularExtraction(
+        circular_id=1,
+        provenance={"event": Span(start=10, end=20, snippet="GRB 240101A")},
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    merged = merge_extractions(1, [chunk_a, chunk_b], run_meta)
+    assert set(merged.provenance.keys()) == {"redshift", "event"}
+    assert merged.provenance["redshift"].snippet == "z = 0.215"
+
+
+def test_merge_provenance_first_chunk_wins_on_key_collision() -> None:
+    """When two chunks claim the same path, the first-seen span is kept."""
+    run_meta = ExtractionMeta(extractor="test")
+    chunk_a = CircularExtraction(
+        circular_id=1,
+        provenance={"redshift": Span(start=0, end=9, snippet="z = 0.215")},
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    chunk_b = CircularExtraction(
+        circular_id=1,
+        provenance={"redshift": Span(start=50, end=59, snippet="z = 0.999")},
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    merged = merge_extractions(1, [chunk_a, chunk_b], run_meta)
+    assert merged.provenance["redshift"].snippet == "z = 0.215"

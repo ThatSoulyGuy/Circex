@@ -40,10 +40,16 @@ def test_few_shot_examples_are_alternating_user_assistant() -> None:
         assert msgs[i + 1]["role"] == "assistant"
 
 
-def test_input_schema_excludes_extraction_meta() -> None:
+def test_input_schema_extraction_meta_is_notes_only_stub() -> None:
+    """extraction_meta is no longer fully stripped — it's reduced to a notes-only
+    stub so the model can emit redshift_bound notes but not runner-owned fields."""
     schema = llm_input_schema()
-    assert "extraction_meta" not in schema.get("properties", {})
+    meta = schema.get("properties", {}).get("extraction_meta")
+    assert meta is not None
+    # Not required (the runner fills it), and only `notes` is exposed.
     assert "extraction_meta" not in schema.get("required", [])
+    assert set(meta.get("properties", {}).keys()) == {"notes"}
+    assert meta["properties"]["notes"]["type"] == "array"
 
 
 def test_input_schema_keeps_event_and_photometry() -> None:

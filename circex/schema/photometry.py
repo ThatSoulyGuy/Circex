@@ -24,6 +24,17 @@ class PhotometryExt(BaseModel):
         default=None,
         description="Filter used for the observation (e.g., u, g, r, R, clear).",
     )
+    bandpass: str | None = Field(
+        default=None,
+        description=(
+            "Canonical bandpass name for downstream consumers (sncosmo/SkyPortal "
+            "vocabulary), derived from `filter` + `mag_system` where possible. "
+            "Sloan u/g/r/i/z -> sdss{u,g,r,i,z}; y -> ps1::y; "
+            "Bessel U/B/V/R/I -> bessell{u,b,v,r,i}; "
+            "NIR J/H/K/Ks -> 2mass{j,h,ks}. Null for unfiltered/clear or when the "
+            "filter cannot be mapped (the raw `filter` string is always retained)."
+        ),
+    )
     mag: float | None = Field(
         default=None,
         description="Measured apparent magnitude [mag] of the source in the specified filter.",

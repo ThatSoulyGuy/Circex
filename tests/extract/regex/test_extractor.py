@@ -107,3 +107,25 @@ def test_single_event_body_emits_string() -> None:
     assert r.event is not None
     assert isinstance(r.event.event_name, str)
     assert r.event.event_name == "GRB230307A"
+
+
+# ---- bound-redshift integration (P2 #11) ----
+
+
+def test_bound_redshift_sets_null_and_notes() -> None:
+    body = "The lower limit to redshift of GRB 990123 is z =< 1.61 from absorption."
+    r = RegexExtractor().extract(_circular(216, "GRB 990123", body))
+    assert r.redshift is None
+    assert r.extraction_meta.notes == ["redshift_bound: z =< 1.61"]
+    assert "_redshift_bound" in r.provenance
+    span = r.provenance["_redshift_bound"]
+    assert body[span.start:span.end] == span.snippet
+
+
+def test_point_redshift_takes_precedence_over_bound() -> None:
+    """When a point value is present, the bound branch must not fire."""
+    body = "Spectroscopy gives z = 0.215 (and earlier z <= 2.0 was assumed)."
+    r = RegexExtractor().extract(_circular(1, "", body))
+    assert r.redshift is not None and r.redshift.redshift == 0.215
+    assert r.extraction_meta.notes == []
+    assert "_redshift_bound" not in r.provenance

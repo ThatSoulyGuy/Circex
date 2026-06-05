@@ -17,6 +17,19 @@
       "description": "Filter used for the observation (e.g., u, g, r, R, clear).",
       "title": "Filter"
     },
+    "bandpass": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Canonical bandpass name for downstream consumers (sncosmo/SkyPortal vocabulary), derived from `filter` + `mag_system` where possible. Sloan u/g/r/i/z -> sdss{u,g,r,i,z}; y -> ps1::y; Bessel U/B/V/R/I -> bessell{u,b,v,r,i}; NIR J/H/K/Ks -> 2mass{j,h,ks}. Null for unfiltered/clear or when the filter cannot be mapped (the raw `filter` string is always retained).",
+      "title": "Bandpass"
+    },
     "mag": {
       "anyOf": [
         {
@@ -172,6 +185,19 @@
       "default": null,
       "description": "Airmass during the observation [dimensionless].",
       "title": "Airmass"
+    },
+    "is_detection": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "True if this row reports a measured magnitude; False if it reports only an upper limit (non-detection). Inferred automatically when not set explicitly: mag present ⇒ True, only limiting_mag present ⇒ False. When both are present (a detection plus the night's depth), this is True. When both are null the value is left null.",
+      "title": "Is Detection"
     }
   },
   "type": "object"

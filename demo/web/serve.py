@@ -34,6 +34,7 @@ _INDEX = Path(__file__).parent / "index.html"
 ALLOWED_TOOLS = frozenset(
     {
         "extract_properties",
+        "extract_text",
         "get_redshift",
         "get_photometry",
         "get_classification",
