@@ -21,6 +21,7 @@ import {
   GetClassificationInput,
   GetPhotometryInput,
   GetRedshiftInput,
+  SearchByPositionInput,
   SearchGcnCircularsInput,
 } from "./input_schema.js";
 
@@ -109,6 +110,25 @@ export class GcnService {
     return (await forward("find_counterparts", {
       gw_event_id: input.gw_event_id,
     })) as unknown[];
+  }
+
+  @Tool({
+    description:
+      "Cone search over stored extractions by sky position. The reliable " +
+      "join for un-named optical transients: when a circular reports only " +
+      "RA/Dec (no AT/GRB designation), a name lookup fails but this finds it " +
+      "by position. Returns hits {circular_id, event_name, ra, dec, " +
+      "separation_arcsec} sorted by ascending separation.",
+    inputClass: SearchByPositionInput,
+  })
+  async search_by_position(input: SearchByPositionInput): Promise<unknown[]> {
+    const args: Record<string, unknown> = {
+      ra: input.ra,
+      dec: input.dec,
+      radius_arcsec: input.radius_arcsec,
+    };
+    if (input.limit !== undefined) args.limit = input.limit;
+    return (await forward("search_by_position", args)) as unknown[];
   }
 
   @Tool({

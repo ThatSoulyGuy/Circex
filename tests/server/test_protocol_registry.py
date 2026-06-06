@@ -36,10 +36,11 @@ def test_tool_response_error_serializes() -> None:
     assert payload == {"ok": False, "error": "boom", "id": "req-2"}
 
 
-def test_seven_tools_registered() -> None:
+def test_core_tools_registered() -> None:
     expected = {
-        "extract_properties", "get_redshift", "get_photometry", "get_classification",
-        "find_counterparts", "search_gcn_circulars", "fetch_gcn_circulars",
+        "extract_properties", "extract_text", "get_redshift", "get_photometry",
+        "get_classification", "find_counterparts", "search_by_position",
+        "search_gcn_circulars", "fetch_gcn_circulars",
     }
     assert expected <= set(TOOLS.keys())
 

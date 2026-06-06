@@ -1,4 +1,4 @@
-"""Tests for the 7 MCP tool implementations (server-side)."""
+"""Tests for the MCP tool implementations (server-side)."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from circex.schema import (
     Classification,
     Event,
     ExtractionMeta,
+    Localization,
     PhotometryExt,
     Redshift,
 )
@@ -18,12 +19,20 @@ from circex.server.registry import ToolContext, dispatch
 from circex.server.store import ExtractionStore
 
 
-def _full_extraction(circular_id: int, event: str) -> CircularExtraction:
+def _full_extraction(
+    circular_id: int,
+    event: str,
+    ra: float | None = None,
+    dec: float | None = None,
+) -> CircularExtraction:
     return CircularExtraction(
         circular_id=circular_id,
         event=Event(event_name=event),
         redshift=Redshift(redshift=0.215, redshift_type="host"),
         classification=Classification(classification="Ic-BL"),
+        localization=(
+            Localization(ra=ra, dec=dec) if ra is not None and dec is not None else None
+        ),
         photometry=[PhotometryExt(filter="r", mag=18.5, mag_system="AB")],
         extraction_meta=ExtractionMeta(extractor="regex-v1"),
     )
@@ -241,3 +250,57 @@ def test_extract_text_provenance_survives_to_serialized_output(
     )
     assert "provenance" in result
     assert "redshift" in result["provenance"]
+
+
+# ---- search_by_position (P1 #3) ----
+
+
+@pytest.fixture
+def positioned_ctx(tmp_path: Path) -> ToolContext:
+    store = ExtractionStore(tmp_path / "p.sqlite")
+    store.put(_full_extraction(1, "AT2024aaa", ra=150.0, dec=2.0))
+    store.put(_full_extraction(2, "AT2024bbb", ra=150.0, dec=2.5))  # 0.5 deg away
+    return ToolContext(store=store)
+
+
+def test_search_by_position_finds_within_radius(positioned_ctx: ToolContext) -> None:
+    hits = dispatch(
+        positioned_ctx,
+        "search_by_position",
+        {"ra": 150.0, "dec": 2.0, "radius_arcsec": 10.0},
+    )
+    assert len(hits) == 1
+    assert hits[0]["circular_id"] == 1
+    assert hits[0]["event_name"] == "AT2024aaa"
+    assert hits[0]["separation_arcsec"] < 1.0
+
+
+def test_search_by_position_excludes_outside_radius(positioned_ctx: ToolContext) -> None:
+    hits = dispatch(
+        positioned_ctx,
+        "search_by_position",
+        {"ra": 150.0, "dec": 2.0, "radius_arcsec": 30.0},
+    )
+    assert [h["circular_id"] for h in hits] == [1]
+
+
+def test_search_by_position_requires_numeric_args(positioned_ctx: ToolContext) -> None:
+    with pytest.raises(ValueError, match="radius_arcsec"):
+        dispatch(
+            positioned_ctx,
+            "search_by_position",
+            {"ra": 150.0, "dec": 2.0, "radius_arcsec": "wide"},
+        )
+
+
+def test_search_by_position_wide_cone_sorted_by_separation(
+    positioned_ctx: ToolContext,
+) -> None:
+    hits = dispatch(
+        positioned_ctx,
+        "search_by_position",
+        {"ra": 150.0, "dec": 2.0, "radius_arcsec": 3600.0},
+    )
+    assert [h["circular_id"] for h in hits] == [1, 2]
+    seps = [h["separation_arcsec"] for h in hits]
+    assert seps == sorted(seps)

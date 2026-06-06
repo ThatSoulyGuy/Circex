@@ -115,3 +115,42 @@ def normalize_classification(text: str) -> str | None:
     extractor for substring matching in body text — this is a strict lookup.
     """
     return alias_to_canonical().get(text.strip().lower())
+
+
+def _walk_paths(node: Any, prefix: list[str], out: dict[str, list[str]]) -> None:
+    """Walk the tree, recording root->node class path for every node.
+
+    First-seen wins when a class appears under more than one parent (e.g.
+    'kilonova' sits under both DNS and NS-BH), matching alias_to_canonical's
+    collision convention.
+    """
+    if isinstance(node, dict):
+        path = prefix
+        name = node.get("class")
+        if isinstance(name, str):
+            path = [*prefix, name]
+            out.setdefault(name, path)
+        for value in node.values():
+            _walk_paths(value, path, out)
+    elif isinstance(node, list):
+        for item in node:
+            _walk_paths(item, prefix, out)
+
+
+@cache
+def class_to_path() -> dict[str, list[str]]:
+    """Map each canonical class name to its root->leaf hierarchy path."""
+    out: dict[str, list[str]] = {}
+    _walk_paths(get_taxonomy(), [], out)
+    return out
+
+
+def taxonomy_path(class_name: str) -> list[str] | None:
+    """Return the root->leaf path for a canonical class name, or None if unknown.
+
+    Example: taxonomy_path("Ia") ->
+        ["Time-domain Source", "Stellar variable", "Cataclysmic",
+         "Supernova", "Type I", "Ia"]
+    """
+    path = class_to_path().get(class_name)
+    return list(path) if path is not None else None

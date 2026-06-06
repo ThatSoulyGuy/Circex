@@ -87,6 +87,37 @@ export class FindCounterpartsInput {
   gw_event_id!: string;
 }
 
+export class SearchByPositionInput {
+  @SchemaConstraint({
+    description: "Right ascension in decimal degrees (ICRS J2000).",
+    minimum: 0,
+    maximum: 360,
+  })
+  ra!: number;
+
+  @SchemaConstraint({
+    description: "Declination in decimal degrees (ICRS J2000).",
+    minimum: -90,
+    maximum: 90,
+  })
+  dec!: number;
+
+  @SchemaConstraint({
+    description: "Cone radius in arcseconds.",
+    minimum: 0,
+  })
+  radius_arcsec!: number;
+
+  @Optional()
+  @SchemaConstraint({
+    description: "Max hits to return, ordered by separation.",
+    minimum: 1,
+    maximum: 500,
+    default: 50,
+  })
+  limit?: number;
+}
+
 export class SearchGcnCircularsInput {
   @SchemaConstraint({
     description: "FTS5 query string against the circulars body + subject index.",

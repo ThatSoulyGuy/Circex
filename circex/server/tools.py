@@ -11,6 +11,7 @@ Tools:
   get_photometry(event)                   -> list[PhotometryExt]
   get_classification(event)               -> Classification | None
   find_counterparts(gw_event_id)          -> list[FollowUp]
+  search_by_position(ra, dec, radius_arcsec) -> list[ConeHit]  (cone search)
   search_gcn_circulars(query, event?)     -> list[SearchHit]   (uses FTS)
   fetch_gcn_circulars(circular_ids)       -> list[Circular]    (raw records)
 """
@@ -188,6 +189,56 @@ def find_counterparts(ctx: ToolContext, args: dict[str, Any]) -> list[dict[str, 
             payload["circular_id"] = ex.circular_id
             out.append(payload)
     return out
+
+
+def _require_float(args: dict[str, Any], key: str) -> float:
+    value = args.get(key)
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        raise ValueError(f"argument {key!r} must be a number")
+    return float(value)
+
+
+@tool("search_by_position")
+def search_by_position(ctx: ToolContext, args: dict[str, Any]) -> list[dict[str, Any]]:
+    """Cone search over stored extractions by sky position.
+
+    The reliable join to un-named optical transients: when a circular reports
+    only RA/Dec (no AT/GRB designation), a name-keyed lookup fails but this
+    finds it by position. Matches any stored extraction whose `localization`
+    falls within `radius_arcsec` of (ra, dec).
+
+    Args:
+        ra:            right ascension in decimal degrees (ICRS J2000).
+        dec:           declination in decimal degrees (ICRS J2000).
+        radius_arcsec: cone radius in arcseconds.
+        limit:         optional max hits (default 50), ordered by separation.
+
+    Returns a list of hits sorted by ascending separation:
+        {circular_id, event_name, ra, dec, separation_arcsec}.
+    """
+    ra = _require_float(args, "ra")
+    dec = _require_float(args, "dec")
+    radius_arcsec = _require_float(args, "radius_arcsec")
+    limit = args.get("limit", 50)
+    if not isinstance(limit, int) or isinstance(limit, bool):
+        limit = 50
+    extractor_id = getattr(ctx.default_extractor, "extractor_id", None)
+
+    hits: list[dict[str, Any]] = []
+    for sep, ex in ctx.store.find_by_cone(
+        ra, dec, radius_arcsec, extractor_id=extractor_id, limit=limit
+    ):
+        loc = ex.localization
+        hits.append(
+            {
+                "circular_id": ex.circular_id,
+                "event_name": ex.event.event_name if ex.event is not None else None,
+                "ra": loc.ra if loc is not None else None,
+                "dec": loc.dec if loc is not None else None,
+                "separation_arcsec": round(sep, 4),
+            }
+        )
+    return hits
 
 
 @tool("search_gcn_circulars")

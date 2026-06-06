@@ -36,6 +36,22 @@
       "default": null,
       "description": "Classifier confidence [0-1] when reported.",
       "title": "Confidence"
+    },
+    "taxonomy_path": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Root-to-leaf hierarchy path for `classification` in the time-domain taxonomy (e.g., ['Time-domain Source', 'Stellar variable', 'Cataclysmic', 'Supernova', 'Type I', 'Ia']). Auto-populated from `classification`; lets a downstream consumer collapse to a coarser campaign class without re-walking the taxonomy.",
+      "title": "Taxonomy Path"
     }
   },
   "required": [

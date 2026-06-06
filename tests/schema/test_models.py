@@ -130,6 +130,34 @@ def test_classification_accepts_canonical() -> None:
     assert instance.classification == "Ia"
 
 
+# ---- taxonomy_path auto-population (P2 #9) ----
+
+
+def test_classification_auto_fills_taxonomy_path() -> None:
+    c = Classification(classification="Ia")
+    assert c.taxonomy_path is not None
+    assert c.taxonomy_path[0] == "Time-domain Source"
+    assert c.taxonomy_path[-1] == "Ia"
+
+
+def test_classification_taxonomy_path_survives_round_trip() -> None:
+    c = Classification(classification="Ic-BL", confidence=0.9)
+    dumped = c.model_dump(mode="json")
+    assert dumped["taxonomy_path"][-1] == "Ic-BL"
+    assert dumped["confidence"] == 0.9
+    rebuilt = Classification.model_validate(dumped)
+    assert rebuilt.taxonomy_path == c.taxonomy_path
+
+
+def test_classification_overwrites_supplied_taxonomy_path() -> None:
+    """A bogus supplied path is replaced by the canonical derivation."""
+    c = Classification.model_validate(
+        {"classification": "Ia", "taxonomy_path": ["bogus", "path"]}
+    )
+    assert c.taxonomy_path is not None and c.taxonomy_path[-1] == "Ia"
+    assert "bogus" not in c.taxonomy_path
+
+
 # ---- is_detection inference (P1 #6) ----
 
 

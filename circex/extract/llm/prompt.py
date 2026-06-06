@@ -55,9 +55,13 @@ y -> ps1::y; Bessel U/B/V/R/I -> bessell{u,b,v,r,i}; NIR J/H/K/Ks -> \
 the raw `filter` string as written.
 - T+offset phrasings (e.g., "T+234s") are LITERAL captures in `time_offsets[]`; \
 do NOT resolve against the absolute trigger time.
-- Classification: must be a canonical class name from the time-domain taxonomy. \
-If the circular's classification term is an alias (e.g., "SNIa"), emit the \
-canonical name ("Ia"). If you are not confident, leave null.
+- Classification: `classification.classification` must be a canonical class \
+name from the time-domain taxonomy. If the circular's classification term is an \
+alias (e.g., "SNIa"), emit the canonical name ("Ia"). If you are not confident, \
+leave the whole classification null. Set `classification.confidence` in [0,1] \
+when the circular states or implies a probability (e.g. "likely", "tentative", \
+"secure"); leave null otherwise. Do NOT set `taxonomy_path` — the runner fills \
+it from the canonical class.
 - GCN cross-references (e.g., "GCN #12345") populate `follow_up.reference`.
 - The reporter is the *alerting party*, NOT the photometry telescope. Most \
 optical observation circulars do not need to populate reporter.

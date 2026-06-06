@@ -284,14 +284,17 @@ discussed in §6.
 
 ### 3.5 Serving Layer
 
-A long-lived asyncio worker (`circex serve`) exposes eight tools over a
+A long-lived asyncio worker (`circex serve`) exposes nine tools over a
 JSON-line TCP protocol on localhost: `extract_properties`, `extract_text`,
 `get_redshift`, `get_photometry`, `get_classification`, `find_counterparts`,
-`search_gcn_circulars` (FTS5-backed), and `fetch_gcn_circulars`. The
-`extract_text` tool is the live-pipeline entry point — it extracts from a
-raw circular body rather than an archive ID, so circulars arriving over the
-GCN Kafka stream before they are archived can still be processed. Tool
-results are read from a SQLite extraction store keyed on
+`search_by_position`, `search_gcn_circulars` (FTS5-backed), and
+`fetch_gcn_circulars`. The `extract_text` tool is the live-pipeline entry
+point — it extracts from a raw circular body rather than an archive ID, so
+circulars arriving over the GCN Kafka stream before they are archived can
+still be processed; `search_by_position` is a cone search over stored
+localizations, the reliable join for un-named optical transients reported
+with only RA/Dec. Tool results are read from a SQLite extraction store
+keyed on
 $circular\_{id}, extractor\_{id}, model\_{id},
 prompt\_{version}$; on store miss with a configured default
 extractor, the worker extracts on demand and persists the result. The
@@ -300,7 +303,7 @@ new extractions concurrently with the worker serving live queries. A
 TypeScript LeanMCP front-end (`leanmcp_bridge/`) sits on top of the worker
 and speaks the streamable-HTTP MCP protocol on port 3001, forwarding each
 tool call over the persistent TCP socket to the Python worker on 8765; the
-eight tools are declared as decorated methods on a single `GcnService`
+nine tools are declared as decorated methods on a single `GcnService`
 class, with per-tool input schemas auto-generated from TypeScript class
 properties via `@leanmcp/core`'s `classToJsonSchemaWithConstraints`. A
 stdlib-only HTTP bridge with a single-file HTML front-end is also provided

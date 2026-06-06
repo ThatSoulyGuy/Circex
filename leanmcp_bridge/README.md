@@ -16,18 +16,18 @@ SkyPortal / MCP client
         ▼
 leanmcp_bridge/  (this folder, Node + TypeScript)
    main.ts                — boots LeanMCP HTTP server on :3001
-   mcp/gcn/index.ts       — GcnService class declaring the 7 Circex tools
+   mcp/gcn/index.ts       — GcnService class declaring the 9 Circex tools
    mcp/gcn/input_schema.ts — decorated input dataclasses → JSON Schema
    bridge/python_bridge.ts — TCP client; falls back to subprocess on legacy
         │  (JSON-line protocol over TCP localhost:8765)
         ▼
 circex serve --worker  (Python, asyncio)
    circex/server/worker.py        — the actual JSON-line server
-   circex/server/tools.py         — the 7 tool implementations
+   circex/server/tools.py         — the 9 tool implementations
    circex/server/store.py         — SQLite ExtractionStore
 ```
 
-## The 8 tools
+## The 9 tools
 
 | Tool | Args | Returns |
 |---|---|---|
@@ -37,12 +37,16 @@ circex serve --worker  (Python, asyncio)
 | `get_photometry` | `{event: str}` | `list[PhotometryExt]` |
 | `get_classification` | `{event: str}` | `Classification \| null` |
 | `find_counterparts` | `{gw_event_id: str}` | `list[FollowUp]` |
+| `search_by_position` | `{ra: float, dec: float, radius_arcsec: float, limit?: int}` | `list[ConeHit]` |
 | `search_gcn_circulars` | `{query: str, event?: str, limit?: int}` | `list[SearchHit]` |
 | `fetch_gcn_circulars` | `{circular_ids: list[int]}` | `list[Circular]` |
 
 `extract_text` is the live-pipeline entry point — it extracts from a raw
 body without an archive lookup, for circulars delivered over gcn.circulars
-(Kafka) that aren't archived yet.
+(Kafka) that aren't archived yet. `search_by_position` is the position-based
+join for un-named optical transients: a cone search over stored
+`localization` returning `{circular_id, event_name, ra, dec,
+separation_arcsec}` sorted by separation.
 
 ## Quickstart
 
@@ -58,7 +62,7 @@ npm run dev   # listens on :3001
 # 3. Point an MCP client at http://localhost:3001/mcp
 ```
 
-Verify the bridge is up and the 7 tools are registered:
+Verify the bridge is up and the 9 tools are registered:
 
 ```bash
 curl -s http://localhost:3001/health

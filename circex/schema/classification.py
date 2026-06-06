@@ -10,9 +10,9 @@ Future upstream PR: nasa-gcn/gcn-schema.
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
-from circex.taxonomy import canonical_classes
+from circex.taxonomy import canonical_classes, taxonomy_path
 
 
 class Classification(BaseModel):
@@ -34,6 +34,16 @@ class Classification(BaseModel):
         le=1.0,
         description="Classifier confidence [0-1] when reported.",
     )
+    taxonomy_path: list[str] | None = Field(
+        default=None,
+        description=(
+            "Root-to-leaf hierarchy path for `classification` in the time-domain "
+            "taxonomy (e.g., ['Time-domain Source', 'Stellar variable', "
+            "'Cataclysmic', 'Supernova', 'Type I', 'Ia']). Auto-populated from "
+            "`classification`; lets a downstream consumer collapse to a coarser "
+            "campaign class without re-walking the taxonomy."
+        ),
+    )
 
     @field_validator("classification")
     @classmethod
@@ -46,3 +56,15 @@ class Classification(BaseModel):
                 f"aliases to canonical names before constructing this model."
             )
         return v
+
+    @model_validator(mode="after")
+    def _fill_taxonomy_path(self) -> Classification:
+        """Always derive taxonomy_path from the canonical class.
+
+        The path is a pure function of the (already-validated) canonical class,
+        so we overwrite any supplied value — this prevents an LLM from injecting
+        a hallucinated path, and round-trips are stable because reload re-derives
+        the same value.
+        """
+        self.taxonomy_path = taxonomy_path(self.classification)
+        return self

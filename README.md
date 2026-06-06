@@ -18,7 +18,7 @@ any tool query the extracted data.
 ┌─────────────────────────────────────────────────────────────┐
 │   circex serve  ────  asyncio TCP worker on :8765           │
 │   ────────────────────────────────────────────────────────  │
-│   8 tools  ◀──  Extraction store (SQLite, WAL)              │
+│   9 tools  ◀──  Extraction store (SQLite, WAL)              │
 │   regex / Claude / Ollama extractors (Extractor protocol)   │
 └──────────────┬──────────────────────────────────────────────┘
                │ on cache-miss: extract on demand
@@ -255,7 +255,7 @@ Computer-Use SDK) can consume it directly.
 circex serve --extractor regex --port 8765 --store data/extractions.sqlite
 ```
 
-**The 8 tools** the worker exposes:
+**The 9 tools** the worker exposes:
 
 | Tool | Arguments | Returns |
 |---|---|---|
@@ -265,6 +265,7 @@ circex serve --extractor regex --port 8765 --store data/extractions.sqlite
 | `get_photometry` | `{event: str}` | `list[PhotometryExt]` |
 | `get_classification` | `{event: str}` | `Classification` or `null` |
 | `find_counterparts` | `{gw_event_id: str}` | `list[FollowUp]` |
+| `search_by_position` | `{ra: float, dec: float, radius_arcsec: float, limit?: int}` | cone hits (by separation) |
 | `search_gcn_circulars` | `{query: str, event?: str, limit?: int}` | FTS5 hits |
 | `fetch_gcn_circulars` | `{circular_ids: list[int]}` | raw archive records |
 
@@ -275,6 +276,13 @@ known so the query store and LLM cache key on it (re-delivered Kafka
 messages are then served from cache, not re-extracted). With no
 `circular_id` it defaults to `0` and the result is returned but not
 persisted to the query store.
+
+`search_by_position` is the position-based join for **un-named** optical
+transients: when a circular reports only RA/Dec with no AT/GRB designation,
+a name lookup can't find it, but a cone search over stored `localization`
+can. Returns `{circular_id, event_name, ra, dec, separation_arcsec}` sorted
+by ascending separation. Backed by a dec-band-indexed prefilter plus exact
+`astropy` great-circle separation.
 
 **Call from any language** — here's a raw socket example in PowerShell:
 
@@ -305,7 +313,7 @@ npm run dev               # boots streamable-HTTP MCP server on :3001
 ```
 
 MCP clients connect to `http://localhost:3001/mcp`. Health check at
-`http://localhost:3001/health`. The 8 tools are auto-registered with full
+`http://localhost:3001/health`. The 9 tools are auto-registered with full
 JSON Schemas; verify with:
 
 ```bash
@@ -424,7 +432,7 @@ everything.
 Architecture: the browser can't speak the worker's raw TCP protocol, so
 `demo/web/serve.py` is a ~150-line `http.server` shim that proxies
 `POST /api/tool` to the worker. It binds to `127.0.0.1` only, serves exactly
-one static file, and allow-lists the 8 tools (the allow-list is unit-tested to
+one static file, and allow-lists the 9 tools (the allow-list is unit-tested to
 stay in sync with the worker's registry).
 
 For a real SkyPortal-style integration use the TS LeanMCP bridge instead
@@ -473,7 +481,7 @@ class CircularExtraction(BaseModel):
     time_offsets: list[TimeOffset]       # literal "T+234s" captures
     photometry: list[PhotometryExt]      # one row per (filter, epoch)
     spectroscopy: SpectralLines | None   # identified emission/absorption lines
-    classification: Classification | None # canonical taxonomy class
+    classification: Classification | None # canonical class + confidence + taxonomy_path
     redshift: Redshift | None            # z, error, measure, type
     reporter: Reporter | None            # alerting mission/instrument
     provenance: dict[str, Span]          # dotted field path -> (start, end, snippet)
@@ -517,6 +525,16 @@ exhaustive:
 The LLM extractors are prompted to follow the same vocabulary but may
 emit other recognized filters; an unmapped filter yields `bandpass: null`
 with the raw `filter` preserved (never silently dropped).
+
+**Classification hierarchy + confidence.** `Classification` carries
+`confidence` (`[0,1]`, populated by the LLM extractors when the circular
+implies a probability) and `taxonomy_path` — the root-to-leaf path through
+the time-domain taxonomy, e.g. `Ia` →
+`["Time-domain Source", "Stellar variable", "Cataclysmic", "Supernova",
+"Type I", "Ia"]`. `taxonomy_path` is auto-derived from the canonical class
+on every extractor and always overwrites any supplied value, so a
+downstream consumer can collapse to a coarser campaign class by walking up
+the path without re-loading the taxonomy.
 
 JSON Schema artifacts for the upstream `nasa-gcn/gcn-schema` PR are dumped to
 `schemas/` via `circex schema-dump`.

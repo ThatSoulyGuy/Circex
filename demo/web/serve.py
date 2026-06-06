@@ -39,6 +39,7 @@ ALLOWED_TOOLS = frozenset(
         "get_photometry",
         "get_classification",
         "find_counterparts",
+        "search_by_position",
         "search_gcn_circulars",
         "fetch_gcn_circulars",
     }
