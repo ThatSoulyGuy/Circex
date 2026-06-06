@@ -1,7 +1,7 @@
 {
   "$id": "https://gcn.nasa.gov/schema/main/gcn/notices/core/Photometry.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "title": "PhotometryExt",
   "description": "Magnitude-based UV/optical/NIR photometry for one source in one filter (one row).",
   "properties": {
@@ -114,6 +114,19 @@
       "description": "Name of the telescope (e.g., GTC, ZTF, Pan-STARRS1).",
       "title": "Telescope"
     },
+    "telescope_canonical": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Canonical telescope name from the alias map (e.g. 'the VLT' -> 'VLT'). Auto-derived from `telescope`; null when the name isn't in the seed map (the raw `telescope` string is always retained). Extend the map from ICARE's instrument_id table.",
+      "title": "Telescope Canonical"
+    },
     "instrument": {
       "anyOf": [
         {
@@ -126,6 +139,19 @@
       "default": null,
       "description": "Name of the instrument (e.g., OSIRIS, ZTF Camera).",
       "title": "Instrument"
+    },
+    "instrument_canonical": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Canonical instrument name from the alias map. Auto-derived from `instrument`; null when not in the seed map (raw `instrument` retained).",
+      "title": "Instrument Canonical"
     },
     "calibration_reference": {
       "anyOf": [

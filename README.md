@@ -526,6 +526,16 @@ The LLM extractors are prompted to follow the same vocabulary but may
 emit other recognized filters; an unmapped filter yields `bandpass: null`
 with the raw `filter` preserved (never silently dropped).
 
+**Telescope / instrument canonicalization.** `PhotometryExt` also carries
+`telescope_canonical` and `instrument_canonical`, auto-derived from the raw
+`telescope`/`instrument` strings via a seed alias map
+(`circex/data/telescope_aliases.yaml`) — so `"the VLT"`, `"ESO-VLT"`, and
+`"VLT/X-shooter"` all canonicalize to `VLT`, and `VT`/`SVOM/VT` collapse to
+one name. The raw strings are always retained; an unmapped name yields a
+`null` canonical (visible "saw something we couldn't normalize"). The map is
+a **seed** — extend it from ICARE's `instrument_id` table; the lookup is
+case- and whitespace-insensitive.
+
 **Classification hierarchy + confidence.** `Classification` carries
 `confidence` (`[0,1]`, populated by the LLM extractors when the circular
 implies a probability) and `taxonomy_path` — the root-to-leaf path through

@@ -201,3 +201,37 @@ def test_is_detection_inferred_on_validate_from_raw_dict() -> None:
     """An LLM/raw dict without is_detection gets it inferred at model_validate time."""
     p = PhotometryExt.model_validate({"filter": "g", "mag": 19.1, "mag_system": "AB"})
     assert p.is_detection is True
+
+
+# ---- telescope/instrument canonicalization (P1 #5) ----
+
+
+def test_photometry_canonicalizes_telescope_and_instrument() -> None:
+    p = PhotometryExt(filter="r", mag=20.0, telescope="the VLT", instrument="VLT/X-shooter")
+    assert p.telescope_canonical == "VLT"
+    assert p.instrument_canonical == "X-shooter"
+    # Raw strings are always retained.
+    assert p.telescope == "the VLT"
+    assert p.instrument == "VLT/X-shooter"
+
+
+def test_photometry_unknown_telescope_canonical_is_none() -> None:
+    p = PhotometryExt(filter="r", mag=20.0, telescope="Backyard 8-inch")
+    assert p.telescope_canonical is None
+    assert p.telescope == "Backyard 8-inch"  # raw kept
+
+
+def test_photometry_canonical_overwrites_supplied_value() -> None:
+    p = PhotometryExt.model_validate(
+        {"filter": "r", "mag": 20.0, "telescope": "the VLT", "telescope_canonical": "BOGUS"}
+    )
+    assert p.telescope_canonical == "VLT"
+
+
+def test_photometry_canonical_round_trips() -> None:
+    p = PhotometryExt(filter="r", mag=20.0, telescope="NOT", instrument="ALFOSC")
+    dumped = p.model_dump(mode="json")
+    assert dumped["telescope_canonical"] == "NOT"
+    assert dumped["instrument_canonical"] == "ALFOSC"
+    rebuilt = PhotometryExt.model_validate(dumped)
+    assert rebuilt.telescope_canonical == "NOT"

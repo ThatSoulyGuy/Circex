@@ -1,0 +1,44 @@
+# Telescope / instrument alias map — SEED.
+#
+# Maps the many prose spellings circulars use to a stable canonical name, so a
+# downstream consumer (ICARE/SkyPortal) can join on canonical instead of exact
+# free text ("the VLT", "VLT/X-shooter", "ESO-VLT" -> "VLT"). This is a seed of
+# common cases, NOT authoritative — extend it from ICARE's instrument_id table.
+#
+# Format: `canonical: [alias, alias, ...]`. Lookup is case-insensitive and
+# whitespace-trimmed; the canonical name also matches itself. Unknown-but-
+# non-null inputs canonicalize to null (the raw `telescope`/`instrument` string
+# is always retained), so "we saw something we couldn't normalize" is visible.
+
+telescopes:
+  VLT: ["VLT", "ESO VLT", "ESO-VLT", "Very Large Telescope", "the VLT", "VLT/X-shooter", "VLT/FORS2"]
+  NOT: ["NOT", "Nordic Optical Telescope"]
+  GTC: ["GTC", "Gran Telescopio Canarias", "GTC/OSIRIS"]
+  Gemini-North: ["Gemini North", "Gemini-N", "GN"]
+  Gemini-South: ["Gemini South", "Gemini-S", "GS"]
+  Keck: ["Keck", "Keck I", "Keck II", "Keck-I", "Keck-II"]
+  Subaru: ["Subaru", "Subaru Telescope"]
+  ZTF: ["ZTF", "Zwicky Transient Facility", "P48", "Palomar 48-inch"]
+  ATLAS: ["ATLAS", "Asteroid Terrestrial-impact Last Alert System"]
+  Pan-STARRS: ["Pan-STARRS", "PanSTARRS", "PS1", "Pan-STARRS1"]
+  GOTO: ["GOTO", "Gravitational-wave Optical Transient Observer"]
+  Swift: ["Swift", "Swift/UVOT", "Neil Gehrels Swift Observatory"]
+  LDT: ["LDT", "Lowell Discovery Telescope", "DCT", "Discovery Channel Telescope"]
+  LCO: ["LCO", "LCOGT", "Las Cumbres Observatory"]
+  TNG: ["TNG", "Telescopio Nazionale Galileo"]
+  WHT: ["WHT", "William Herschel Telescope"]
+  CAHA: ["CAHA", "Calar Alto"]
+  # SVOM-era (ICARE examples)
+  SVOM/VT: ["VT", "SVOM/VT", "SVOM VT"]
+  COLIBRI: ["COLIBRI", "COLIBRI-VIS", "COLIBRI/VIS"]
+
+instruments:
+  X-shooter: ["X-shooter", "XSHOOTER", "VLT/X-shooter"]
+  FORS2: ["FORS2", "VLT/FORS2"]
+  OSIRIS: ["OSIRIS", "GTC/OSIRIS"]
+  ALFOSC: ["ALFOSC", "NOT/ALFOSC"]
+  GMOS: ["GMOS", "GMOS-N", "GMOS-S"]
+  DEIMOS: ["DEIMOS", "Keck/DEIMOS"]
+  LRIS: ["LRIS", "Keck/LRIS"]
+  FOCAS: ["FOCAS", "Subaru/FOCAS"]
+  UVOT: ["UVOT", "Swift/UVOT"]

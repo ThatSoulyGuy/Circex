@@ -63,6 +63,9 @@ when the circular states or implies a probability (e.g. "likely", "tentative", \
 "secure"); leave null otherwise. Do NOT set `taxonomy_path` — the runner fills \
 it from the canonical class.
 - GCN cross-references (e.g., "GCN #12345") populate `follow_up.reference`.
+- Telescope/instrument: set `photometry[].telescope` and `.instrument` to the \
+name AS WRITTEN in the circular. Do NOT set `telescope_canonical` / \
+`instrument_canonical` — the runner fills those from an alias map.
 - The reporter is the *alerting party*, NOT the photometry telescope. Most \
 optical observation circulars do not need to populate reporter.
 - DO NOT populate `extraction_meta` other than `notes` (see below).

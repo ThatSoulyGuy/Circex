@@ -63,8 +63,24 @@ class PhotometryExt(BaseModel):
     telescope: str | None = Field(
         default=None, description="Name of the telescope (e.g., GTC, ZTF, Pan-STARRS1)."
     )
+    telescope_canonical: str | None = Field(
+        default=None,
+        description=(
+            "Canonical telescope name from the alias map (e.g. 'the VLT' -> 'VLT'). "
+            "Auto-derived from `telescope`; null when the name isn't in the seed map "
+            "(the raw `telescope` string is always retained). Extend the map from "
+            "ICARE's instrument_id table."
+        ),
+    )
     instrument: str | None = Field(
         default=None, description="Name of the instrument (e.g., OSIRIS, ZTF Camera)."
+    )
+    instrument_canonical: str | None = Field(
+        default=None,
+        description=(
+            "Canonical instrument name from the alias map. Auto-derived from "
+            "`instrument`; null when not in the seed map (raw `instrument` retained)."
+        ),
     )
     calibration_reference: CalibrationReference | None = Field(
         default=None,
@@ -106,4 +122,18 @@ class PhotometryExt(BaseModel):
                 self.is_detection = True
             elif self.limiting_mag is not None:
                 self.is_detection = False
+        return self
+
+    @model_validator(mode="after")
+    def _fill_canonical_names(self) -> PhotometryExt:
+        """Derive telescope_canonical / instrument_canonical from the raw names.
+
+        Always re-derives (a pure function of the raw name + alias map), so an
+        LLM-supplied canonical can't drift from the map; round-trips are stable.
+        """
+        # Local import avoids a schema->data import cycle at module load.
+        from circex.data.telescopes import canonicalize_instrument, canonicalize_telescope
+
+        self.telescope_canonical = canonicalize_telescope(self.telescope)
+        self.instrument_canonical = canonicalize_instrument(self.instrument)
         return self
