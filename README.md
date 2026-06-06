@@ -539,6 +539,18 @@ the path without re-loading the taxonomy.
 JSON Schema artifacts for the upstream `nasa-gcn/gcn-schema` PR are dumped to
 `schemas/` via `circex schema-dump`.
 
+**Versioning (pin against this).** Each dumped schema carries a semver
+`version` field, and `schemas/VERSION` is the single source of truth
+(`SCHEMA_VERSION` in `circex/schema/dump.py`). Downstream consumers
+(ICARE/SkyPortal) should pin to a version and re-validate their mapping when
+it changes. Bump rules: **patch** for additive/descriptive changes,
+**minor** for new optional fields, **major** for removed/renamed/retyped
+fields or tightened enums (anything that can break an existing consumer). CI
+enforces two invariants on every push/PR: the committed artifacts must match
+the models (`circex schema-dump` produces no diff), and any change to a
+`*.schema.json` artifact must bump `schemas/VERSION` — so a stale pin is
+always detectable.
+
 ## Project layout
 
 ```

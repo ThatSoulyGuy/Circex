@@ -52,6 +52,29 @@ jobs:
           git diff --exit-code -- schemas/ \
             || (echo "::error::schemas/ is out of date — run 'circex schema-dump --out schemas/' and commit" && exit 1)
 
+      # Downstream consumers pin to the schema version. Any change to a schema
+      # artifact must be accompanied by a SCHEMA_VERSION bump (schemas/VERSION),
+      # so a consumer comparing versions can detect that the contract changed.
+      - name: Schema version bumped on change
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ]; then
+            echo "no base ref (new branch / first push) — skipping version-bump check"
+            exit 0
+          fi
+          git fetch --depth=1 origin "$BASE" 2>/dev/null || true
+          if git diff --quiet "$BASE" HEAD -- 'schemas/*.schema.json'; then
+            echo "no schema-artifact changes — version bump not required"
+            exit 0
+          fi
+          if git diff --quiet "$BASE" HEAD -- 'schemas/VERSION'; then
+            echo "::error::schemas/*.schema.json changed but schemas/VERSION did not — bump SCHEMA_VERSION in circex/schema/dump.py and re-dump"
+            exit 1
+          fi
+          echo "schema artifacts changed and VERSION was bumped — OK"
+
   bridge:
     # Typecheck the TypeScript LeanMCP bridge so a tool added on the Python side
     # but not mirrored here (or a schema/decorator mistake) fails CI.

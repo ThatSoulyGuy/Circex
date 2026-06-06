@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from circex.schema.dump import (
+    SCHEMA_VERSION,
     dump_classification,
     dump_photometry,
     dump_spectral_lines,
@@ -33,14 +35,34 @@ def test_classification_dump_has_taxonomy_constraint() -> None:
     assert "classification" in schema.get("required", [])
 
 
-def test_write_all_produces_three_files(tmp_path: Path) -> None:
+def test_write_all_produces_three_schemas_plus_version(tmp_path: Path) -> None:
     written = write_all(tmp_path)
     assert {p.name for p in written} == {
         "Photometry.schema.json",
         "SpectralLines.schema.json",
         "Classification.schema.json",
+        "VERSION",
     }
     for path in written:
+        if path.name == "VERSION":
+            continue
         payload = json.loads(path.read_text(encoding="utf-8"))
         assert "$id" in payload
         assert "$schema" in payload
+
+
+# ---- versioning (P2 #10) ----
+
+
+def test_schema_version_is_semver() -> None:
+    assert re.fullmatch(r"\d+\.\d+\.\d+", SCHEMA_VERSION), SCHEMA_VERSION
+
+
+def test_every_schema_carries_the_version() -> None:
+    for dump in (dump_photometry, dump_spectral_lines, dump_classification):
+        assert dump()["version"] == SCHEMA_VERSION
+
+
+def test_version_file_matches_constant(tmp_path: Path) -> None:
+    write_all(tmp_path)
+    assert (tmp_path / "VERSION").read_text(encoding="utf-8").strip() == SCHEMA_VERSION
