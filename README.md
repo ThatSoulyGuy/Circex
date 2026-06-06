@@ -696,6 +696,7 @@ with severity, status, and code paths. The major open items:
   [`~/.claude/plans/come-up-with-a-unified-hopper.md`](~/.claude/plans/come-up-with-a-unified-hopper.md).
 - **Prompt deltas vs Vidushi/Sharma 2026**: [`docs/prompt_deltas.md`](docs/prompt_deltas.md).
 - **Consistency-pass runbook (A–F)**: [`docs/consistency_passes_runbook.md`](docs/consistency_passes_runbook.md).
+- **Per-row photometry epoch (`obs_mjd`) design**: [`docs/design_obs_mjd.md`](docs/design_obs_mjd.md) (proposed; code deferred pending sign-off).
 
 ---
 
