@@ -32,7 +32,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Ruff
+      - name: Ruff lint
         run: ruff check .
 
       - name: Mypy
@@ -40,3 +40,35 @@ jobs:
 
       - name: Pytest
         run: pytest --cov=circex --cov-report=term-missing
+
+      # The JSON Schema artifacts in schemas/ are generated from the Pydantic
+      # models. If a model changes without re-running `circex schema-dump`, the
+      # committed artifacts go stale silently — and downstream consumers (ICARE,
+      # the upstream gcn-schema PR) pin to them. Re-dump and fail on any diff.
+      - name: Schema artifacts up to date
+        shell: bash
+        run: |
+          circex schema-dump --out schemas/
+          git diff --exit-code -- schemas/ \
+            || (echo "::error::schemas/ is out of date — run 'circex schema-dump --out schemas/' and commit" && exit 1)
+
+  bridge:
+    # Typecheck the TypeScript LeanMCP bridge so a tool added on the Python side
+    # but not mirrored here (or a schema/decorator mistake) fails CI.
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: leanmcp_bridge
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install bridge dependencies
+        run: npm ci || npm install
+
+      - name: Typecheck bridge
+        run: npx tsc --noEmit
