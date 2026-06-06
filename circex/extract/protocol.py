@@ -8,6 +8,7 @@ implementations without changes.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, Protocol, runtime_checkable
 
 from circex.schema import CircularExtraction
@@ -24,6 +25,10 @@ class Circular:
     submitter: str | None = None
     created_on: int | None = None
     bibcode: str | None = None
+    # Trigger time T0 for resolving relative offsets ("T+234s") into obs_mjd.
+    # Caller-supplied (the GCN broker has it); NOT created_on, which is the
+    # circular's submission time. None when unknown — relative epochs stay null.
+    trigger_time: datetime | None = None
 
     @classmethod
     def from_record(cls, record: dict[str, Any]) -> Circular:

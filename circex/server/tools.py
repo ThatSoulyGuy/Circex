@@ -92,11 +92,13 @@ def extract_text(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]:
     fail. The caller passes the body directly.
 
     Args:
-        body:        required, the circular's free text.
-        circular_id: optional int; pass the real GCN ID when known so the store
-                     and LLM cache key on it. Defaults to 0 ("no archive id").
-        subject:     optional str, default "".
-        event_id:    optional str (the broker's associated event, if any).
+        body:         required, the circular's free text.
+        circular_id:  optional int; pass the real GCN ID when known so the store
+                      and LLM cache key on it. Defaults to 0 ("no archive id").
+        subject:      optional str, default "".
+        event_id:     optional str (the broker's associated event, if any).
+        trigger_time: optional ISO-8601 string; the event's T0, used to resolve
+                      relative photometry offsets ("T+234s") into obs_mjd.
 
     Idempotency: the underlying extractor's LLM cache keys on
     (extractor_id, model_id, prompt_version, circular_id, sha1(body)), so a
@@ -120,11 +122,26 @@ def extract_text(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]:
     if event_id is not None and not isinstance(event_id, str):
         raise ValueError("argument 'event_id' must be a string when provided")
 
+    trigger_time = None
+    raw_t0 = args.get("trigger_time")
+    if raw_t0 is not None:
+        if not isinstance(raw_t0, str):
+            raise ValueError("argument 'trigger_time' must be an ISO-8601 string when provided")
+        from dateutil import parser as _date_parser
+
+        try:
+            trigger_time = _date_parser.parse(raw_t0)
+        except (ValueError, OverflowError) as exc:
+            raise ValueError(
+                f"argument 'trigger_time' is not a valid datetime: {raw_t0!r}"
+            ) from exc
+
     circular = Circular(
         circular_id=circular_id,
         subject=subject,
         body=body,
         event_id=event_id,
+        trigger_time=trigger_time,
     )
     extraction = extractor.extract(circular)
 

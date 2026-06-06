@@ -49,6 +49,15 @@ export class ExtractTextInput {
     minLength: 1,
   })
   event_id?: string;
+
+  @Optional()
+  @SchemaConstraint({
+    description:
+      "Event trigger time T0 as an ISO-8601 string. Used to resolve relative " +
+      "photometry offsets ('T+234s') into obs_mjd. Omit when unknown.",
+    minLength: 1,
+  })
+  trigger_time?: string;
 }
 
 export class GetRedshiftInput {

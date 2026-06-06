@@ -27,6 +27,7 @@ from circex.extract.regex.regex_events import (
     extract_gcn_xrefs_with_positions,
     extract_matches_with_positions,
 )
+from circex.extract.timing import resolve_relative_epochs
 from circex.schema import (
     CircularExtraction,
     Event,
@@ -143,7 +144,7 @@ class RegexExtractor(Extractor):
 
         latency_ms = (time.perf_counter() - started) * 1000.0
 
-        return CircularExtraction(
+        extraction = CircularExtraction(
             circular_id=circular.circular_id,
             event=event,
             follow_up=follow_up,
@@ -159,3 +160,7 @@ class RegexExtractor(Extractor):
                 notes=bound_notes,
             ),
         )
+        # Fill obs_mjd/obs_time on rows lacking an absolute epoch from T0 + a
+        # single relative offset (no-op when trigger_time is None).
+        resolve_relative_epochs(extraction, circular.trigger_time)
+        return extraction

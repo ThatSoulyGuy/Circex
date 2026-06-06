@@ -26,6 +26,7 @@ from circex.extract.llm.prompt import (
     llm_input_schema,
 )
 from circex.extract.protocol import Circular, Extractor
+from circex.extract.timing import resolve_relative_epochs
 from circex.schema import CircularExtraction, ExtractionMeta
 
 if TYPE_CHECKING:
@@ -108,7 +109,10 @@ class ClaudeExtractor(Extractor):
             )
             if cached is not None:
                 meta = cached.extraction.extraction_meta.model_copy(update={"cache_hit": True})
-                return cached.extraction.model_copy(update={"extraction_meta": meta})
+                result = cached.extraction.model_copy(update={"extraction_meta": meta})
+                # Relative epochs are resolved per-call (T0-dependent), not cached.
+                resolve_relative_epochs(result, circular.trigger_time)
+                return result
 
         chunks = chunk_body(circular.body)
 
@@ -161,6 +165,8 @@ class ClaudeExtractor(Extractor):
         )
         merged = merge_extractions(circular.circular_id, chunk_results, meta)
 
+        # Cache the T0-independent (absolute-epoch) extraction; put() serializes
+        # immediately, so the relative resolution below doesn't leak into cache.
         if self._cache is not None:
             self._cache.put(
                 extractor_id=self.extractor_id,
@@ -175,6 +181,7 @@ class ClaudeExtractor(Extractor):
                 latency_ms=latency_ms,
             )
 
+        resolve_relative_epochs(merged, circular.trigger_time)
         return merged
 
     # ---- internal ----

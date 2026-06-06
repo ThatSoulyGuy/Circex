@@ -1,7 +1,14 @@
 # Design note — per-row photometry epoch (`obs_mjd`)
 
-**Status:** proposed (code deferred pending sign-off). Tracks ICARE P0 #2.
+**Status:** IMPLEMENTED. Tracks ICARE P0 #2.
 **Author:** Circex. **Date:** 2026-06-06.
+
+**Decisions taken** (resolving §7): both `obs_mjd` (float MJD, UTC) and
+`obs_time` (ISO-8601) are emitted; absolute-UT and relative resolution are both
+implemented; caching follows §5(i) — the T0-independent absolute epochs are
+cached, relative offsets are resolved per call from `Circular.trigger_time`.
+The relative pairing uses the conservative single-epoch rule (§7.3). See
+`circex/extract/timing.py` and the `PhotometryExt.obs_mjd/obs_time` fields.
 
 ## 1. Problem
 

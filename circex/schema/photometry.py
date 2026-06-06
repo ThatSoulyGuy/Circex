@@ -59,6 +59,21 @@ class PhotometryExt(BaseModel):
         description="Significance level [sigma] associated with limiting_mag (default 5).",
     )
 
+    # ---- per-row observation epoch (ICARE P0 #2) ----
+    obs_mjd: float | None = Field(
+        default=None,
+        description=(
+            "Observation epoch as Modified Julian Date (UTC). Resolved from an "
+            "absolute UT/MJD stated in the row, else from the caller-supplied "
+            "trigger time plus the circular's relative offset. Null when neither "
+            "is available. SkyPortal consumes this directly as the point's mjd."
+        ),
+    )
+    obs_time: str | None = Field(
+        default=None,
+        description="Same epoch as obs_mjd in ISO-8601 UTC (human-legible mirror).",
+    )
+
     # ---- optical-specific extensions added by Circex ----
     telescope: str | None = Field(
         default=None, description="Name of the telescope (e.g., GTC, ZTF, Pan-STARRS1)."
@@ -122,6 +137,21 @@ class PhotometryExt(BaseModel):
                 self.is_detection = True
             elif self.limiting_mag is not None:
                 self.is_detection = False
+        return self
+
+    @model_validator(mode="after")
+    def _fill_obs_pair(self) -> PhotometryExt:
+        """Backfill the missing half of (obs_mjd, obs_time) from the other.
+
+        The regex path sets both; an LLM may set only obs_time. When exactly one
+        is present, derive the other so SkyPortal always gets obs_mjd.
+        """
+        if (self.obs_mjd is None) != (self.obs_time is None):
+            from circex.extract.timing import normalize_pair
+
+            pair = normalize_pair(self.obs_mjd, self.obs_time)
+            if pair is not None:
+                self.obs_mjd, self.obs_time = pair
         return self
 
     @model_validator(mode="after")

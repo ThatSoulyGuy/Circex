@@ -260,7 +260,7 @@ circex serve --extractor regex --port 8765 --store data/extractions.sqlite
 | Tool | Arguments | Returns |
 |---|---|---|
 | `extract_properties` | `{circular_id: int}` | full `CircularExtraction` (archive lookup) |
-| `extract_text` | `{body: str, circular_id?: int, subject?: str, event_id?: str}` | full `CircularExtraction` (live path, no archive lookup) |
+| `extract_text` | `{body: str, circular_id?: int, subject?: str, event_id?: str, trigger_time?: str}` | full `CircularExtraction` (live path, no archive lookup) |
 | `get_redshift` | `{event: str}` | `Redshift` or `null` |
 | `get_photometry` | `{event: str}` | `list[PhotometryExt]` |
 | `get_classification` | `{event: str}` | `Classification` or `null` |
@@ -525,6 +525,15 @@ exhaustive:
 The LLM extractors are prompted to follow the same vocabulary but may
 emit other recognized filters; an unmapped filter yields `bandpass: null`
 with the raw `filter` preserved (never silently dropped).
+
+**Per-row observation epoch.** Each `PhotometryExt` carries `obs_mjd` (float
+MJD, UTC — SkyPortal consumes this as the point's `mjd`) and `obs_time`
+(ISO-8601 mirror). Resolved from an absolute UT/MJD stated in the row (table
+Date/MJD column), or from a `trigger_time` passed to `extract_text` plus the
+circular's relative offset (`T+234s`). Null when neither is available; the
+literal `time_offsets` capture is always retained regardless. Relative
+resolution uses a conservative single-epoch rule — multiple distinct offsets
+in one circular are left unresolved rather than mis-paired.
 
 **Telescope / instrument canonicalization.** `PhotometryExt` also carries
 `telescope_canonical` and `instrument_canonical`, auto-derived from the raw

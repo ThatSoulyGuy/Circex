@@ -15,6 +15,7 @@ from __future__ import annotations
 import re
 from typing import Final
 
+from circex.extract.timing import epoch_from_absolute
 from circex.schema import MagSystem, PhotometryExt, Span
 
 # Filter classification.
@@ -235,6 +236,9 @@ def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                 row_start = line_offsets[j]
                 row_text = lines[j].rstrip("\r\n")
                 row_end = row_start + len(row_text)
+                obs_mjd, obs_time = (None, None)
+                if (epoch := epoch_from_absolute(row_data.get("date"))) is not None:
+                    obs_mjd, obs_time = epoch
                 rows.append((
                     PhotometryExt(
                         filter=filter_token,
@@ -242,6 +246,8 @@ def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                         mag_error=err,
                         mag_system=infer_mag_system(filter_token),
                         bandpass=infer_bandpass(filter_token),
+                        obs_mjd=obs_mjd,
+                        obs_time=obs_time,
                     ),
                     Span(start=row_start, end=row_end, snippet=row_text),
                 ))

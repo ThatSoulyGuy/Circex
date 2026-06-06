@@ -53,6 +53,11 @@ name for the filter when recognizable. Sloan u/g/r/i/z -> sdss{u,g,r,i,z}; \
 y -> ps1::y; Bessel U/B/V/R/I -> bessell{u,b,v,r,i}; NIR J/H/K/Ks -> \
 2mass{j,h,ks}. Leave null for unfiltered/clear or unknown filters. Always keep \
 the raw `filter` string as written.
+- Observation epoch: when a row states an absolute date/UT or MJD (e.g. a \
+table Date/MJD column), set `photometry[].obs_time` to that time in ISO-8601 \
+UTC. Leave it null for rows given only as a relative offset ("T+234s") — do \
+NOT do trigger-time arithmetic; the runner resolves those. Leave `obs_mjd` to \
+the runner.
 - T+offset phrasings (e.g., "T+234s") are LITERAL captures in `time_offsets[]`; \
 do NOT resolve against the absolute trigger time.
 - Classification: `classification.classification` must be a canonical class \
@@ -119,14 +124,17 @@ Seeing was 1.1 arcsec; airmass 1.3.""",
             "event": {"event_name": "GRB 240101A"},
             "photometry": [
                 {"filter": "r", "bandpass": "sdssr", "mag": 20.42, "mag_error": 0.05,
-                 "mag_system": "AB", "telescope": "NOT", "instrument": "ALFOSC",
-                 "calibration_reference": "PS1", "seeing": 1.1, "airmass": 1.3},
+                 "mag_system": "AB", "obs_time": "2024-01-02T04:30:00Z", "telescope": "NOT",
+                 "instrument": "ALFOSC", "calibration_reference": "PS1", "seeing": 1.1,
+                 "airmass": 1.3},
                 {"filter": "r", "bandpass": "sdssr", "mag": 20.55, "mag_error": 0.05,
-                 "mag_system": "AB", "telescope": "NOT", "instrument": "ALFOSC",
-                 "calibration_reference": "PS1", "seeing": 1.1, "airmass": 1.3},
+                 "mag_system": "AB", "obs_time": "2024-01-02T05:10:00Z", "telescope": "NOT",
+                 "instrument": "ALFOSC", "calibration_reference": "PS1", "seeing": 1.1,
+                 "airmass": 1.3},
                 {"filter": "g", "bandpass": "sdssg", "mag": 21.10, "mag_error": 0.07,
-                 "mag_system": "AB", "telescope": "NOT", "instrument": "ALFOSC",
-                 "calibration_reference": "PS1", "seeing": 1.1, "airmass": 1.3},
+                 "mag_system": "AB", "obs_time": "2024-01-02T05:50:00Z", "telescope": "NOT",
+                 "instrument": "ALFOSC", "calibration_reference": "PS1", "seeing": 1.1,
+                 "airmass": 1.3},
             ],
         },
     ),

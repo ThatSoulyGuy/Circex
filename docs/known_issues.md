@@ -349,12 +349,14 @@ run (or larger). The 50-row pilot is committed-but-flagged as preliminary.
 (These are open issues the hand-labeling exercise is expected to uncover more
 of. Update `docs/labeling_spec.md` "Known gaps" section in parallel.)
 
-- **No per-row photometry epoch** (ICARE P0 #2) — `PhotometryExt` has no
-  per-row observation time, but SkyPortal photometry requires an `mjd` per
-  point. Design for an `obs_mjd` field (caller-supplied T0, absolute-UT-first
-  resolution, null when unresolvable) is written up in
-  [`docs/design_obs_mjd.md`](design_obs_mjd.md); code deferred pending sign-off
-  on field type and caching strategy.
+- **Per-row photometry epoch** (ICARE P0 #2) — **resolved.** `PhotometryExt`
+  now carries `obs_mjd` (float MJD) + `obs_time` (ISO-8601), resolved from an
+  absolute UT/MJD in the row or from `Circular.trigger_time` plus a single
+  relative offset (null when unresolvable). See
+  [`docs/design_obs_mjd.md`](design_obs_mjd.md) and `circex/extract/timing.py`.
+  Known limitation: relative resolution uses a conservative single-epoch rule —
+  multiple distinct offsets in one circular are left unresolved rather than
+  guessed.
 - **Bound redshifts** (`z ≤ 1.61`) — see above.
 - **Conditional/hypothetical fields:** circular 216 reasons about a *putative*
   host galaxy at z ~ 0.2-0.3 conditional on a lensing hypothesis. Our schema

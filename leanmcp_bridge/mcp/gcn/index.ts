@@ -66,6 +66,7 @@ export class GcnService {
     if (input.circular_id !== undefined) args.circular_id = input.circular_id;
     if (input.subject !== undefined) args.subject = input.subject;
     if (input.event_id !== undefined) args.event_id = input.event_id;
+    if (input.trigger_time !== undefined) args.trigger_time = input.trigger_time;
     return forward("extract_text", args);
   }
 

@@ -1,0 +1,183 @@
+"""Tests for observation-epoch resolution (ICARE P0 #2)."""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+
+from circex.extract.protocol import Circular
+from circex.extract.regex import RegexExtractor
+from circex.extract.timing import (
+    epoch_from_absolute,
+    epoch_from_offset,
+    normalize_pair,
+    resolve_relative_epochs,
+)
+from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt, TimeOffset
+
+# ---- epoch_from_absolute ----
+
+
+def test_absolute_iso_date() -> None:
+    pair = epoch_from_absolute("2024-01-02 04:30")
+    assert pair is not None
+    mjd, iso = pair
+    assert abs(mjd - 60311.1875) < 1e-6
+    assert iso.startswith("2024-01-02T04:30")
+
+
+def test_absolute_bare_mjd() -> None:
+    pair = epoch_from_absolute("60311.5")
+    assert pair is not None
+    mjd, _ = pair
+    assert mjd == 60311.5
+
+
+def test_absolute_number_outside_mjd_range_is_none() -> None:
+    # A year or a small count is not a date we trust.
+    assert epoch_from_absolute("2024") is None
+    assert epoch_from_absolute("12") is None
+
+
+def test_absolute_garbage_is_none() -> None:
+    assert epoch_from_absolute("not a date") is None
+    assert epoch_from_absolute(None) is None
+    assert epoch_from_absolute("") is None
+
+
+# ---- epoch_from_offset ----
+
+
+def test_offset_hours() -> None:
+    t0 = datetime(2024, 1, 1, 0, 0, 0, tzinfo=UTC)
+    pair = epoch_from_offset(t0, 1.0, "h")
+    assert pair is not None
+    mjd, iso = pair
+    assert abs(mjd - (60310.0 + 1.0 / 24.0)) < 1e-6
+    assert iso.startswith("2024-01-01T01:00")
+
+
+def test_offset_unknown_unit_is_none() -> None:
+    t0 = datetime(2024, 1, 1, tzinfo=UTC)
+    assert epoch_from_offset(t0, 5.0, "weeks") is None
+
+
+def test_offset_naive_datetime_treated_as_utc() -> None:
+    naive = datetime(2024, 1, 1, 0, 0, 0)
+    aware = datetime(2024, 1, 1, 0, 0, 0, tzinfo=UTC)
+    assert epoch_from_offset(naive, 30.0, "s") == epoch_from_offset(aware, 30.0, "s")
+
+
+# ---- normalize_pair (backfill) ----
+
+
+def test_normalize_pair_from_mjd() -> None:
+    pair = normalize_pair(60311.5, None)
+    assert pair is not None and pair[0] == 60311.5
+
+
+def test_normalize_pair_from_iso() -> None:
+    pair = normalize_pair(None, "2024-01-02T04:30:00Z")
+    assert pair is not None and abs(pair[0] - 60311.1875) < 1e-6
+
+
+def test_normalize_pair_none() -> None:
+    assert normalize_pair(None, None) is None
+
+
+# ---- PhotometryExt pair backfill ----
+
+
+def test_photometry_backfills_mjd_from_obs_time() -> None:
+    p = PhotometryExt(filter="r", mag=20.0, obs_time="2024-01-02T04:30:00Z")
+    assert p.obs_mjd is not None and abs(p.obs_mjd - 60311.1875) < 1e-6
+
+
+def test_photometry_backfills_obs_time_from_mjd() -> None:
+    p = PhotometryExt(filter="r", mag=20.0, obs_mjd=60311.5)
+    assert p.obs_time is not None and p.obs_time.startswith("2024-01-02")
+
+
+def test_photometry_no_epoch_stays_null() -> None:
+    p = PhotometryExt(filter="r", mag=20.0)
+    assert p.obs_mjd is None and p.obs_time is None
+
+
+# ---- resolve_relative_epochs (single-epoch rule) ----
+
+
+def _extraction(rows: list[PhotometryExt], offsets: list[TimeOffset]) -> CircularExtraction:
+    return CircularExtraction(
+        circular_id=1,
+        photometry=rows,
+        time_offsets=offsets,
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+
+
+def test_resolve_single_offset_applies_to_all_rows() -> None:
+    ex = _extraction(
+        [PhotometryExt(filter="r", mag=19.5), PhotometryExt(filter="g", mag=20.1)],
+        [TimeOffset(value=1.0, unit="h", reference="T+")],
+    )
+    resolve_relative_epochs(ex, datetime(2024, 1, 1, tzinfo=UTC))
+    assert all(p.obs_mjd is not None for p in ex.photometry)
+    assert ex.photometry[0].obs_mjd == ex.photometry[1].obs_mjd
+
+
+def test_resolve_multiple_distinct_offsets_is_ambiguous_noop() -> None:
+    ex = _extraction(
+        [PhotometryExt(filter="r", mag=19.5)],
+        [
+            TimeOffset(value=1.0, unit="h", reference="T+"),
+            TimeOffset(value=5.0, unit="h", reference="T+"),
+        ],
+    )
+    resolve_relative_epochs(ex, datetime(2024, 1, 1, tzinfo=UTC))
+    assert ex.photometry[0].obs_mjd is None
+
+
+def test_resolve_no_trigger_time_noop() -> None:
+    ex = _extraction(
+        [PhotometryExt(filter="r", mag=19.5)],
+        [TimeOffset(value=1.0, unit="h", reference="T+")],
+    )
+    resolve_relative_epochs(ex, None)
+    assert ex.photometry[0].obs_mjd is None
+
+
+def test_resolve_does_not_overwrite_absolute_epoch() -> None:
+    row = PhotometryExt(filter="r", mag=19.5, obs_mjd=60000.0)
+    ex = _extraction([row], [TimeOffset(value=1.0, unit="h", reference="T+")])
+    resolve_relative_epochs(ex, datetime(2024, 1, 1, tzinfo=UTC))
+    assert ex.photometry[0].obs_mjd == 60000.0
+
+
+# ---- regex extractor integration ----
+
+
+def test_regex_table_resolves_absolute_epoch() -> None:
+    body = (
+        "Date              Filter  Mag     Err\n"
+        "2024-01-02 04:30  r       20.42   0.05\n"
+        "60311.5           g       21.10   0.07"
+    )
+    r = RegexExtractor().extract(Circular(circular_id=1, subject="", body=body))
+    mjds = sorted(p.obs_mjd for p in r.photometry if p.obs_mjd is not None)
+    assert len(mjds) == 2
+    assert abs(mjds[0] - 60311.1875) < 1e-6
+
+
+def test_regex_relative_resolved_with_trigger_time() -> None:
+    body = "We observed at T+1 h and measured r = 19.5 mag."
+    t0 = datetime(2024, 1, 1, tzinfo=UTC)
+    r = RegexExtractor().extract(
+        Circular(circular_id=2, subject="", body=body, trigger_time=t0)
+    )
+    detected = [p for p in r.photometry if p.filter == "r"]
+    assert detected and detected[0].obs_mjd is not None
+
+
+def test_regex_relative_unresolved_without_trigger_time() -> None:
+    body = "We observed at T+1 h and measured r = 19.5 mag."
+    r = RegexExtractor().extract(Circular(circular_id=3, subject="", body=body))
+    assert all(p.obs_mjd is None for p in r.photometry)

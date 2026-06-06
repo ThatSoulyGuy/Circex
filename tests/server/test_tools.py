@@ -236,6 +236,37 @@ def test_extract_text_idempotent_via_caching_extractor(populated_ctx: ToolContex
     assert ext.calls == 1  # second delivery served from the extractor's cache
 
 
+def test_extract_text_resolves_relative_epoch_from_trigger_time(
+    populated_ctx: ToolContext,
+) -> None:
+    from circex.extract.regex import RegexExtractor
+
+    populated_ctx.default_extractor = RegexExtractor()
+    result = dispatch(
+        populated_ctx,
+        "extract_text",
+        {
+            "circular_id": 80000,
+            "body": "We observed at T+1 h and measured r = 19.5 mag.",
+            "trigger_time": "2024-01-01T00:00:00Z",
+        },
+    )
+    rows = [p for p in result["photometry"] if p.get("obs_mjd") is not None]
+    assert rows, "expected the relative offset to resolve to an obs_mjd"
+
+
+def test_extract_text_rejects_bad_trigger_time(populated_ctx: ToolContext) -> None:
+    from circex.extract.regex import RegexExtractor
+
+    populated_ctx.default_extractor = RegexExtractor()
+    with pytest.raises(ValueError, match="trigger_time"):
+        dispatch(
+            populated_ctx,
+            "extract_text",
+            {"body": "r = 19.5 mag", "trigger_time": "not-a-date"},
+        )
+
+
 def test_extract_text_provenance_survives_to_serialized_output(
     populated_ctx: ToolContext,
 ) -> None:
