@@ -86,13 +86,16 @@ a classification-context cue (`type`, `classified`, `spectrum`, `supernova`,
 directly, as before. Re-running the flurry: all four garbage classes are gone,
 `Type Ia` style classifications still resolve. Regression tests in
 `tests/extract/regex/test_classification.py`.
-**Remaining (separate, lower-severity, still accepted):**
-- Tautological `classification = "GRB"` on GRB circulars (the 3-char alias "GRB"
-  is a taxonomy class) — uninformative but not wrong.
-- Substrings of proper nouns can still match a 3+ char alias, e.g. `"kilonova"`
-  from the *"Kilonova-Catcher"* telescope name. A context guard for longer
-  aliases, or an instrument-name stoplist, would address it — deferred; the LLM
-  extractor handles this naturally.
+**Proper-noun guard also landed.** A second rule rejects an alias that heads a
+hyphenated proper noun (trailing "-Capitalizedword"), e.g. `"Kilonova"` inside
+the telescope name *"Kilonova-Catcher"*. Single-letter subtype suffixes
+(`II-P`), all-caps suffixes (`Ia-CSM`), and lowercase modifiers
+(`kilonova-like`, `Ia-pec`) are kept. Re-running the flurry, the classification
+distribution collapses to `GRB`×17 / `long GRB`×1 / `None`×2 — **zero garbage**.
+**Remaining (accepted, not wrong):** tautological `classification = "GRB"` on
+GRB circulars (the 3-char alias "GRB" is itself a taxonomy class) — uninformative
+but correct. Could be suppressed with an event-type-vs-classification rule;
+deferred (the LLM extractor distinguishes these naturally).
 **Where:** `circex/extract/regex/classification.py`.
 
 ### Single-mag parser rejects mag < 5 (and z-band mag < 10) — **accepted**

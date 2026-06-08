@@ -17,7 +17,12 @@ We guard against it with two rules:
     'consistent with', ...) appears within a small window — which preserves
     'Type Ia' while rejecting 'in' (Orion) and 'Fu' (FU Ori) in GRB prose.
 
-Aliases of 3+ characters match directly, as before.
+Aliases of 3+ characters match directly, except that a match which is the head
+of a hyphenated proper noun (a trailing "-Capitalizedword", e.g. "Kilonova"
+inside the telescope name "Kilonova-Catcher") is skipped. Single-letter subtype
+suffixes ("II-P"), all-caps suffixes ("Ia-CSM"), and lowercase modifiers
+("kilonova-like", "Ia-pec") are kept; real hyphenated classes (Ic-BL, Type II)
+are aliases and match in full regardless.
 """
 
 from __future__ import annotations
@@ -84,6 +89,16 @@ def parse_classification_with_span(
         token = match.group(0)
         canonical = alias_to_canonical().get(token.lower())
         if canonical is None:
+            continue
+        # Reject an alias that is the head of a hyphenated proper noun, e.g.
+        # "Kilonova" inside the telescope name "Kilonova-Catcher". The tell is a
+        # trailing "-" + a Capitalized word (uppercase then lowercase). Single-
+        # letter subtype suffixes ("II-P", "II-L"), all-caps suffixes ("Ia-CSM"),
+        # and lowercase modifiers ("kilonova-like", "Ia-pec") are kept. Real
+        # hyphenated classes (Ic-BL, II-P, Type II) are aliases and match in full
+        # above, so this only fires on partial matches of non-alias compounds.
+        tail = text[match.end() : match.end() + 3]
+        if len(tail) == 3 and tail[0] == "-" and tail[1].isupper() and tail[2].islower():
             continue
         if len(token) <= _SHORT_ALIAS_MAX:
             window = text[

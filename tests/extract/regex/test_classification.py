@@ -65,3 +65,24 @@ def test_two_char_alias_with_context_accepted() -> None:
 
 def test_bare_two_char_alias_without_context_rejected() -> None:
     assert parse_classification("the transient is Ia") is None
+
+
+# ---- hyphenated-proper-noun guard (the "Kilonova-Catcher" telescope name) ----
+
+
+def test_kilonova_in_telescope_name_is_not_a_classification() -> None:
+    """'Kilonova' inside the telescope name 'Kilonova-Catcher' must not classify."""
+    c = parse_classification("Kilonova-Catcher reports an optical afterglow detection.")
+    assert c is None or c.classification != "kilonova"
+
+
+def test_kilonova_like_modifier_is_kept() -> None:
+    """A real classification phrase 'kilonova-like' (lowercase suffix) is kept."""
+    c = parse_classification("The spectrum is consistent with a kilonova-like transient.")
+    assert c is not None and c.classification == "kilonova"
+
+
+def test_single_letter_subtype_suffix_is_kept() -> None:
+    """'Type II-P' keeps the base class (single-letter subtype, not a proper noun)."""
+    c = parse_classification("Classified as a Type II-P supernova.")
+    assert c is not None and c.classification == "Type II"

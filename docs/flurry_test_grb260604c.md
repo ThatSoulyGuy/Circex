@@ -80,12 +80,15 @@ Provenance saves the *consumer* — every bogus snippet (`"O"`, `"M"`, `"in"`,
 **minimum alias length + a classification-context keyword requirement** before
 accepting short aliases.
 
-> **Update (fixed):** the guard landed. `classification.py` now drops 1-char
-> aliases and gates 2-char aliases on a classification-context cue. Re-running
-> this flurry, all four garbage classes (`Overtone`, `Mira`, `Orion`, `FU Ori`)
-> are gone; the remaining hits are the tautological `"GRB"` and one
-> `"kilonova"` from the *Kilonova-Catcher* telescope name (a separate
-> longer-alias-substring issue). See [`known_issues.md`](known_issues.md).
+> **Update (fixed):** two guards landed. (1) `classification.py` drops 1-char
+> aliases and gates 2-char aliases on a classification-context cue. (2) It also
+> rejects an alias heading a hyphenated proper noun (`"Kilonova"` inside the
+> *Kilonova-Catcher* telescope name) while keeping `kilonova-like`, `II-P`,
+> `Ia-CSM`. Re-running this flurry, the classification distribution collapses to
+> `GRB`×17 / `long GRB`×1 / `None`×2 — **zero garbage** (all of `Overtone`,
+> `Mira`, `Orion`, `FU Ori`, and the `kilonova` telescope-name match are gone).
+> The only remaining output is the tautological-but-correct `"GRB"`. See
+> [`known_issues.md`](known_issues.md).
 
 **2. Photometry recall is poor and lossy — the documented "irregular table"
 failure.**
