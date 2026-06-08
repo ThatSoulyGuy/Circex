@@ -78,9 +78,14 @@ alias matches:
 Provenance saves the *consumer* — every bogus snippet (`"O"`, `"M"`, `"in"`,
 `"Fu"`) is trivially filterable — but the matcher itself needs a guard:
 **minimum alias length + a classification-context keyword requirement** before
-accepting short aliases. This is the documented "regex fails on in-prose
-classification" weakness, now quantified into an actionable fix. See
-[`known_issues.md`](known_issues.md).
+accepting short aliases.
+
+> **Update (fixed):** the guard landed. `classification.py` now drops 1-char
+> aliases and gates 2-char aliases on a classification-context cue. Re-running
+> this flurry, all four garbage classes (`Overtone`, `Mira`, `Orion`, `FU Ori`)
+> are gone; the remaining hits are the tautological `"GRB"` and one
+> `"kilonova"` from the *Kilonova-Catcher* telescope name (a separate
+> longer-alias-substring issue). See [`known_issues.md`](known_issues.md).
 
 **2. Photometry recall is poor and lossy — the documented "irregular table"
 failure.**

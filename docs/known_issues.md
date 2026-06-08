@@ -71,26 +71,28 @@ spec_z).
 
 ## Sprint 2 — regex baseline
 
-### Classification matches first taxonomy alias, no context — **accepted (fix proposed)**
-**Severity:** M (intentional — PDF says regex should visibly fail on in-prose
-classification).
-The matcher returns the first taxonomy alias in body order, regardless of
-context. So:
-- Every "GRB " circular gets `classification = "GRB"` (taxonomy contains GRB
-  as a class) — tautological.
-- Circular 14 (GRB 971214 OT) got `classification = "Mira"` (false positive
-  via stray alias match).
+### Classification short-alias false positives — **resolved (guard landed)**
+**Severity:** M (was). The matcher returned the first taxonomy alias in body
+order regardless of context. The taxonomy includes 1–2 char aliases that match
+author initials and substrings, producing confident wrong answers.
 **Quantified by the GRB 260604C flurry** ([`flurry_test_grb260604c.md`](flurry_test_grb260604c.md)):
-~9 of 12 classification hits across the 20-circular flurry were garbage from
-single-letter / substring aliases — `"Overtone"` from the author initial "O",
-`"Mira"` from "M", `"Orion"` from "in", `"FU Ori"` from "Fu". Provenance makes
-each one filterable (the snippet is obviously not a classification), but the
-matcher should be guarded.
-**Proposed fix:** require a minimum alias length (drop 1–2 char aliases) and/or
-a classification-context keyword nearby before accepting short aliases. This
-goes beyond "measure the gap" into a genuine defect the flurry surfaced.
-**Decision:** still acceptable for the eval baseline, but the short-alias guard
-is worth landing.
+~9 of 12 classification hits across the 20-circular flurry were garbage —
+`"Overtone"` from the author initial "O", `"Mira"` from "M", `"Orion"` from
+"in", `"FU Ori"` from "Fu".
+**Fix landed:** `circex/extract/regex/classification.py` now drops 1-char
+aliases entirely and accepts 2-char aliases (`Ia`, `Ib`, `Ic`, `II`) only when
+a classification-context cue (`type`, `classified`, `spectrum`, `supernova`,
+`consistent with`, …) appears within 60 chars. Aliases of 3+ chars match
+directly, as before. Re-running the flurry: all four garbage classes are gone,
+`Type Ia` style classifications still resolve. Regression tests in
+`tests/extract/regex/test_classification.py`.
+**Remaining (separate, lower-severity, still accepted):**
+- Tautological `classification = "GRB"` on GRB circulars (the 3-char alias "GRB"
+  is a taxonomy class) — uninformative but not wrong.
+- Substrings of proper nouns can still match a 3+ char alias, e.g. `"kilonova"`
+  from the *"Kilonova-Catcher"* telescope name. A context guard for longer
+  aliases, or an instrument-name stoplist, would address it — deferred; the LLM
+  extractor handles this naturally.
 **Where:** `circex/extract/regex/classification.py`.
 
 ### Single-mag parser rejects mag < 5 (and z-band mag < 10) — **accepted**

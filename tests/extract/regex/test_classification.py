@@ -33,3 +33,35 @@ def test_match_tde_alias() -> None:
     assert c is not None
     # 'TDE' is the alias; canonical is 'Tidal Disruption Event'.
     assert c.classification == "Tidal Disruption Event"
+
+
+# ---- short-alias false-positive guard (GRB 260604C flurry; docs/flurry_test_grb260604c.md) ----
+
+
+def test_author_initial_is_not_a_classification() -> None:
+    """1-char aliases are dropped: 'O.' (O. Spiridonova) must not become 'Overtone'."""
+    assert parse_classification("A. Moskvitin, O. Spiridonova report observations.") is None
+
+
+def test_substring_two_char_alias_without_context_rejected() -> None:
+    """'in' (an Orion alias) in plain prose, no classification cue -> not Orion.
+
+    (The sentence avoids other taxonomy words; we assert the specific
+    false-positive the guard targets does not occur.)"""
+    c = parse_classification("The optical counterpart brightened in our latest frames.")
+    assert c is None or c.classification != "Orion"
+
+
+def test_two_char_alias_initial_rejected() -> None:
+    """'Fu' (FU Ori alias) as a name fragment, no cue -> no match."""
+    assert parse_classification("Observations reported by Fu et al. last night.") is None
+
+
+def test_two_char_alias_with_context_accepted() -> None:
+    """A real 2-char class with a classification cue is still matched."""
+    c = parse_classification("The spectrum is consistent with a Type Ia event.")
+    assert c is not None and c.classification == "Ia"
+
+
+def test_bare_two_char_alias_without_context_rejected() -> None:
+    assert parse_classification("the transient is Ia") is None
