@@ -71,7 +71,7 @@ spec_z).
 
 ## Sprint 2 — regex baseline
 
-### Classification matches first taxonomy alias, no context — **accepted**
+### Classification matches first taxonomy alias, no context — **accepted (fix proposed)**
 **Severity:** M (intentional — PDF says regex should visibly fail on in-prose
 classification).
 The matcher returns the first taxonomy alias in body order, regardless of
@@ -80,8 +80,17 @@ context. So:
   as a class) — tautological.
 - Circular 14 (GRB 971214 OT) got `classification = "Mira"` (false positive
   via stray alias match).
-**Decision:** keep. This is exactly the "regex fails on in-prose
-classification" failure mode the eval will quantify. **Do not over-engineer.**
+**Quantified by the GRB 260604C flurry** ([`flurry_test_grb260604c.md`](flurry_test_grb260604c.md)):
+~9 of 12 classification hits across the 20-circular flurry were garbage from
+single-letter / substring aliases — `"Overtone"` from the author initial "O",
+`"Mira"` from "M", `"Orion"` from "in", `"FU Ori"` from "Fu". Provenance makes
+each one filterable (the snippet is obviously not a classification), but the
+matcher should be guarded.
+**Proposed fix:** require a minimum alias length (drop 1–2 char aliases) and/or
+a classification-context keyword nearby before accepting short aliases. This
+goes beyond "measure the gap" into a genuine defect the flurry surfaced.
+**Decision:** still acceptable for the eval baseline, but the short-alias guard
+is worth landing.
 **Where:** `circex/extract/regex/classification.py`.
 
 ### Single-mag parser rejects mag < 5 (and z-band mag < 10) — **accepted**
