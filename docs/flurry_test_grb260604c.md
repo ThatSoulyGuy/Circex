@@ -48,6 +48,46 @@ classification matcher loads.)
 
 20/20 circulars fetched and extracted live.
 
+### Final output (regex baseline, after the classification fixes)
+
+```
+  circ  event        class      phot xref  subject
+----------------------------------------------------------------------------------------------------
+ 44877  GRB 260604C  GRB           0   19  GRB 260604C: further SAO RAS optical observations
+ 44822  GRB 260604C  long GRB      0    0  GRB 260604C: Fermi GBM Final Real-time Localization
+ 44831  GRB 260604C  GRB           0    3  GRB 260604C: Fermi GBM Observation
+ 44823  GRB 260604C  GRB           0    1  GRB 260604C: SVOM detection of a long burst
+ 44854  GRB 260604C  GRB           0    3  GRB 260604C: GECAM-B observation
+ 44827  GRB 260604C  None          0    0  GRB 260604C: MASTER OT J145749.59+284903.0 optical ...
+ 44828  GRB 260604C  GRB           0    3  GRB 260604C: LAST detection of optical counterpart ...
+ 44836  GRB 260604C  GRB           0    1  GRB 260604C: Correction to GCN 44828
+ 44832  GRB 260604C  None          1    4  GRB 260604C: Jinshan optical observations
+ 44834  GRB 260604C  GRB           8    5  GRB 260604C: SVOM/COLIBRÍ (FM-GFT) optical observations
+ 44835  GRB 260604C  GRB           0    8  GRB 260604C: Kilonova-Catcher optical afterglow detection
+ 44837  GRB 260604C  GRB           0    7  GRB 260604C: GOTO detections of the optical afterglow
+ 44843  GRB 260604C  GRB           1    7  GRB 260604C: Liverpool Telescope optical detection
+ 44851  GRB 260604C  GRB           0    7  GRB 260604C: GRANDMA observations
+ 44852  GRB 260604C  GRB           0   12  GRB 260604C: SAO RAS optical observations
+ 44857  GRB 260604C  GRB           0    4  GRB 260604C: OPD1.6m - GRANDMA observations - detection
+ 44858  GRB 260604C  GRB           0   12  GRB 260604C: Simeiz Zeiss-1000 optical observations
+ 44862  GRB 260604C  GRB           0   13  GRB 260604C: Mondy optical observations: evidence of ...
+ 44865  GRB 260604C  GRB           0    4  GRB 260604C: GRANDMA further observations
+ 44873  GRB 260604C  GRB           0    4  GRB 260604C: SVOM/COLIBRÍ (FM-GFT) colour evolution
+----------------------------------------------------------------------------------------------------
+distinct events:        ['GRB 260604C']        (consistent across all 20)
+classification hits:    18/20  — 0 garbage; all 'GRB'/'long GRB' or None
+photometry rows (regex): 10
+cross-reference union:   22 circulars
+```
+
+`class` is now clean: every value is the tautological-but-correct `GRB`/`long
+GRB` or `None` — the 9 garbage classifications from the pre-fix run (`Overtone`,
+`Mira`, `Orion`, `FU Ori`, and the `kilonova` telescope-name match) are gone.
+`phot` shows the regex baseline's known recall gap on irregular tables (10 rows
+total; the seed's own `Rc = 23.08 ± 0.18` detection still missed — see below).
+`xref` is the per-circular cross-reference count; their union (22) is the event
+graph the multi-circular machinery reconstructs from any seed.
+
 ### What worked — the structural spine
 
 - **Flurry reconstruction.** From the one seed, `follow_up` extracted **19**
