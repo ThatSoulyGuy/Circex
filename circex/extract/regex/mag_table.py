@@ -200,7 +200,7 @@ _HEADER_KEYWORDS = {"date", "mjd", "epoch", "filter", "band", "mag", "magnitude"
 
 def _looks_like_header(line: str) -> bool:
     """Cheap heuristic: line is a header if it contains 2+ table keywords."""
-    tokens = {token.strip(":").lower() for token in _COLUMN_SPLIT_RE.split(line)}
+    tokens = {token.strip().strip(":").lower() for token in _COLUMN_SPLIT_RE.split(line)}
     return len(tokens & _HEADER_KEYWORDS) >= 2
 
 
@@ -213,8 +213,14 @@ def _looks_like_table_row(line: str, expected_columns: int) -> bool:
 
 
 def _classify_columns(header_line: str) -> dict[int, str]:
-    """Return a dict mapping column index -> semantic role (filter, mag, err, ...)."""
-    fields = [f.strip(":").lower() for f in _COLUMN_SPLIT_RE.split(header_line) if f]
+    """Return a dict mapping column index -> semantic role (filter, mag, err, ...).
+
+    Tokens are whitespace-stripped first so a trailing newline (the parser reads
+    lines with line endings kept, for span offsets) can't corrupt the last
+    column's role — previously "Err\\n" failed to classify and mag_error was
+    silently dropped.
+    """
+    fields = [f.strip().strip(":").lower() for f in _COLUMN_SPLIT_RE.split(header_line) if f]
     classification: dict[int, str] = {}
     for i, token in enumerate(fields):
         if token in {"filter", "band"}:

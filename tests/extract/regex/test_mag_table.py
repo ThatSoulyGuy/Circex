@@ -63,6 +63,16 @@ Date          Filter   Mag      Err
     }
 
 
+def test_table_trailing_error_column_is_captured() -> None:
+    """Regression: the last column ('Err') was dropped because the header line
+    kept its trailing newline, so 'Err\\n' failed keyword classification."""
+    text = "Date          Filter   Mag      Err\n2020-01-01    r        18.42    0.05"
+    rows = parse_mag_table(text)
+    assert len(rows) == 1
+    assert rows[0].mag == 18.42
+    assert rows[0].mag_error == 0.05  # must not be None
+
+
 def test_parse_empty_when_no_table() -> None:
     """Prose-only circulars should produce zero table rows (the PDF's expected failure mode)."""
     text = (
