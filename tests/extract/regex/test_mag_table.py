@@ -124,3 +124,39 @@ Date          Filter   Mag      Err
     rows = parse_mag_table(text)
     by_filter = {p.filter: p.bandpass for p in rows}
     assert by_filter == {"r": "sdssr", "g": "sdssg"}
+
+
+# ---- space-separated detection (fixed-width tables / terse prose; GRB 260604C flurry) ----
+
+
+def test_spaced_detection_with_cousins_filter() -> None:
+    """The seed-circular row format: 'Rc  23.08 +/- 0.18' (no '=', Cousins R)."""
+    rows = parse_single_mags("2026.06.08 20:01:14 4.01102 12*300 Rc     23.08 +/- 0.18  23.8")
+    det = [p for p in rows if p.mag == 23.08]
+    assert det, "the space-separated detection should be recovered"
+    p = det[0]
+    assert p.filter == "R" and p.mag_error == 0.18
+    assert p.bandpass == "bessellr" and p.mag_system == "Vega"
+    assert p.is_detection is True
+
+
+def test_spaced_detection_unicode_pm() -> None:
+    rows = parse_single_mags("r 19.5 ± 0.05 in good conditions")
+    assert any(p.filter == "r" and p.mag == 19.5 and p.mag_error == 0.05 for p in rows)
+
+
+def test_spaced_detection_requires_error_term() -> None:
+    """No +/- after the mag -> not a detection (precision guard)."""
+    assert parse_single_mags("We obtained 12 x 300 sec images of the field.") == []
+    assert not any(p.mag == 300 for p in parse_single_mags("exposure r 300 sec"))
+
+
+def test_spaced_form_does_not_double_count_equals_form() -> None:
+    """'r = 18.42 ± 0.05' is matched once, not by both the '=' and spaced forms."""
+    rows = [p for p in parse_single_mags("r = 18.42 ± 0.05") if p.mag == 18.42]
+    assert len(rows) == 1
+
+
+def test_spaced_detection_rejects_redshift_as_z_mag() -> None:
+    """'z 0.215 +/- 0.001' is a redshift, not a Sloan-z mag (z<10 guard)."""
+    assert not any(p.filter == "z" for p in parse_single_mags("z 0.215 +/- 0.001"))

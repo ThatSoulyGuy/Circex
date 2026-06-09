@@ -123,7 +123,15 @@ tables without that header (e.g., a bare 3-column row block).
 **Decision:** keep the conservative behavior — the eval will report low recall
 on irregular tables, which is the headline regex-vs-LLM failure mode the PDF
 calls out.
-**Where:** `circex/extract/regex/mag_table.py` (`_looks_like_header`).
+**Partial relief (GRB 260604C flurry):** a high-precision space-separated
+single-detection recognizer (`_SPACED_DETECTION_RE`) now catches the common
+`<filter> <mag> +/- <err>` line that fixed-width tables produce (e.g.
+`Rc  23.08 +/- 0.18`), including Cousins/primed filters. The mandatory `+/-`
+keeps precision high. This recovers single-detection lines **without** parsing
+multi-row tables — the multi-row failure mode the eval depends on is unchanged.
+Trailing upper limits and per-row epochs in such tables are still not captured.
+**Where:** `circex/extract/regex/mag_table.py` (`_looks_like_header`,
+`_SPACED_DETECTION_RE`).
 
 ### Coords parser requires "RA"/"Dec" labels — **accepted**
 **Severity:** M. Many circulars write `(J2000) 12h34m56.7s -23d45m12.3s`

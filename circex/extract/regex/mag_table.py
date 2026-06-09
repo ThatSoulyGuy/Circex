@@ -49,6 +49,35 @@ _UPPER_LIMIT_RE = re.compile(
     re.VERBOSE | re.IGNORECASE,
 )
 
+# Space-separated detection, as written in fixed-width single-row tables and
+# terse prose: "Rc     23.08 +/- 0.18", "r 19.5 ± 0.05". The mandatory +/- (or
+# ±) error term after a whitespace-separated mag is a strong precision guard —
+# it distinguishes a real magnitude measurement from incidental "<letter>
+# <number>" pairs. Cousins (Rc, Ic) and primed-Sloan (r', rp) filters are
+# accepted here and normalized to their base band. This intentionally does NOT
+# parse multi-row tables (the documented regex/LLM boundary); it recovers the
+# common single-detection line the column-split parser drops.
+_SPACED_DETECTION_RE = re.compile(
+    r"""
+    (?<![A-Za-z])
+    (?P<filter>[UBVRI]c|[ugriz][p']|[UBVRIJHKgrizyuC]s?)
+    \s+
+    (?P<mag>\d{1,2}\.\d{1,3})
+    \s*(?:±|\+/-|\+/−)\s*
+    (?P<err>\d+\.\d+)
+    """,
+    re.VERBOSE,
+)
+
+
+def _normalize_filter(token: str) -> str:
+    """Strip a Cousins 'c' suffix (Rc->R) or a prime marker (r'/rp->r)."""
+    if len(token) == 2 and token[0] in "UBVRI" and token[1] == "c":
+        return token[0]
+    if len(token) == 2 and token[0] in "ugriz" and token[1] in "p'":
+        return token[0]
+    return token
+
 
 def infer_mag_system(filter_name: str) -> MagSystem | None:
     """Heuristic AB/Vega inference based on filter name conventions."""
@@ -98,6 +127,7 @@ def parse_single_mags(text: str) -> list[PhotometryExt]:
 def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     """Same as parse_single_mags, plus per-row Spans into the source text."""
     rows: list[tuple[PhotometryExt, Span]] = []
+    consumed: list[tuple[int, int]] = []  # char ranges already claimed
 
     for match in _DETECTION_RE.finditer(text):
         filter_name = match.group("filter")
@@ -107,6 +137,7 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
         if not _plausible_mag(filter_name, mag):
             continue
         err = float(match.group("err")) if match.group("err") else None
+        consumed.append((match.start(), match.end()))
         rows.append((
             PhotometryExt(
                 filter=filter_name,
@@ -114,6 +145,28 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                 mag_error=err,
                 mag_system=infer_mag_system(filter_name),
                 bandpass=infer_bandpass(filter_name),
+            ),
+            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+        ))
+
+    # Space-separated form ("Rc  23.08 +/- 0.18"). Skip ranges already matched
+    # by the '=' form above so a value isn't double-counted.
+    for match in _SPACED_DETECTION_RE.finditer(text):
+        if any(s < match.end() and match.start() < e for s, e in consumed):
+            continue
+        base = _normalize_filter(match.group("filter"))
+        if base not in _KNOWN_FILTERS:
+            continue
+        mag = float(match.group("mag"))
+        if not _plausible_mag(base, mag):
+            continue
+        rows.append((
+            PhotometryExt(
+                filter=base,
+                mag=mag,
+                mag_error=float(match.group("err")),
+                mag_system=infer_mag_system(base),
+                bandpass=infer_bandpass(base),
             ),
             Span(start=match.start(), end=match.end(), snippet=match.group(0)),
         ))

@@ -53,7 +53,7 @@ classification matcher loads.)
 ```
   circ  event        class      phot xref  subject
 ----------------------------------------------------------------------------------------------------
- 44877  GRB 260604C  GRB           0   19  GRB 260604C: further SAO RAS optical observations
+ 44877  GRB 260604C  GRB           1   19  GRB 260604C: further SAO RAS optical observations
  44822  GRB 260604C  long GRB      0    0  GRB 260604C: Fermi GBM Final Real-time Localization
  44831  GRB 260604C  GRB           0    3  GRB 260604C: Fermi GBM Observation
  44823  GRB 260604C  GRB           0    1  GRB 260604C: SVOM detection of a long burst
@@ -67,7 +67,7 @@ classification matcher loads.)
  44837  GRB 260604C  GRB           0    7  GRB 260604C: GOTO detections of the optical afterglow
  44843  GRB 260604C  GRB           1    7  GRB 260604C: Liverpool Telescope optical detection
  44851  GRB 260604C  GRB           0    7  GRB 260604C: GRANDMA observations
- 44852  GRB 260604C  GRB           0   12  GRB 260604C: SAO RAS optical observations
+ 44852  GRB 260604C  GRB           1   12  GRB 260604C: SAO RAS optical observations
  44857  GRB 260604C  GRB           0    4  GRB 260604C: OPD1.6m - GRANDMA observations - detection
  44858  GRB 260604C  GRB           0   12  GRB 260604C: Simeiz Zeiss-1000 optical observations
  44862  GRB 260604C  GRB           0   13  GRB 260604C: Mondy optical observations: evidence of ...
@@ -76,15 +76,17 @@ classification matcher loads.)
 ----------------------------------------------------------------------------------------------------
 distinct events:        ['GRB 260604C']        (consistent across all 20)
 classification hits:    18/20  — 0 garbage; all 'GRB'/'long GRB' or None
-photometry rows (regex): 10
+photometry rows (regex): 12   (was 10; the spaced-detection recognizer recovered
+                                the SAO RAS detections in #44877 and #44852)
 cross-reference union:   22 circulars
 ```
 
 `class` is now clean: every value is the tautological-but-correct `GRB`/`long
 GRB` or `None` — the 9 garbage classifications from the pre-fix run (`Overtone`,
 `Mira`, `Orion`, `FU Ori`, and the `kilonova` telescope-name match) are gone.
-`phot` shows the regex baseline's known recall gap on irregular tables (10 rows
-total; the seed's own `Rc = 23.08 ± 0.18` detection still missed — see below).
+`phot` shows the regex baseline's recall on photometry (12 rows total; the
+spaced-detection recognizer recovers the SAO RAS detections, but multi-row
+tables remain the LLM extractor's job — see below).
 `xref` is the per-circular cross-reference count; their union (22) is the event
 graph the multi-circular machinery reconstructs from any seed.
 
@@ -133,14 +135,24 @@ accepting short aliases.
 **2. Photometry recall is poor and lossy — the documented "irregular table"
 failure.**
 
-- **The seed's own detection was missed.** #44877 states
-  `Rc = 23.08 ± 0.18, UL 23.8` at `t-T0 = 4.011 d`, but the regex table parser
-  returned **0 rows**: the table has a two-line header, `Mag +/- Err` split
-  across columns, and a dotted date `2026.06.08` — exactly the layout the parser
-  is built to skip conservatively.
-- Even the hits are partial: `mag_error`/`limiting_mag` are mostly dropped, and
-  #44832's `R = 16.1` is suspect (too bright for a 4-day afterglow — likely a
-  calibration-star or coordinate misparse).
+- **The seed's own detection was originally missed.** #44877 states
+  `Rc 23.08 +/- 0.18, UL 23.8` at `t-T0 = 4.011 d`, and the multi-row table
+  parser returned **0 rows**: the table has a two-line header, `Mag +/- Err`
+  split across columns, and a dotted date `2026.06.08` — exactly the layout the
+  multi-row parser skips conservatively.
+- Even the other hits are partial: `mag_error`/`limiting_mag` are mostly
+  dropped, and #44832's `R = 16.1` is suspect (too bright for a 4-day
+  afterglow — likely a calibration-star or coordinate misparse).
+
+> **Update (partly fixed):** a surgical, high-precision recognizer for the
+> space-separated `<filter> <mag> ± <err>` measurement line (mandatory `±`, with
+> Cousins/primed filters like `Rc`) now recovers the seed's detection —
+> `R = 23.08 ± 0.18`, `bessellr`, Vega, `is_detection=True` — taking the flurry
+> from 10 to 12 photometry rows. This deliberately does **not** parse multi-row
+> tables (the documented regex/LLM eval boundary stays); it only catches the
+> single-detection line the column-split parser drops. The trailing `UL 23.8`
+> and the `t-T0` epoch are still not captured (see #3) — multi-column structure
+> is still the LLM extractor's job.
 
 **3. obs_mjd unresolved here.** No `trigger_time` was supplied, and the seed's
 `t-T0 = 4.011 d` relative epoch wasn't captured because its photometry row was
