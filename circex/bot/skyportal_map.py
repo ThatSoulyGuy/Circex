@@ -16,6 +16,11 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+from circex.extract.regex.mag_table import (
+    infer_bandpass,
+    infer_mag_system,
+    normalize_filter,
+)
 from circex.schema import CircularExtraction, PhotometryExt
 
 # mag_system (our enum) -> SkyPortal magsys (lowercase). STMag has no direct
@@ -165,6 +170,22 @@ def to_actions(
     )
 
 
+def _effective_band(row: PhotometryExt) -> tuple[str | None, str]:
+    """Canonical (bandpass, magsys) for a row.
+
+    The deterministic filter crosswalk is authoritative for recognized filters
+    and OVERRIDES the extractor's values — an LLM may mislabel a band (e.g.
+    Mistral tagging Cousins "Rc" as sdssr/ab when it is bessellr/vega). Falls
+    back to the row's own bandpass/mag_system when the filter isn't recognized.
+    """
+    base = normalize_filter(row.filter) if row.filter else None
+    band = infer_bandpass(base) if base else None
+    if band is not None:
+        system = infer_mag_system(base) if base else None
+        return band, _MAGSYS.get(system or "", "ab")
+    return row.bandpass, _MAGSYS.get(row.mag_system or "", "ab")
+
+
 def _row_to_point(
     extraction: CircularExtraction,
     obj_id: str | None,
@@ -175,11 +196,11 @@ def _row_to_point(
     """One photometry row -> a SkyPortal point, or None if unpostable.
 
     A row needs an obj_id, an obs_mjd (SkyPortal requires a time), and a
-    bandpass (filter is required). Otherwise it cannot be posted.
+    resolvable bandpass (filter is required). Otherwise it cannot be posted.
     """
-    if obj_id is None or row.obs_mjd is None or row.bandpass is None:
+    band, magsys = _effective_band(row)
+    if obj_id is None or row.obs_mjd is None or band is None:
         return None
-    magsys = _MAGSYS.get(row.mag_system or "", "ab")
     instrument_id = (
         instrument_map.get(row.telescope_canonical) if row.telescope_canonical else None
     )
@@ -192,7 +213,7 @@ def _row_to_point(
     return PhotometryPoint(
         obj_id=obj_id,
         mjd=row.obs_mjd,
-        filter=row.bandpass,
+        filter=band,
         magsys=magsys,
         instrument_id=instrument_id,
         mag=row.mag,

@@ -159,3 +159,32 @@ def test_live_post_requires_token() -> None:
     # live=True but no token -> still dry-run (returns plan, sends nothing)
     plan = SkyPortalPoster(live=True, token=None).post(to_actions(ex))
     assert isinstance(plan, list)
+
+
+def test_deterministic_band_overrides_llm_mislabel() -> None:
+    """The filter crosswalk corrects an LLM that mislabeled the band/magsys.
+
+    Mistral tagged Cousins 'Rc' as sdssr/ab; it is bessellr/vega.
+    """
+    ex = CircularExtraction(
+        circular_id=1,
+        event=Event(event_name="AT2026xyz"),
+        photometry=[PhotometryExt(filter="Rc", bandpass="sdssr", mag_system="AB",
+                                  mag=23.08, mag_error=0.18, obs_mjd=61199.83)],
+        extraction_meta=_meta(),
+    )
+    p = to_actions(ex).photometry[0].to_payload()
+    assert p["filter"] == "bessellr" and p["magsys"] == "vega"
+
+
+def test_unrecognized_filter_falls_back_to_row_bandpass() -> None:
+    """A filter the crosswalk doesn't know keeps the extractor's bandpass."""
+    ex = CircularExtraction(
+        circular_id=1,
+        event=Event(event_name="AT2026xyz"),
+        photometry=[PhotometryExt(filter="white", bandpass="ztfg", mag_system="AB",
+                                  mag=20.0, obs_mjd=61199.83)],
+        extraction_meta=_meta(),
+    )
+    p = to_actions(ex).photometry[0].to_payload()
+    assert p["filter"] == "ztfg"

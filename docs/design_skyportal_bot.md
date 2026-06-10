@@ -39,12 +39,24 @@ consumer); the mapping and poster are trigger-agnostic.
 
 ### Field conversions
 - **`magsys`**: `AB`→`ab`, `Vega`→`vega`, `STMag`→`ab` (closest; flagged).
-- **`filter`**: the `bandpass` field already holds the sncosmo name SkyPortal
-  wants (`sdssr`, `bessellr`, `2massj`, …). A row without a `bandpass` is not
-  postable as photometry (filter is required) → comment.
+- **`filter`**: the deterministic filter crosswalk (`normalize_filter` +
+  `infer_bandpass`/`infer_mag_system`) is **authoritative for recognized
+  filters and overrides the extractor's bandpass/magsys** — a weak LLM mislabels
+  bands (Mistral tagged Cousins `Rc` as `sdssr`/`ab`; it is `bessellr`/`vega`).
+  An unrecognized filter falls back to the row's own `bandpass`; a row with no
+  resolvable filter is not postable → comment.
 - **`instrument_id`**: `telescope_canonical` → SkyPortal numeric `instrument_id`
   via a caller-supplied map (ICARE's `instrument_id` table, e.g. `VT→114`,
   `COLIBRI-VIS→85`). Unmapped ⇒ `instrument_id=None` and a note; never guessed.
+
+### Extractor choice (regex vs LLM)
+On the real GRB 260604C flurry, the **regex baseline produced zero postable
+photometry** — its rows lack `obs_mjd` because the dates sit in table columns
+the parser doesn't bind to rows. The **LLM extractor (Mistral-7B via Ollama)
+reads the table date and emits a timed point** (`2026-06-08 20:01:14` →
+`mjd 61199.83`), which the bot can post. So the live bot must run an LLM
+extractor; the deterministic band crosswalk above backstops the LLM's
+calibration errors.
 
 ## Idempotency & safety
 

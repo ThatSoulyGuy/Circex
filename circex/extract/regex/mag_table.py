@@ -70,7 +70,7 @@ _SPACED_DETECTION_RE = re.compile(
 )
 
 
-def _normalize_filter(token: str) -> str:
+def normalize_filter(token: str) -> str:
     """Strip a Cousins 'c' suffix (Rc->R) or a prime marker (r'/rp->r)."""
     if len(token) == 2 and token[0] in "UBVRI" and token[1] == "c":
         return token[0]
@@ -154,7 +154,7 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     for match in _SPACED_DETECTION_RE.finditer(text):
         if any(s < match.end() and match.start() < e for s, e in consumed):
             continue
-        base = _normalize_filter(match.group("filter"))
+        base = normalize_filter(match.group("filter"))
         if base not in _KNOWN_FILTERS:
             continue
         mag = float(match.group("mag"))
