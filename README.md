@@ -603,7 +603,8 @@ references/          # 4 upstream repos, gitignored
 |---|---|
 | `circex extract` | Run one extractor over a circular set, write JSON files |
 | `circex eval` | Run extractors against gold, produce a markdown report |
-| `circex serve` | Boot the long-lived TCP worker for the 7 MCP tools |
+| `circex serve` | Boot the long-lived TCP worker for the 9 MCP tools |
+| `circex post` | Extract one circular → SkyPortal writes (dry-run by default; `--live` to post) |
 | `circex index --backfill` | Walk a circular set, extract, persist to the SQLite store |
 | `circex fetch` | Poll gcn.nasa.gov for new circulars |
 | `circex subset-build` | Build a stratified iteration subset from the optical pool |
@@ -717,6 +718,8 @@ with severity, status, and code paths. The major open items:
 - **Consistency-pass runbook (A–F)**: [`docs/consistency_passes_runbook.md`](docs/consistency_passes_runbook.md).
 - **Per-row photometry epoch (`obs_mjd`) design**: [`docs/design_obs_mjd.md`](docs/design_obs_mjd.md).
 - **Real-world flurry test (GRB 260604C, 20 circulars)**: [`docs/flurry_test_grb260604c.md`](docs/flurry_test_grb260604c.md) — what the pipeline gets right (event graph) and where it breaks (classification, irregular tables).
+- **SkyPortal poster bot design**: [`docs/design_skyportal_bot.md`](docs/design_skyportal_bot.md) — the CircularExtraction → SkyPortal mapping (driven by `circex post`).
+- **Slideshow material**: [`docs/slides_outline.md`](docs/slides_outline.md) — narrative, key numbers, diagrams, and a live-demo script.
 
 ---
 

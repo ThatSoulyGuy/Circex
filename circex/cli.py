@@ -408,6 +408,100 @@ def index(
 
 
 @app.command()
+def post(
+    circular_id: int = typer.Option(
+        0, "--circular-id", help="GCN circular id to fetch from the local archive"
+    ),
+    from_file: Path | None = typer.Option(
+        None, "--from-file", help="raw circular JSON (a Kafka message / fixture) instead of an id"
+    ),
+    extractor: str = typer.Option(
+        "ollama", "--extractor", help="regex | claude-haiku | claude-sonnet | ollama"
+    ),
+    trigger_time: str | None = typer.Option(
+        None, "--trigger-time", help="event T0 (ISO-8601) for resolving relative offsets"
+    ),
+    instrument_map: Path | None = typer.Option(
+        None, "--instrument-map", help="JSON {telescope_canonical: skyportal_instrument_id}"
+    ),
+    group_ids: str = typer.Option("", "--group-ids", help="comma-separated SkyPortal group ids"),
+    live: bool = typer.Option(
+        False, "--live", help="actually POST to SkyPortal (needs --token/--url); default dry-run"
+    ),
+    url: str = typer.Option("", "--url", help="SkyPortal API base URL (with --live)"),
+    token: str = typer.Option("", "--token", help="SkyPortal token (with --live)"),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
+) -> None:
+    """Extract one circular and map it to SkyPortal writes (dry-run by default).
+
+    Examples:
+      circex post --from-file docs/fixtures/grb260604c_44877.json --extractor ollama
+      circex post --circular-id 44877 --extractor regex
+      circex post --from-file msg.json --extractor claude-haiku --live --url ... --token ...
+    """
+
+    from circex.bot import to_actions
+    from circex.bot.poster import SkyPortalPoster, render_plan
+    from circex.extract.protocol import Circular
+
+    # ---- load the circular ----
+    if from_file is not None:
+        record = json.loads(from_file.read_text(encoding="utf-8"))
+    elif circular_id:
+        from circex.data.archive import iter_circulars
+
+        records = list(iter_circulars(circular_ids=[circular_id]))
+        if not records:
+            console.print(f"[red]circular {circular_id} not found in the local archive[/]")
+            raise typer.Exit(code=2)
+        record = records[0]
+    else:
+        raise typer.BadParameter("pass --circular-id or --from-file")
+
+    t0 = None
+    if trigger_time is not None:
+        from dateutil import parser as _dp
+
+        t0 = _dp.parse(trigger_time)
+    circular = Circular(
+        circular_id=int(record.get("circularId", circular_id) or 0),
+        subject=str(record.get("subject") or ""),
+        body=str(record.get("body") or ""),
+        event_id=record.get("eventId") or None,
+        trigger_time=t0,
+    )
+
+    # ---- extract ----
+    cache = cache_db if extractor != "regex" else None
+    extraction = _build_extractor(extractor, cache).extract(circular)
+
+    # ---- map to SkyPortal actions ----
+    imap: dict[str, int] = {}
+    if instrument_map is not None:
+        imap = {k: int(v) for k, v in json.loads(instrument_map.read_text()).items()}
+    gids = [int(g) for g in group_ids.split(",") if g.strip()]
+    actions = to_actions(extraction, instrument_map=imap, group_ids=gids)
+
+    poster = SkyPortalPoster(
+        base_url=url or "https://skyportal.example/api",
+        token=token or None,
+        live=live,
+    )
+    plan = poster.post(actions)
+
+    mode = "LIVE POST" if (live and token) else "DRY-RUN (nothing sent)"
+    console.print(f"\n[bold]circex post — {mode}[/]")
+    console.print(
+        f"extractor={extractor}  circular={circular.circular_id}  "
+        f"source={'yes' if actions.source else 'no'}  "
+        f"photometry={len(actions.photometry)}  "
+        f"redshift={'yes' if actions.redshift else 'no'}  "
+        f"comments={len(actions.comments)}  skipped_rows={actions.skipped_rows}\n"
+    )
+    console.print(render_plan(plan) or "(no actions)")
+
+
+@app.command()
 def fetch(
     since: int = typer.Option(0, "--since", help="lowest circular id to fetch"),
 ) -> None:
