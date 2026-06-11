@@ -129,8 +129,12 @@ circex post --from-file docs/fixtures/grb260604c_44877.json --extractor ollama -
 ## Slide 10 — To go live (the asks back to you)
 
 1. **A SkyPortal sandbox + token** to point `circex post --live` at.
-2. **The `instrument_id` table** (telescope_canonical → SkyPortal id) to finish
-   #5.
+2. **A generic GCN `instrument_id`** (and, optionally, ICARE's full
+   `telescope→id` table). SkyPortal *requires* an `instrument_id` per
+   photometry point; the bot already falls back to a generic one (matching
+   ICARE) so it posts everything — the table just upgrades attribution from
+   "generic GCN" to the precise instrument. (P1 #5 — the canonical *name* — is
+   already done; the id table is ICARE-owned data, not a Circex deliverable.)
 3. **Trigger:** wire a GCN Kafka consumer (vs. manual/replay for now).
 4. **Extractor for live:** run the **LLM** (timed photometry) with the
    deterministic crosswalk as the safety net. Recommend **not** posting
