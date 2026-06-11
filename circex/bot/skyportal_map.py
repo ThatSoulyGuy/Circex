@@ -114,12 +114,16 @@ def to_actions(
     extraction: CircularExtraction,
     *,
     instrument_map: dict[str, int] | None = None,
+    default_instrument_id: int | None = None,
     group_ids: list[int] | None = None,
 ) -> SkyPortalActions:
     """Build the SkyPortal write bundle for one extraction.
 
     `instrument_map` maps `telescope_canonical` -> SkyPortal instrument_id
-    (ICARE's table). Unmapped telescopes post with instrument_id=None and a note.
+    (ICARE's table). `default_instrument_id` is the generic GCN instrument used
+    when a telescope isn't in the map (matching ICARE's fall-back). SkyPortal's
+    photometry endpoint REQUIRES an instrument_id, so a row that resolves to
+    neither a mapped nor a default id cannot be posted — it becomes a comment.
     """
     instrument_map = instrument_map or {}
     group_ids = group_ids or []
@@ -136,7 +140,7 @@ def to_actions(
     skipped = 0
 
     for idx, row in enumerate(extraction.photometry):
-        point = _row_to_point(extraction, obj_id, idx, row, instrument_map)
+        point = _row_to_point(extraction, obj_id, idx, row, instrument_map, default_instrument_id)
         if point is None:
             skipped += 1
         else:
@@ -158,7 +162,8 @@ def to_actions(
     if skipped:
         comments.append(
             f"{skipped} photometry row(s) could not be posted "
-            f"(no observation time or filter); kept in the extraction only."
+            f"(missing observation time, filter, or instrument_id); "
+            f"kept in the extraction only."
         )
 
     return SkyPortalActions(
@@ -192,24 +197,28 @@ def _row_to_point(
     idx: int,
     row: PhotometryExt,
     instrument_map: dict[str, int],
+    default_instrument_id: int | None,
 ) -> PhotometryPoint | None:
     """One photometry row -> a SkyPortal point, or None if unpostable.
 
-    A row needs an obj_id, an obs_mjd (SkyPortal requires a time), and a
-    resolvable bandpass (filter is required). Otherwise it cannot be posted.
+    A row needs an obj_id, an obs_mjd, a resolvable bandpass, AND an
+    instrument_id (mapped, or the generic default) — SkyPortal requires all of
+    these. Otherwise it cannot be posted.
     """
     band, magsys = _effective_band(row)
-    if obj_id is None or row.obs_mjd is None or band is None:
+    mapped = instrument_map.get(row.telescope_canonical) if row.telescope_canonical else None
+    instrument_id = mapped if mapped is not None else default_instrument_id
+    if obj_id is None or row.obs_mjd is None or band is None or instrument_id is None:
         return None
-    instrument_id = (
-        instrument_map.get(row.telescope_canonical) if row.telescope_canonical else None
-    )
     altdata: dict[str, Any] = {}
     if (note := _provenance_note(extraction, f"photometry[{idx}]")) is not None:
         altdata["note"] = note
     altdata["circex_circular_id"] = extraction.circular_id
-    if row.telescope_canonical and instrument_id is None:
-        altdata["unmapped_telescope"] = row.telescope_canonical
+    if mapped is None:
+        # Fell back to the generic instrument; record what we actually saw.
+        altdata["instrument_fallback"] = True
+        if row.telescope:
+            altdata["telescope_as_written"] = row.telescope
     return PhotometryPoint(
         obj_id=obj_id,
         mjd=row.obs_mjd,

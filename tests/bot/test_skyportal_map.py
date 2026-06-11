@@ -83,7 +83,7 @@ def test_non_detection_maps_to_limiting_mag() -> None:
                                   mag_system="AB", obs_mjd=61199.0)],
         extraction_meta=_meta(),
     )
-    p = to_actions(ex).photometry[0].to_payload()
+    p = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()
     assert p["mag"] is None and p["limiting_mag"] == 22.5
 
 
@@ -119,22 +119,45 @@ def test_provenance_lands_in_photometry_altdata() -> None:
         provenance={"photometry[0]": Span(start=0, end=5, snippet="r=20.4")},
         extraction_meta=_meta(),
     )
-    alt = to_actions(ex).photometry[0].to_payload()["altdata"]
+    alt = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()["altdata"]
     assert alt["note"] == 'photometry[0]: "r=20.4"'
     assert alt["circex_circular_id"] == 42
 
 
-def test_unmapped_telescope_flagged_not_guessed() -> None:
-    ex = CircularExtraction(
+def _photometry_ex(telescope: str | None = None) -> CircularExtraction:
+    return CircularExtraction(
         circular_id=1,
         event=Event(event_name="AT2026xyz"),
         photometry=[PhotometryExt(filter="r", bandpass="sdssr", mag=20.4, obs_mjd=61199.0,
-                                  telescope="VLT")],
+                                  telescope=telescope)],
         extraction_meta=_meta(),
     )
-    p = to_actions(ex, instrument_map={}).photometry[0].to_payload()  # empty map
-    assert "instrument_id" not in p  # None -> omitted
-    assert p["altdata"]["unmapped_telescope"] == "VLT"
+
+
+def test_unmapped_telescope_without_default_is_not_postable() -> None:
+    """SkyPortal requires instrument_id; no map entry and no default -> not posted."""
+    a = to_actions(_photometry_ex(telescope="VLT"), instrument_map={})
+    assert a.photometry == []
+    assert a.skipped_rows == 1
+    assert any("instrument_id" in c for c in a.comments)
+
+
+def test_unmapped_telescope_uses_generic_default_and_flags_it() -> None:
+    """With a generic GCN instrument id (ICARE's fallback), the row IS postable."""
+    a = to_actions(_photometry_ex(telescope="VLT"), instrument_map={}, default_instrument_id=1)
+    assert len(a.photometry) == 1
+    p = a.photometry[0].to_payload()
+    assert p["instrument_id"] == 1
+    assert p["altdata"]["instrument_fallback"] is True
+    assert p["altdata"]["telescope_as_written"] == "VLT"
+
+
+def test_mapped_telescope_uses_its_id_no_fallback_flag() -> None:
+    a = to_actions(_photometry_ex(telescope="VLT"), instrument_map={"VLT": 42},
+                   default_instrument_id=1)
+    p = a.photometry[0].to_payload()
+    assert p["instrument_id"] == 42
+    assert "instrument_fallback" not in p["altdata"]
 
 
 def test_dry_run_poster_sends_nothing_and_plans_in_order() -> None:
@@ -146,7 +169,7 @@ def test_dry_run_poster_sends_nothing_and_plans_in_order() -> None:
         redshift=Redshift(redshift=0.5),
         extraction_meta=_meta(),
     )
-    plan = SkyPortalPoster().post(to_actions(ex))  # dry-run (no token)
+    plan = SkyPortalPoster().post(to_actions(ex, default_instrument_id=1))  # dry-run
     methods = [(r["method"], r["path"]) for r in plan]
     assert methods[0] == ("POST", "/sources")
     assert ("POST", "/photometry") in methods
@@ -173,7 +196,7 @@ def test_deterministic_band_overrides_llm_mislabel() -> None:
                                   mag=23.08, mag_error=0.18, obs_mjd=61199.83)],
         extraction_meta=_meta(),
     )
-    p = to_actions(ex).photometry[0].to_payload()
+    p = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()
     assert p["filter"] == "bessellr" and p["magsys"] == "vega"
 
 
@@ -186,5 +209,5 @@ def test_unrecognized_filter_falls_back_to_row_bandpass() -> None:
                                   mag=20.0, obs_mjd=61199.83)],
         extraction_meta=_meta(),
     )
-    p = to_actions(ex).photometry[0].to_payload()
+    p = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()
     assert p["filter"] == "ztfg"

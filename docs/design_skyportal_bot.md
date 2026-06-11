@@ -45,9 +45,15 @@ consumer); the mapping and poster are trigger-agnostic.
   bands (Mistral tagged Cousins `Rc` as `sdssr`/`ab`; it is `bessellr`/`vega`).
   An unrecognized filter falls back to the row's own `bandpass`; a row with no
   resolvable filter is not postable → comment.
-- **`instrument_id`**: `telescope_canonical` → SkyPortal numeric `instrument_id`
-  via a caller-supplied map (ICARE's `instrument_id` table, e.g. `VT→114`,
-  `COLIBRI-VIS→85`). Unmapped ⇒ `instrument_id=None` and a note; never guessed.
+- **`instrument_id`** (SkyPortal **requires** this for photometry):
+  `telescope_canonical` → numeric `instrument_id` via a caller-supplied map
+  (ICARE's `instrument_id` table, e.g. `VT→114`, `COLIBRI-VIS→85`). A telescope
+  not in the map falls back to `default_instrument_id` — the **generic GCN
+  instrument** ICARE already uses — and the point is flagged
+  (`altdata.instrument_fallback=true`, `telescope_as_written`). A row with
+  **neither a mapped nor a default id is not postable** (SkyPortal would reject
+  it) → it becomes a comment. So Circex's job (P1 #5) is to emit the canonical
+  *name*; the name→id table and the generic fallback id are ICARE-owned inputs.
 
 ### Extractor choice (regex vs LLM)
 On the real GRB 260604C flurry, the **regex baseline produced zero postable

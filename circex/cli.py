@@ -424,6 +424,10 @@ def post(
     instrument_map: Path | None = typer.Option(
         None, "--instrument-map", help="JSON {telescope_canonical: skyportal_instrument_id}"
     ),
+    default_instrument_id: int | None = typer.Option(
+        None, "--default-instrument-id",
+        help="generic GCN instrument id for unmapped telescopes (SkyPortal requires one)",
+    ),
     group_ids: str = typer.Option("", "--group-ids", help="comma-separated SkyPortal group ids"),
     live: bool = typer.Option(
         False, "--live", help="actually POST to SkyPortal (needs --token/--url); default dry-run"
@@ -480,7 +484,12 @@ def post(
     if instrument_map is not None:
         imap = {k: int(v) for k, v in json.loads(instrument_map.read_text()).items()}
     gids = [int(g) for g in group_ids.split(",") if g.strip()]
-    actions = to_actions(extraction, instrument_map=imap, group_ids=gids)
+    actions = to_actions(
+        extraction,
+        instrument_map=imap,
+        default_instrument_id=default_instrument_id,
+        group_ids=gids,
+    )
 
     poster = SkyPortalPoster(
         base_url=url or "https://skyportal.example/api",
