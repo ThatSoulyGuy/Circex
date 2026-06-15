@@ -1,0 +1,56 @@
+{
+  "circular_id": 44877,
+  "event": {
+    "event_name": "GRB 260604C",
+    "id": null,
+    "data_archive_page": null
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "trigger_time": null,
+    "trigger_time_error": null,
+    "observation_start": "2026-06-08T20:01:14Z",
+    "observation_stop": "2026-06-08T21:07:58Z",
+    "observation_livetime": null
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "Rc",
+      "bandpass": "sdssr",
+      "mag": 23.08,
+      "mag_error": 0.18,
+      "mag_system": null,
+      "limiting_mag": null,
+      "limiting_mag_sigma": null,
+      "obs_mjd": 61199.834189814814,
+      "obs_time": "2026-06-08T20:01:14Z",
+      "telescope": "SAO RAS",
+      "telescope_canonical": null,
+      "instrument": "Zeiss-1000 1-m telescope",
+      "instrument_canonical": null,
+      "calibration_reference": null,
+      "galactic_extinction_corrected": null,
+      "seeing": null,
+      "airmass": null,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "ollama:mistral:7b-instruct-v0.2-q4_K_M",
+    "model_id": "mistral:7b-instruct-v0.2-q4_K_M",
+    "prompt_version": "2026-06-04",
+    "tokens_in": null,
+    "tokens_out": null,
+    "latency_ms": 27325.00162499491,
+    "cost_usd": null,
+    "cache_hit": false,
+    "notes": []
+  }
+}

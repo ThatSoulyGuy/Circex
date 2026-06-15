@@ -1,0 +1,88 @@
+{
+  "circular_id": 44877,
+  "event": {
+    "event_name": "GRB 260604C",
+    "id": null,
+    "data_archive_page": null
+  },
+  "follow_up": {
+    "ref_type": null,
+    "ref_instrument": null,
+    "ref_ID": null,
+    "reference": {
+      "gcn_circulars": "44822,44831,44823,44854,44827,44828,44836,44832,44834,44835,44837,44843,44851,44852,44857,44858,44862,44865,44873"
+    }
+  },
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "bandpass": "bessellr",
+      "mag": 23.08,
+      "mag_error": 0.18,
+      "mag_system": "Vega",
+      "limiting_mag": null,
+      "limiting_mag_sigma": null,
+      "obs_mjd": null,
+      "obs_time": null,
+      "telescope": null,
+      "telescope_canonical": null,
+      "instrument": null,
+      "instrument_canonical": null,
+      "calibration_reference": null,
+      "galactic_extinction_corrected": null,
+      "seeing": null,
+      "airmass": null,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": {
+    "classification": "GRB",
+    "subtype": null,
+    "confidence": null,
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "GRB"
+    ]
+  },
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 174,
+      "end": 185,
+      "snippet": "GRB 260604C"
+    },
+    "follow_up": {
+      "start": 227,
+      "end": 875,
+      "snippet": "GCN 44822; Neights & Meegan, GCN 44831);\nSVOM (Gotz et al., GCN 44823) and GECAM-B (Luo et al., GCN 44854)\nwith the Zeiss-1000 1-m telescope of SAO RAS equipped with the CCD\nphotometer. We obtained 12 x 300 sec. images in Rc band on June 08,\n20:01:14--21:07:58 UT.\n\nThe OT (Lipunov, GCN 44827; Konno et al., GCN 44828; GCN 44836;\nZhu et al., GCN 44832; Becerra et al., GCN 44834; Hellot et al.,\nGCN 44835; Gompertz et al., GCN 44837; Gompertz et al., GCN 44843;\nChen et al., GCN 44851; Moskvitin et al., GCN 44852; Sasaki et al.,\nGCN 44857; Pankov et al., GCN 44858; Pankov et al., GCN 44862;\nBurkhonov et al., GCN 44865; Lincetto et al., GCN 44873"
+    },
+    "photometry[0]": {
+      "start": 1108,
+      "end": 1129,
+      "snippet": "Rc     23.08 +/- 0.18"
+    },
+    "classification": {
+      "start": 124,
+      "end": 127,
+      "snippet": "GRB"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "regex-v1",
+    "model_id": null,
+    "prompt_version": null,
+    "tokens_in": null,
+    "tokens_out": null,
+    "latency_ms": 61.513249995186925,
+    "cost_usd": null,
+    "cache_hit": false,
+    "notes": []
+  }
+}

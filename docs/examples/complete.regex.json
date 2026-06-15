@@ -1,0 +1,135 @@
+{
+  "circular_id": 99001,
+  "event": {
+    "event_name": "AT2026xyz",
+    "id": null,
+    "data_archive_page": null
+  },
+  "follow_up": {
+    "ref_type": null,
+    "ref_instrument": null,
+    "ref_ID": null,
+    "reference": {
+      "gcn_circulars": "12345"
+    }
+  },
+  "localization": {
+    "ra": 224.512,
+    "dec": 28.804,
+    "ra_dec_error": null,
+    "containment_probability": null,
+    "systematic_included": null,
+    "instrument_phi": null,
+    "instrument_theta": null,
+    "instrument_semimajor_angle": null,
+    "healpix_url": null
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "r",
+      "bandpass": "sdssr",
+      "mag": 20.42,
+      "mag_error": 0.05,
+      "mag_system": "AB",
+      "limiting_mag": null,
+      "limiting_mag_sigma": null,
+      "obs_mjd": 61201.0,
+      "obs_time": "2026-06-10T00:00:00Z",
+      "telescope": null,
+      "telescope_canonical": null,
+      "instrument": null,
+      "instrument_canonical": null,
+      "calibration_reference": null,
+      "galactic_extinction_corrected": null,
+      "seeing": null,
+      "airmass": null,
+      "is_detection": true
+    },
+    {
+      "filter": "g",
+      "bandpass": "sdssg",
+      "mag": 21.1,
+      "mag_error": 0.07,
+      "mag_system": "AB",
+      "limiting_mag": null,
+      "limiting_mag_sigma": null,
+      "obs_mjd": 61201.0,
+      "obs_time": "2026-06-10T00:00:00Z",
+      "telescope": null,
+      "telescope_canonical": null,
+      "instrument": null,
+      "instrument_canonical": null,
+      "calibration_reference": null,
+      "galactic_extinction_corrected": null,
+      "seeing": null,
+      "airmass": null,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": {
+    "classification": "Ia",
+    "subtype": null,
+    "confidence": null,
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ia"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.512,
+    "redshift_error": null,
+    "redshift_measure": "photometric",
+    "redshift_type": "host"
+  },
+  "reporter": null,
+  "provenance": {
+    "follow_up": {
+      "start": 345,
+      "end": 354,
+      "snippet": "GCN 12345"
+    },
+    "localization": {
+      "start": 98,
+      "end": 125,
+      "snippet": "RA = 224.512, Dec = +28.804"
+    },
+    "photometry[0]": {
+      "start": 207,
+      "end": 243,
+      "snippet": "2026-06-10    r        20.42    0.05"
+    },
+    "photometry[1]": {
+      "start": 244,
+      "end": 280,
+      "snippet": "2026-06-10    g        21.10    0.07"
+    },
+    "redshift": {
+      "start": 315,
+      "end": 324,
+      "snippet": "z = 0.512"
+    },
+    "classification": {
+      "start": 84,
+      "end": 86,
+      "snippet": "Ia"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "regex-v1",
+    "model_id": null,
+    "prompt_version": null,
+    "tokens_in": null,
+    "tokens_out": null,
+    "latency_ms": 43.90145797515288,
+    "cost_usd": null,
+    "cache_hit": false,
+    "notes": []
+  }
+}

@@ -556,7 +556,8 @@ downstream consumer can collapse to a coarser campaign class by walking up
 the path without re-loading the taxonomy.
 
 JSON Schema artifacts for the upstream `nasa-gcn/gcn-schema` PR are dumped to
-`schemas/` via `circex schema-dump`.
+`schemas/` via `circex schema-dump`. **Example populated outputs** are in
+[`docs/examples/`](docs/examples) (regex + Ollama, with a field tour).
 
 **Versioning (pin against this).** Each dumped schema carries a semver
 `version` field, and `schemas/VERSION` is the single source of truth
