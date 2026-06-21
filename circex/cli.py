@@ -511,6 +511,67 @@ def post(
 
 
 @app.command()
+def annotate(
+    from_file: Path | None = typer.Option(
+        None, "--from-file", help="one raw circular JSON to annotate"
+    ),
+    circulars_dir: Path | None = typer.Option(
+        None, "--circulars-dir", help="folder of raw circular JSONs (batch mode)"
+    ),
+    extractor: str = typer.Option(
+        "regex", "--extractor", help="regex | claude-haiku | claude-sonnet | ollama"
+    ),
+    out: Path | None = typer.Option(
+        None, "--out", help="output file (single) or directory (batch); stdout if omitted"
+    ),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
+) -> None:
+    """Emit a flat {field: {value, snippet, start, end}} map per circular.
+
+    For snippet-level human validation: every extracted value is paired with the
+    source-text snippet it came from. Single circular to stdout, or batch a
+    folder into `<out>/<circular_id>.json` (the layout gcn-nlp-label expects).
+
+      circex annotate --from-file docs/fixtures/grb260604c_44877.json
+      circex annotate --circulars-dir circulars/ --extractor ollama --out extracted_circulars/
+    """
+    from circex.extract.protocol import Circular
+    from circex.label import to_label_fields
+
+    def _annotate_record(record: dict[str, object]) -> tuple[int, str]:
+        circ = Circular(
+            circular_id=int(str(record.get("circularId") or 0)),
+            subject=str(record.get("subject") or ""),
+            body=str(record.get("body") or ""),
+            event_id=record.get("eventId") or None,  # type: ignore[arg-type]
+        )
+        ext = _build_extractor(extractor, cache_db if extractor != "regex" else None)
+        fields = to_label_fields(ext.extract(circ))
+        return circ.circular_id, json.dumps(fields, indent=2, ensure_ascii=False) + "\n"
+
+    if from_file is not None:
+        _, text = _annotate_record(json.loads(from_file.read_text(encoding="utf-8")))
+        if out is not None:
+            out.write_text(text, encoding="utf-8")
+            console.print(f"[green]wrote[/] {out}")
+        else:
+            console.print(text)
+    elif circulars_dir is not None:
+        if out is None:
+            console.print("[red]--out <dir> is required in batch mode[/]")
+            raise typer.Exit(code=2)
+        out.mkdir(parents=True, exist_ok=True)
+        n = 0
+        for src in sorted(circulars_dir.glob("*.json")):
+            cid, text = _annotate_record(json.loads(src.read_text(encoding="utf-8")))
+            (out / f"{cid}.json").write_text(text, encoding="utf-8")
+            n += 1
+        console.print(f"[green]wrote {n} annotated files to {out}[/]")
+    else:
+        raise typer.BadParameter("pass --from-file or --circulars-dir")
+
+
+@app.command()
 def fetch(
     since: int = typer.Option(0, "--since", help="lowest circular id to fetch"),
 ) -> None:

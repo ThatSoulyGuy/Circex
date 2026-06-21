@@ -9,6 +9,30 @@ circular. Every extractor (regex / Claude / Ollama) emits this same shape
 | [`complete.regex.json`](complete.regex.json) | a clean synthetic circular | regex | the **full populated schema** — event, localization (RA/Dec), dated photometry (`obs_mjd`, `bandpass`, `is_detection`, `mag_error`, `mag_system`), classification + `taxonomy_path`, redshift, `provenance`, `follow_up` |
 | [`grb260604c_44877.regex.json`](grb260604c_44877.regex.json) | a real circular ([#44877](https://gcn.nasa.gov/circulars/44877)) | regex | real-world output: the event, the 19-circular cross-reference graph (`follow_up`), one recovered detection, and `provenance` spans |
 | [`grb260604c_44877.ollama.json`](grb260604c_44877.ollama.json) | the same real circular | Ollama / Mistral-7B | the LLM reads the table date → a **timed** photometry point (`obs_mjd`), which regex can't bind from that table layout |
+| [`grb260604c_44877.annotated.json`](grb260604c_44877.annotated.json) | the same real circular | regex | the **value↔snippet** view for human validation — every field paired with the source snippet it came from |
+
+## Snippet-paired output (for validation UIs)
+
+`circex annotate` flattens an extraction into a per-field map where each value
+is paired with the source-text **snippet** (and char offsets) it came from —
+made for snippet-level human validation:
+
+```json
+{
+  "event.event_name":   { "value": "AT2026xyz", "snippet": "AT2026xyz", "start": 0, "end": 9 },
+  "localization.ra":    { "value": "224.512", "snippet": "RA = 224.512, Dec = +28.804", "start": 98, "end": 125 },
+  "redshift.redshift":  { "value": "0.512", "snippet": "z = 0.512", "start": 315, "end": 324 },
+  "photometry[0].mag":  { "value": "20.42", "snippet": "2026-06-10  r  20.42  0.05", "start": 207, "end": 243 }
+}
+```
+
+`snippet` is `null` when the extractor recorded no span for a field. A consumer
+that wants only the value reads `.value`; a validation UI shows `.snippet`.
+
+```bash
+circex annotate --from-file <circular.json> --extractor regex         # one, to stdout
+circex annotate --circulars-dir circulars/ --extractor ollama --out extracted/   # batch -> extracted/<id>.json
+```
 
 ## Field tour (see `complete.regex.json`)
 
