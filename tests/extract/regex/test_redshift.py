@@ -106,3 +106,13 @@ def test_still_extracts_source_photoz() -> None:
     r = parse_redshift("The afterglow colours imply a photometric redshift z = 0.5.")
     assert r is not None
     assert r.redshift == 0.5
+
+
+def test_zband_magnitude_is_not_a_redshift() -> None:
+    """'z = 19.21 +/- 0.06' is a Sloan z-band magnitude, not a redshift (GCN 44834)."""
+    assert parse_redshift("z = 19.21 +/- 0.06") is None
+
+
+def test_high_but_plausible_redshift_still_parses() -> None:
+    r = parse_redshift("The GRB is at a spectroscopic z = 8.2.")
+    assert r is not None and r.redshift == 8.2

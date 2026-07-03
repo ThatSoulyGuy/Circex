@@ -27,7 +27,7 @@ from circex.extract.regex.regex_events import (
     extract_gcn_xrefs_with_positions,
     extract_matches_with_positions,
 )
-from circex.extract.timing import resolve_relative_epochs
+from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
 from circex.schema import (
     CircularExtraction,
     Event,
@@ -163,4 +163,7 @@ class RegexExtractor(Extractor):
         # Fill obs_mjd/obs_time on rows lacking an absolute epoch from T0 + a
         # single relative offset (no-op when trigger_time is None).
         resolve_relative_epochs(extraction, circular.trigger_time)
+        # Fallback for prose photometry lists: if every row is still untimed, bind
+        # a single observation datetime stated in the body to all rows.
+        resolve_observation_epoch(extraction, body)
         return extraction

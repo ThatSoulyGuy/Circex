@@ -30,6 +30,10 @@ _Z_BOUND_RE = re.compile(
 # Context-window heuristics. Search ±200 chars around the redshift match.
 _CONTEXT_WINDOW = 200
 
+# A real redshift is well below this; a "z = 19.21" match is the Sloan z-band
+# MAGNITUDE, not a redshift (the highest known spectroscopic redshifts are ~11).
+_MAX_PLAUSIBLE_Z = 12.0
+
 # A redshift can belong to a *nearby, explicitly-unassociated* object (typically a
 # catalog galaxy offset from the transient) rather than to the transient itself —
 # e.g. 44834's "red galaxy ... at 18.9\" from the optical counterpart ... photo-z =
@@ -98,6 +102,8 @@ def parse_redshift_with_span(text: str) -> tuple[Redshift, Span] | None:
         return None
 
     z = float(match.group(1))
+    if z >= _MAX_PLAUSIBLE_Z:
+        return None  # a "z = 19.21" match is a z-band magnitude, not a redshift
     err: float | None = None
     if _Z_RE.match(match.group(0)) is not None:
         try:

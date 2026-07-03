@@ -170,3 +170,33 @@ def test_spaced_form_does_not_double_count_equals_form() -> None:
 def test_spaced_detection_rejects_redshift_as_z_mag() -> None:
     """'z 0.215 +/- 0.001' is a redshift, not a Sloan-z mag (z<10 guard)."""
     assert not any(p.filter == "z" for p in parse_single_mags("z 0.215 +/- 0.001"))
+
+
+def test_slashed_plus_minus_error_is_parsed() -> None:
+    """'g = 19.69 +/- 0.04' — the +/- error form must populate mag_error (GCN 44834)."""
+    from circex.extract.regex.mag_table import parse_single_mags
+
+    rows = parse_single_mags("We detected the counterpart at g = 19.69 +/- 0.04.")
+    assert len(rows) == 1
+    assert rows[0].mag == 19.69
+    assert rows[0].mag_error == 0.04
+
+
+def test_excludes_nearby_galaxy_photometry() -> None:
+    """A nearby galaxy's magnitudes must NOT be extracted as transient photometry (GCN 44834)."""
+    from circex.extract.regex.mag_table import parse_single_mags
+
+    text = (
+        "The counterpart is at r = 19.56 +/- 0.03. We also notice a red galaxy with "
+        "g = 21.69 +/- 0.02, r = 20.15 +/- 0.01, z = 19.10 +/- 0.01 at 18.9 arcsec offset."
+    )
+    rows = parse_single_mags(text)
+    mags = sorted(p.mag for p in rows if p.mag is not None)
+    assert mags == [19.56]  # only the transient's r-band, none of the galaxy's
+
+
+def test_reference_star_photometry_excluded() -> None:
+    from circex.extract.regex.mag_table import parse_single_mags
+
+    rows = parse_single_mags("OT at R = 20.1 +/- 0.1. The comparison star has R = 15.3 +/- 0.02.")
+    assert sorted(p.mag for p in rows if p.mag is not None) == [20.1]

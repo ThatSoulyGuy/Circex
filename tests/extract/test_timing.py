@@ -181,3 +181,45 @@ def test_regex_relative_unresolved_without_trigger_time() -> None:
     body = "We observed at T+1 h and measured r = 19.5 mag."
     r = RegexExtractor().extract(Circular(circular_id=3, subject="", body=body))
     assert all(p.obs_mjd is None for p in r.photometry)
+
+
+# ---- parse_observation_epoch / resolve_observation_epoch ----
+
+
+def test_parse_observation_epoch_from_prose() -> None:
+    from circex.extract.timing import parse_observation_epoch
+
+    pair = parse_observation_epoch("We observed from 2026-06-05 03:41 to 03:51 UTC.")
+    assert pair is not None
+    mjd, iso = pair
+    assert iso.startswith("2026-06-05T03:41")
+
+
+def test_resolve_observation_epoch_backfills_untimed_prose_rows() -> None:
+    from circex.extract.timing import resolve_observation_epoch
+
+    ex = CircularExtraction(
+        circular_id=44834,
+        photometry=[PhotometryExt(filter="g", mag=19.69), PhotometryExt(filter="r", mag=19.56)],
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    resolve_observation_epoch(ex, "We observed on 2026-06-05 03:41 UTC and obtained griz.")
+    assert all(p.obs_mjd is not None for p in ex.photometry)
+    assert ex.photometry[0].obs_mjd == ex.photometry[1].obs_mjd
+    assert any("observation epoch" in n for n in ex.extraction_meta.notes)
+
+
+def test_resolve_observation_epoch_does_not_clobber_timed_rows() -> None:
+    from circex.extract.timing import resolve_observation_epoch
+
+    ex = CircularExtraction(
+        circular_id=1,
+        photometry=[
+            PhotometryExt(filter="g", mag=19.0, obs_mjd=60000.0),
+            PhotometryExt(filter="r", mag=19.5),
+        ],
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    resolve_observation_epoch(ex, "observed on 2026-06-05 03:41 UTC")
+    assert ex.photometry[0].obs_mjd == 60000.0  # any-timed guard: leave all as-is
+    assert ex.photometry[1].obs_mjd is None

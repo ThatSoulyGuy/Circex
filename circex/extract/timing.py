@@ -14,6 +14,7 @@ result is safe.
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 
 from astropy.time import Time
@@ -92,6 +93,55 @@ def epoch_from_offset(
     base = trigger_time if trigger_time.tzinfo else trigger_time.replace(tzinfo=UTC)
     mjd = float(Time(base.astimezone(UTC)).mjd) + (value * seconds) / 86400.0
     return _to_pair(mjd)
+
+
+# An absolute observation datetime stated in prose, near observation language:
+# "We observed from 2026-06-05 03:41 to 03:51 UTC", "images obtained on
+# 2026-06-08 20:01". Captures the first datetime that follows an observation verb.
+_OBS_EPOCH_RE = re.compile(
+    r"(?:observ|imag|obtain|acquir|expos|integrat)\w*[^.\n]{0,60}?"
+    r"(\d{4}[-.]\d{2}[-.]\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?)",
+    re.IGNORECASE,
+)
+
+
+def parse_observation_epoch(text: str) -> tuple[float, str] | None:
+    """First absolute observation datetime stated in prose, as (obs_mjd, obs_time).
+
+    Looks for a calendar datetime immediately following observation language
+    ("observed ... 2026-06-05 03:41"). Used to time prose photometry lists whose
+    epoch lives in a separate sentence rather than a per-row column. None if none.
+    """
+    match = _OBS_EPOCH_RE.search(text)
+    if match is None:
+        return None
+    return epoch_from_absolute(match.group(1))
+
+
+def resolve_observation_epoch(extraction: CircularExtraction, body: str) -> None:
+    """Backfill a single circular-level observation epoch onto untimed rows, in place.
+
+    For prose photometry lists ("g = 19.69 +/- 0.04", magnitudes on their own
+    lines) the observation time is stated once, in a separate sentence, not per
+    row. When EVERY photometry row lacks an epoch and the body states one
+    observation datetime, apply it to all rows. Guarded to all-untimed so a
+    partially-dated table is never clobbered; notes the inference for the record.
+    """
+    if not extraction.photometry:
+        return
+    if any(r.obs_mjd is not None or r.obs_time is not None for r in extraction.photometry):
+        return
+    pair = parse_observation_epoch(body)
+    if pair is None:
+        return
+    mjd, iso = pair
+    for row in extraction.photometry:
+        row.obs_mjd = mjd
+        row.obs_time = iso
+    extraction.extraction_meta.notes.append(
+        f"observation epoch {iso} (single circular-level time) applied to all "
+        f"{len(extraction.photometry)} photometry row(s)"
+    )
 
 
 def resolve_relative_epochs(

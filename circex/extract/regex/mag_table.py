@@ -33,7 +33,7 @@ _DETECTION_RE = re.compile(
     (?P<filter>[UBVRIJHKgrizyuC]s?)         # filter
     \s*[=~]\s*
     (?P<mag>\d{1,2}\.\d{1,3})              # magnitude
-    (?:\s*[±+\-]\s*(?P<err>\d+\.\d+))?     # optional error
+    (?:\s*(?:±|\+/[-−]|[+\-])\s*(?P<err>\d+\.\d+))?   # optional error (±, +/-, +/−)
     """,
     re.VERBOSE,
 )
@@ -119,6 +119,35 @@ def _plausible_mag(filter_name: str, mag: float) -> bool:
     return not (filter_name == "z" and mag < 10.0)
 
 
+# Clauses describing a NON-transient object — a nearby/host galaxy, a reference or
+# comparison star — can state magnitudes that are not the transient's (e.g. 44834's
+# "a red galaxy with g = 21.69 ..."). Photometry inside such a clause is excluded.
+_CONTAMINANT_RE = re.compile(
+    r"red\s+galaxy|host\s+galaxy|nearby\s+galaxy|underlying\s+galaxy"
+    r"|background\s+galaxy|foreground\s+galaxy"
+    r"|reference\s+star|comparison\s+star|calibration\s+star|field\s+star|nearby\s+star",
+    re.IGNORECASE,
+)
+
+
+def _contaminant_ranges(text: str) -> list[tuple[int, int]]:
+    """Char ranges of clauses about non-transient objects (galaxy / reference star).
+
+    Each runs from the contaminant phrase to the end of its sentence, so
+    magnitudes attributed to that object are dropped from the transient's photometry.
+    """
+    ranges: list[tuple[int, int]] = []
+    for m in _CONTAMINANT_RE.finditer(text):
+        end_match = re.search(r"\.(?:\s|$)", text[m.start():])
+        end = m.start() + end_match.end() if end_match else len(text)
+        ranges.append((m.start(), end))
+    return ranges
+
+
+def _in_ranges(pos: int, ranges: list[tuple[int, int]]) -> bool:
+    return any(s <= pos < e for s, e in ranges)
+
+
 def parse_single_mags(text: str) -> list[PhotometryExt]:
     """Extract single-row magnitude mentions ('r = 18.42 ± 0.05', 'R > 22.5')."""
     return [p for p, _ in parse_single_mags_with_spans(text)]
@@ -128,10 +157,13 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     """Same as parse_single_mags, plus per-row Spans into the source text."""
     rows: list[tuple[PhotometryExt, Span]] = []
     consumed: list[tuple[int, int]] = []  # char ranges already claimed
+    excluded = _contaminant_ranges(text)  # non-transient (galaxy / ref-star) clauses
 
     for match in _DETECTION_RE.finditer(text):
         filter_name = match.group("filter")
         if filter_name not in _KNOWN_FILTERS:
+            continue
+        if _in_ranges(match.start(), excluded):
             continue
         mag = float(match.group("mag"))
         if not _plausible_mag(filter_name, mag):
@@ -154,6 +186,8 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     for match in _SPACED_DETECTION_RE.finditer(text):
         if any(s < match.end() and match.start() < e for s, e in consumed):
             continue
+        if _in_ranges(match.start(), excluded):
+            continue
         base = normalize_filter(match.group("filter"))
         if base not in _KNOWN_FILTERS:
             continue
@@ -174,6 +208,8 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     for match in _UPPER_LIMIT_RE.finditer(text):
         filter_name = match.group("filter")
         if filter_name not in _KNOWN_FILTERS:
+            continue
+        if _in_ranges(match.start(), excluded):
             continue
         limit = float(match.group("limit"))
         sigma = float(match.group("sigma")) if match.group("sigma") else None
