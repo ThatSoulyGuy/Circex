@@ -40,9 +40,12 @@ def test_prefers_optical_at_name_for_obj_id() -> None:
     ex = CircularExtraction(
         circular_id=1,
         event=Event(event_name=["GW170817", "AT2017gfo"]),
+        localization=Localization(ra=197.45, dec=-23.38),
         extraction_meta=_meta(),
     )
-    assert to_actions(ex).source.id == "AT2017gfo"
+    source = to_actions(ex).source
+    assert source is not None
+    assert source.id == "AT2017gfo"
 
 
 def test_timed_photometry_becomes_a_point() -> None:
@@ -211,3 +214,47 @@ def test_unrecognized_filter_falls_back_to_row_bandpass() -> None:
     )
     p = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()
     assert p["filter"] == "ztfg"
+
+
+def test_no_positionless_source_create() -> None:
+    """A named event with no RA/Dec must NOT emit a source-create (SkyPortal 400s)."""
+    ex = CircularExtraction(
+        circular_id=44877,
+        event=Event(event_name="GRB 260604C"),
+        extraction_meta=_meta(),
+    )
+    a = to_actions(ex)
+    assert a.source is None
+    assert any("not created" in c and "RA/Dec" in c for c in a.comments)
+
+
+def test_detection_without_limit_backfills_limiting_mag() -> None:
+    """SkyPortal requires a non-null limiting_mag; fall back to the detection mag, flagged."""
+    ex = CircularExtraction(
+        circular_id=44834,
+        event=Event(event_name="GRB 260604C"),
+        localization=Localization(ra=224.4566, dec=28.8175),
+        photometry=[
+            PhotometryExt(filter="g", mag=19.69, mag_error=0.04, obs_mjd=61200.15)
+        ],
+        extraction_meta=_meta(),
+    )
+    a = to_actions(ex, default_instrument_id=4)
+    assert len(a.photometry) == 1
+    p = a.photometry[0].to_payload()
+    assert p["limiting_mag"] == 19.69
+    assert p["mag"] == 19.69
+    assert a.photometry[0].altdata.get("limiting_mag_assumed") is True
+
+
+def test_row_with_neither_mag_nor_limit_is_unpostable() -> None:
+    ex = CircularExtraction(
+        circular_id=1,
+        event=Event(event_name="GRB 260604C"),
+        localization=Localization(ra=1.0, dec=2.0),
+        photometry=[PhotometryExt(filter="g", obs_mjd=61200.0)],
+        extraction_meta=_meta(),
+    )
+    a = to_actions(ex, default_instrument_id=4)
+    assert a.photometry == []
+    assert a.skipped_rows == 1

@@ -133,11 +133,21 @@ def to_actions(
     ra = loc.ra if loc is not None else None
     dec = loc.dec if loc is not None else None
 
-    source = SourceUpsert(id=obj_id, ra=ra, dec=dec, group_ids=group_ids) if obj_id else None
-
     photometry: list[PhotometryPoint] = []
     comments: list[str] = []
     skipped = 0
+
+    # A NEW SkyPortal source requires ra/dec. A follow-up circular usually has no
+    # position (it lives in the discovery circular), so guard against emitting a
+    # positionless source-create that SkyPortal would reject with a 400.
+    source: SourceUpsert | None = None
+    if obj_id is not None and ra is not None and dec is not None:
+        source = SourceUpsert(id=obj_id, ra=ra, dec=dec, group_ids=group_ids)
+    elif obj_id is not None:
+        comments.append(
+            f"Source {obj_id} not created: no RA/Dec in this circular "
+            f"(position comes from the discovery circular)."
+        )
 
     for idx, row in enumerate(extraction.photometry):
         point = _row_to_point(extraction, obj_id, idx, row, instrument_map, default_instrument_id)
@@ -210,6 +220,19 @@ def _row_to_point(
     instrument_id = mapped if mapped is not None else default_instrument_id
     if obj_id is None or row.obs_mjd is None or band is None or instrument_id is None:
         return None
+
+    # SkyPortal's photometry endpoint REQUIRES a non-null limiting_mag for
+    # mag-space points. Circulars often report a detection with no explicit
+    # per-point limit, so fall back to the detection mag itself — a conservative,
+    # truthful depth floor (the field was seen at least this faint) — and flag it.
+    limiting_mag = row.limiting_mag
+    limit_assumed = False
+    if limiting_mag is None:
+        if row.mag is None:
+            return None  # neither a detection nor a stated limit — nothing to post
+        limiting_mag = row.mag
+        limit_assumed = True
+
     altdata: dict[str, Any] = {}
     if (note := _provenance_note(extraction, f"photometry[{idx}]")) is not None:
         altdata["note"] = note
@@ -219,6 +242,8 @@ def _row_to_point(
         altdata["instrument_fallback"] = True
         if row.telescope:
             altdata["telescope_as_written"] = row.telescope
+    if limit_assumed:
+        altdata["limiting_mag_assumed"] = True
     return PhotometryPoint(
         obj_id=obj_id,
         mjd=row.obs_mjd,
@@ -227,6 +252,6 @@ def _row_to_point(
         instrument_id=instrument_id,
         mag=row.mag,
         magerr=row.mag_error,
-        limiting_mag=row.limiting_mag,
+        limiting_mag=limiting_mag,
         altdata=altdata,
     )

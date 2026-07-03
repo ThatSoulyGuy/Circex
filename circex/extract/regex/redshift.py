@@ -30,6 +30,20 @@ _Z_BOUND_RE = re.compile(
 # Context-window heuristics. Search ±200 chars around the redshift match.
 _CONTEXT_WINDOW = 200
 
+# A redshift can belong to a *nearby, explicitly-unassociated* object (typically a
+# catalog galaxy offset from the transient) rather than to the transient itself —
+# e.g. 44834's "red galaxy ... at 18.9\" from the optical counterpart ... photo-z =
+# 0.343 ... association very unlikely". Grabbing that z would post a wrong redshift.
+# If the context around the match carries an offset/association-doubt cue, skip it.
+_NEARBY_OBJECT_RE = re.compile(
+    r"association\s+(?:is\s+)?(?:very\s+)?unlikely"
+    r"|unlikely\s+to\s+be\s+associated"
+    r"|\bP_?cc\b"  # chance-coincidence probability, cited to argue non-association
+    r"|\d+(?:\.\d+)?\s*(?:\"|''|arcsec|arcseconds?)\s+(?:from|away|offset)"
+    r"|offset\s+of\s+\d",
+    re.IGNORECASE,
+)
+
 _SPEC_RE = re.compile(r"\bspectroscop(?:ic|y|ically)\b", re.IGNORECASE)
 _PHOTO_RE = re.compile(r"\bphotomet(?:ric|ry|rically)\b", re.IGNORECASE)
 _HOST_RE = re.compile(r"\bhost(?:\s+galaxy)?\b", re.IGNORECASE)
@@ -96,6 +110,11 @@ def parse_redshift_with_span(text: str) -> tuple[Redshift, Span] | None:
     ctx_start = max(0, match.start() - _CONTEXT_WINDOW)
     ctx_end = min(len(text), match.end() + _CONTEXT_WINDOW)
     context = text[ctx_start:ctx_end]
+
+    # Skip a redshift that the circular attributes to a nearby, explicitly
+    # unassociated object rather than to the transient.
+    if _NEARBY_OBJECT_RE.search(context):
+        return None
 
     redshift = Redshift(
         redshift=z,

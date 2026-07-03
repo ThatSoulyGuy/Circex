@@ -30,16 +30,27 @@ def test_subcommands_are_registered() -> None:
 
 
 def test_post_dry_run_from_file_regex() -> None:
-    """`circex post` extracts a circular from a file and prints a SkyPortal plan."""
+    """`circex post` on the discovery circular emits a source with a parsed position."""
+    result = runner.invoke(
+        app,
+        ["post", "--from-file", "docs/fixtures/grb260604c_44827.json", "--extractor", "regex"],
+    )
+    assert result.exit_code == 0, result.output
+    assert "DRY-RUN" in result.output
+    assert "POST /sources" in result.output
+    # coords parser recovers the combined "(RA, Dec) = 14h57m... +28d..." form.
+    assert "224.45" in result.output
+
+
+def test_post_positionless_follow_up_creates_no_source() -> None:
+    """A follow-up with no RA/Dec must NOT emit a source-create (SkyPortal would 400)."""
     result = runner.invoke(
         app,
         ["post", "--from-file", "docs/fixtures/grb260604c_44877.json", "--extractor", "regex"],
     )
     assert result.exit_code == 0, result.output
-    assert "DRY-RUN" in result.output
-    assert "POST /sources" in result.output
-    # regex can't time the seed's table row -> it's a comment, not a photometry post.
-    assert "could not be posted" in result.output
+    assert "source=no" in result.output
+    assert "POST /sources" not in result.output
 
 
 def test_post_requires_a_source() -> None:

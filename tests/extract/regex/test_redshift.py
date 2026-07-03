@@ -89,3 +89,20 @@ def test_parse_redshift_bound_does_not_match_point_value() -> None:
     from circex.extract.regex.redshift import parse_redshift_bound
 
     assert parse_redshift_bound("z = 0.215 +/- 0.001") is None
+
+
+def test_skips_nearby_unassociated_galaxy_photoz() -> None:
+    """A nearby galaxy's photo-z, explicitly disclaimed, must NOT be extracted (GCN 44834)."""
+    text = (
+        "We notice the presence of a red galaxy with a photo-z = 0.343 +/- 0.031 "
+        '(DESI Legacy Survey) at 18.9" from the optical counterpart position. This '
+        "corresponds to a Pcc ~ 0.16, which makes an association very unlikely."
+    )
+    assert parse_redshift(text) is None
+
+
+def test_still_extracts_source_photoz() -> None:
+    """A photometric redshift OF the transient (no offset/association caveat) still parses."""
+    r = parse_redshift("The afterglow colours imply a photometric redshift z = 0.5.")
+    assert r is not None
+    assert r.redshift == 0.5

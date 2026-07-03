@@ -1,0 +1,6 @@
+{
+  "circularId": 44827,
+  "subject": "GRB 260604C: MASTER OT J145749.59+284903.0 optical counterpart discovery",
+  "body": "MASTER OT J145749.59+284903.0 discovery\n \n\nMASTER-Tavrida auto-detection system ( Lipunov et al., \"MASTER Global Robotic Net\", Advances in Astronomy, 2010, 30L )\n discovered OT source at (RA, Dec) = 14h 57m 49.59s +28d 49m 03.0s on 2026-06-04.86020 UT.\n\nThe OT magnitude (unfiltered) is 17.5m at04.86020UT (mlim=19.4).\n\nThe OT is seen in 14 images. There is no minor planet at this place.\n\nWe have reference image on 2020-09-17.71399 UT with  unfiltered mlim=  18.1m.\n\nSpectral observations are required.\n",
+  "eventId": "GRB 260604C"
+}

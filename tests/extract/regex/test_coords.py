@@ -69,3 +69,22 @@ def test_decimal_property(ra_deg: float, dec_deg: float) -> None:
     parsed_ra, parsed_dec = result
     assert math.isclose(parsed_ra, ra_deg, abs_tol=1e-3)
     assert math.isclose(parsed_dec, dec_deg, abs_tol=1e-3)
+
+
+def test_combined_label_sexagesimal_with_spaces() -> None:
+    """'(RA, Dec) = 14h 57m 49.59s +28d 49m 03.0s' — combined label, spaced (GCN 44827)."""
+    text = "discovered OT source at (RA, Dec) = 14h 57m 49.59s +28d 49m 03.0s on 2026-06-04."
+    result = parse_coords(text)
+    assert result is not None
+    ra, dec = result
+    assert math.isclose(ra, 224.4566, abs_tol=1e-3)
+    assert math.isclose(dec, 28.8175, abs_tol=1e-3)
+
+
+def test_combined_label_decimal() -> None:
+    text = "The position is (RA, Dec) = 224.4566 28.8175 degrees."
+    result = parse_coords(text)
+    assert result is not None
+    ra, dec = result
+    assert math.isclose(ra, 224.4566, abs_tol=1e-3)
+    assert math.isclose(dec, 28.8175, abs_tol=1e-3)
