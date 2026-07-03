@@ -71,7 +71,7 @@ class SkyPortalPoster:
                 plan.append(
                     {
                         "method": "POST",
-                        "path": f"/sources/{obj_id}/comment",
+                        "path": f"/sources/{obj_id}/comments",
                         "payload": {"text": text},
                     }
                 )
