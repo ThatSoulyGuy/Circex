@@ -1,0 +1,10 @@
+{
+  "subject": "LIGO/Virgo G184098: spectral classification of PS15cci",
+  "eventId": "LIGO/Virgo G184098",
+  "bibcode": "2015GCN.18372....1S",
+  "createdOn": 1443383184000,
+  "circularId": 18372,
+  "submitter": "S. J. Smartt at Queens U Belfast  <s.smartt@qub.ac.uk>",
+  "email": "s.smartt@qub.ac.uk",
+  "body": "S.J. Smartt (Queen���s University Belfast), T. Kupfer (Caltech), K. Chambers\n(IfA, University of Hawaii), K. W. Smith,  (QUB), M. Huber, E. Magnier,\nH. Flewelling, C. Waters, J. Tonry, A. Schultz, N. Primak (IfA), D. Young,\nD. Wright, (QUB), C. Stubbs (Harvard)\n\nFurther to GCN 18362, and the Pan-STARRS wide-field search of the\naccessible area of the northern ALIGO/VIRGO area. We report\na spectrum of the transient PS15cci. Thomas Kupfer took a\n25min exposure with the Palomar 200-inch and DBSP on 2015-09-25\ncovering 3200-9000 Angs.\n\nThis transient is in the faint dwarf galaxy\nSDSS J091322.78+061047.6,  and clear emission lines from the host\n([OII] 3727, [OIII] 5009, H-alpha) are detected at z=0.055 (\ngiving M_r ~ -17 for the host),\n\nThe transient is a type Ia supernova with SNID suggesting\na good match with a 1991T-like SN at an epoch of a few days before peak\nbrightness.\n\nPS15cci lies within the 90% contour of the LIB area, and to date has been\nthe only candidate within this contour (in the northern probability region).\nPan-STARRS continues to observe the accessible north-western\nspur of the ALIGO/VIRGO LIB region (nightly when weather allows),\npushing eastwards as far as possible."
+}

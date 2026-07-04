@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 230328B: redshift lower limit estimating",
+  "eventId": "GRB 230328B",
+  "bibcode": "2023GCN.33609....1M",
+  "createdOn": 1681344167000,
+  "circularId": 33609,
+  "submitter": "Alexei Pozanenko at IKI, Moscow  <apozanen@iki.rssi.ru>",
+  "email": "apozanen@iki.rssi.ru",
+  "body": "P. Minaev (IKI), A. Pozanenko (IKI) report on behalf of GRB IKI FuN:\n\nWe analyzed GRB 230328B detected by Swift (Gropp et al., GCN 33527), \nFermi (Dalessi et al., GCN 33531), Astrosat (Waratkar et al., GCN \n33532), GRBAlpha (Dafcikova et al., GCN 33543), Konus (Svinkin et al., \nGCN 33544). Using publicly available data of GBM/Fermi we estimate the \nduration T_90 = 25.7 +/- 0.5 s in (10 - 300) keV energy band. We also \nperformed spectral analysis in a time interval of (-7, 30) s since GBM \ntrigger, the best fit is obtained for CPL model with following \nparameters: E_p = 164 +/- 13 keV, alpha = -1.22 +/- 0.04. The fluence of \nF = (1.02 +/- 0.04)E-5 erg/cm**2 is obtained in 10 - 1000 keV energy \nband. Using T_90,i - EH diagram [1] we can classify the burst as type II \n(long) and find the minimal possible redshift value of z = 0.09.\n\nThe T_90,i - EH diagram for GRB 230328B can be found in\nhttp://grb.rssi.ru/GRB230328B/GRB230328B_T90i-EH.png\n\n[1] - Minaev, Pozanenko, MNRAS, 492, 1919, 2020"
+}

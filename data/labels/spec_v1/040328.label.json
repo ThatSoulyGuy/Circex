@@ -1,0 +1,19 @@
+{
+  "circular_id": 40328,
+  "event": {
+    "event_name": "GRB 250502A"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "redshift": {
+    "redshift": 2.163,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "subject": "LIGO/Virgo/KAGRA S250206dm: Spectroscopic Classification of AT2025bay and AT2025baz with Keck I/LRIS",
+  "eventId": "LIGO/Virgo/KAGRA S250206dm",
+  "submittedHow": "email",
+  "bibcode": "2025GCN.39229....1K",
+  "createdOn": 1739001332282,
+  "circularId": 39229,
+  "submitter": "Viraj Karambelkar at Indian Inst of Tech,Bombay <karambelkarvraj21197@gmail.com>",
+  "body": "Viraj Karambelkar (Caltech), Tomás Ahumada (Caltech), Mansi Kasliwal\n(Caltech) report on behalf of the ZTF and GROWTH collaborations:\n\n\nWe report optical spectroscopy of two counterpart candidates reported by\nthe Zwicky Transient Facility, AT 2025bay, AT 2025baz (GCN #39228) in the\nlocalization region of LIGO/Virgo S200206dm (LVC, GCN #39175,39184). We\nused the Low Resolution Imaging Spectrometer (Oke et al. 1995) on the Keck\nI telescope, reduced  data using the idl package lpipe (Perley 2019) and\nfind:\n\n\nZTF25aaffyzc  / AT2025bay shows broad features matching a Type Ia supernova\nbefore maximum at z = 0.19\n\n\nZTF25aaffzpx / AT2025baz matches a Cataclysmic Variable in the Milky Way\nand shows Balmer emission lines at z = 0.0\n\n\nThus, AT2025bay and AT2025baz are not related to the gravitational wave\nevent.\n\n\nWe are grateful to the Keck Observatory staff, Sherry Yeh and Matthew Wahl,\nas well as observers, Andrew Howard and Howard Isaacson, for swiftly\nco-operating with these Target-of-Opportunity observations for rapidly\nsetting targets.\n"
+}

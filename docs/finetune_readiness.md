@@ -75,6 +75,31 @@ generalizes to. Classification/redshift still need SN / spectroscopy circulars t
 get gold. The full-field labels also seed the first extraction training examples:
 `circex dataset --source data/labels/flurry_v1`.
 
+## 3c. Classification + spectroscopic-redshift gold (`data/labels/spec_v1`)
+
+The flurry (GRB afterglow) had no classification/redshift gold. Searching the
+40,506-circular 2025 archive surfaced SN-classification and spectroscopic-redshift
+circulars; 10 diverse ones were labeled — SN Ia/Ic, spectroscopic absorption GRB
+redshifts (z=2.163, 0.767), host (0.714) and photometric (0.199) redshifts, two
+redshift bounds (z≥0.09, z≥0.42), and two deliberate traps: GRB "type I/II"
+(short/long population, **not** an SN type → classification null) and a nearby
+galaxy's z (GOTO25cqo's SN is z=0.18; the 0.169 galaxy is explicitly excluded).
+
+First numbers for the weak fields (`reports/eval_regex_spec.md`):
+
+| Field | regex F1 | P / R | gold | verdict |
+|---|---|---|---|---|
+| **classification** | **0.143** | **0.10 / 0.25** | 4 | fires on nearly every circular; misses 3/4 real SN types |
+| redshift value | 0.875 | 0.78 / 1.0 | 7 | perfect recall, over-extracts on bounds/traps |
+| redshift type | 0.000 | 0 / 0 | 4 | host/emission/absorption not classified |
+| event | 0.500 | 0.5 / 0.5 | 10 | SN designations harder than GRB names |
+
+**Classification F1 = 0.143 is the hard number that justifies the SN-type
+classifier** — regex's precision is 0.10 here (rampant false positives despite the
+guards). Redshift *value* is strong on recall but loses precision to bounds/traps;
+redshift *type* is unhandled. These labels seed the first classification/redshift
+training examples (`circex dataset --source data/labels/spec_v1`).
+
 ## 4. Recommendation
 
 A Mistral-7B **extractor** fine-tune is weakly justified *right now*:

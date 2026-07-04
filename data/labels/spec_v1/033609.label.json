@@ -1,0 +1,16 @@
+{
+  "circular_id": 33609,
+  "event": {
+    "event_name": "GRB 230328B"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": [
+      "redshift_bound: z >= 0.09"
+    ]
+  }
+}

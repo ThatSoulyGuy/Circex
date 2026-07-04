@@ -1,0 +1,13 @@
+{
+  "subject": "GRB 250515A: NOT classification of GOTO25cqo as a type-Ia SN",
+  "editedOn": 1747660110685,
+  "eventId": "GRB 250515A",
+  "version": 2,
+  "submittedHow": "web",
+  "createdOn": 1747470722706,
+  "editedBy": "Judith Racusin at NASA/GSFC <judith.racusin@nasa.gov> on behalf of Daniele Bjørn Malesani at Cosmic Dawn Center, Niels Bohr Institute <daniele.malesani@nbi.ku.dk>",
+  "circularId": 40480,
+  "submitter": "Daniele Bjørn Malesani at Cosmic Dawn Center, Niels Bohr Institute <daniele.malesani@nbi.ku.dk>",
+  "format": "text/plain",
+  "body": "A. Martin-Carrillo (UCD), Z. P. Zhu (NAOC), L. Izzo (INAF/OACN and DARK/NBI), D. B. Malesani (DAWN/NBI and Radboud), B. P. Gompertz (U. Birmingham), G. Corcoran (UCD), N. R. Tanvir (Leicester), R. Rautio (Univ. Oulu), report on behalf of a larger collaboration.\n\nWe observed the position of GOTO25cqo (Gompertz et al., GCN 40464), a candidate optical counterpart to GRB 250515A (Fermi GBM team, GCN 40462), using the ALFOSC camera mounted on the Nordic Optical Telescope (NOT). We obtained exposures in the SDSS r band (3x300 s) starting at 23:44:29 UT on 2025-05-16 (27 hours after the Fermi trigger). The candidate is detected in single exposures with an AB magnitude of r = 20.18 +/- 0.02, calibrated against nearby Pan-STARRS stars. \n\nWe further obtained 4x600 s of spectroscopic observations. The flux-calibrated spectrum shows features not consistent with typical GRB afterglows. Using SNID (Blondin & Tonry 2007, doi:10.1086/520494), the spectrum matches well several normal rising type-Ia supernovae at z = 0.18 +/- 0.01. This excludes the association of GOTO25cqo with GRB 250515A, as already suggested by Xin et al. (GCN 40474) and Lopez et al. (GCN 40478).\n\nThe slit was oriented so to cover the bright galaxy 5.3” NW of GOTO25cqo. We detect several emission lines which we identify Halpha, Hbeta, [O III] and [O II] at a common redshift of z = 0.169. With a 15 kpc projected separation, this galaxy is thus a plausible host of GOTO25cqo.\n\nWe acknowledge excellent support from the NOT staff, in particular Joonas Viuho and Amanda Djupvik.\n"
+}

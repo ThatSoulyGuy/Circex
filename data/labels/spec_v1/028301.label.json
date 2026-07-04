@@ -1,0 +1,18 @@
+{
+  "circular_id": 28301,
+  "event": {
+    "event_name": "GRB 200826A"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "redshift": {
+    "redshift": 0.714,
+    "redshift_type": "host"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

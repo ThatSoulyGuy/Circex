@@ -1,0 +1,29 @@
+{
+  "circular_id": 39229,
+  "event": {
+    "event_name": "AT2025bay"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Ia",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ia"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.19,
+    "redshift_measure": "spectroscopic"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

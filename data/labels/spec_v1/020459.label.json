@@ -1,0 +1,18 @@
+{
+  "circular_id": 20459,
+  "event": {
+    "event_name": "PS17fr"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "redshift": {
+    "redshift": 0.199,
+    "redshift_measure": "photometric"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

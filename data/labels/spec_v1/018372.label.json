@@ -1,0 +1,30 @@
+{
+  "circular_id": 18372,
+  "event": {
+    "event_name": "PS15cci"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Ia",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ia"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.055,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

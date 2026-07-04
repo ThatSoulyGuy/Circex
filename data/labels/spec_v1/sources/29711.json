@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 210323A: Classification and redshift estimation",
+  "eventId": "GRB 210323A",
+  "bibcode": "2021GCN.29711....1M",
+  "createdOn": 1616599258000,
+  "circularId": 29711,
+  "submitter": "Alexei Pozanenko at IKI, Moscow  <apozanen@iki.rssi.ru>",
+  "email": "apozanen@iki.rssi.ru",
+  "body": "P. Minaev (IKI),  A. Pozanenko (IKI) report on behalf of GRB IKI FuN:\n\nWe analysed spectral data of GBM/Fermi of GRB 210323A (Hamburg et al., \nGCN 29709) which is initially reported in for GRB 210323A (Gropp et al., \nGCN 29699; Hamburg et al., GCN 29709) to classify the burst and estimate \nits redshift using EH-T90,i diagram [1,2]. The burst belongs to type I \n(short) population. We also estimate the lower limit on redshift of z = \n0.42.\n\nSee figure of EH-T90,i diagram for GRB 210323A at \nhttp://grb.rssi.ru/GRB210323A/GRB210323A_EH-T90.png\n\n[1] ��� Minaev et al., MNRAS, 492, 1919 (2020)\n[2] ��� Minaev et al., Astronomy Letters, 46, 573 (2020)"
+}
