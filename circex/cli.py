@@ -198,6 +198,10 @@ def eval_cmd(
     gold: str = typer.Option(
         "vidushi", "--gold", help="vidushi | path/to/labels/dir"
     ),
+    circulars_dir: Path | None = typer.Option(
+        None, "--circulars-dir",
+        help="dir of {id}.json bodies for label-dir gold not in the local archive",
+    ),
     report: Path = typer.Option(Path("reports/eval_v1.md"), "--report"),
     plot: Path | None = typer.Option(
         None, "--plot",
@@ -256,7 +260,14 @@ def eval_cmd(
             payload = json.loads(path.read_text(encoding="utf-8"))
             gold_extractions.append(CircularExtraction.model_validate(payload))
         ids = [g.circular_id for g in gold_extractions]
-        records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
+        if circulars_dir is not None:
+            records = {}
+            for cid in ids:
+                path = circulars_dir / f"{cid}.json"
+                if path.exists():
+                    records[cid] = json.loads(path.read_text(encoding="utf-8"))
+        else:
+            records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
         circulars = [
             Circular.from_record(records[g.circular_id])
             for g in gold_extractions
@@ -646,6 +657,11 @@ def dataset(
         from circex.data.archive import iter_circulars
 
         def _body(cid: int) -> str | None:
+            # Prefer a body co-located with the labels (labels_dir/sources/{id}.json),
+            # so a label set for circulars outside the local archive is self-contained.
+            local = Path(source) / "sources" / f"{cid}.json"
+            if local.exists():
+                return str(json.loads(local.read_text(encoding="utf-8")).get("body"))
             recs = list(iter_circulars(circular_ids=[cid]))
             return str(recs[0].get("body")) if recs else None
 

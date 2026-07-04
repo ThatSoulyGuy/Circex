@@ -50,6 +50,31 @@ turn (target JSON). The Vidushi source yields **544 validated examples** today
 `circex dataset --source <labels>` pipeline — the labels for photometry/
 classification have to be produced there first.
 
+## 3b. Full-field gold — the annotate labeling pass (`data/labels/flurry_v1`)
+
+The Vidushi gap (no photometry/localization/classification gold) is now partly
+filled. The GRB 260604C flurry — 13 circulars we cross-checked against SkyPortal
+— was labeled into validated `.label.json` gold (27 photometry rows), *including
+the detections regex cannot map* (MASTER unfiltered, LAST clear-band, GOTO-L) and
+the SVOM position regex misses. Bodies are co-located under `sources/` so the set
+is self-contained; run `circex eval --gold data/labels/flurry_v1
+--circulars-dir data/labels/flurry_v1/sources`.
+
+First full-field regex numbers (`reports/eval_regex_flurry.md`):
+
+| Field | regex F1 | P / R | gold rows | what it reveals |
+|---|---|---|---|---|
+| event | 1.000 | 1.0 / 1.0 | 13 | solved |
+| localization | 0.800 | 1.0 / 0.667 | 3 | misses one "R.A., Dec. …, … degrees" format |
+| **photometry** | 0.826 | **1.0 / 0.704** | 27 | **perfect precision, 70% recall** — misses the 8 unmappable-filter (clear/unfiltered/GOTO-L) detections |
+| classification / redshift | — | — | 0 | none in this event (GRB afterglow) |
+
+The signal for a fine-tune: regex **never fabricates** photometry (precision 1.0)
+but leaves ~30% recall on the table — exactly the odd filters/formats an LLM
+generalizes to. Classification/redshift still need SN / spectroscopy circulars to
+get gold. The full-field labels also seed the first extraction training examples:
+`circex dataset --source data/labels/flurry_v1`.
+
 ## 4. Recommendation
 
 A Mistral-7B **extractor** fine-tune is weakly justified *right now*:

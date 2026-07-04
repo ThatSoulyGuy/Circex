@@ -1,0 +1,26 @@
+{
+  "circular_id": 44877,
+  "event": {
+    "event_name": "GRB 260604C"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "bandpass": "bessellr",
+      "mag": 23.08,
+      "mag_error": 0.18,
+      "mag_system": "Vega",
+      "limiting_mag": 23.8,
+      "obs_mjd": 61199.834189814814,
+      "obs_time": "2026-06-08T20:01:14Z",
+      "is_detection": true
+    }
+  ],
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-flurry-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

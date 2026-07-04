@@ -1,0 +1,65 @@
+{
+  "circular_id": 44834,
+  "event": {
+    "event_name": "GRB 260604C"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "g",
+      "bandpass": "sdssg",
+      "mag": 19.69,
+      "mag_error": 0.04,
+      "mag_system": "AB",
+      "obs_mjd": 61196.16055555555,
+      "obs_time": "2026-06-05T03:51:12.000Z",
+      "is_detection": true
+    },
+    {
+      "filter": "r",
+      "bandpass": "sdssr",
+      "mag": 19.56,
+      "mag_error": 0.03,
+      "mag_system": "AB",
+      "obs_mjd": 61196.16055555555,
+      "obs_time": "2026-06-05T03:51:12.000Z",
+      "is_detection": true
+    },
+    {
+      "filter": "i",
+      "bandpass": "sdssi",
+      "mag": 19.38,
+      "mag_error": 0.04,
+      "mag_system": "AB",
+      "obs_mjd": 61196.16055555555,
+      "obs_time": "2026-06-05T03:51:12.000Z",
+      "is_detection": true
+    },
+    {
+      "filter": "z",
+      "bandpass": "sdssz",
+      "mag": 19.21,
+      "mag_error": 0.06,
+      "mag_system": "AB",
+      "obs_mjd": 61196.16055555555,
+      "obs_time": "2026-06-05T03:51:12.000Z",
+      "is_detection": true
+    },
+    {
+      "filter": "y",
+      "bandpass": "ps1::y",
+      "mag": 19.26,
+      "mag_error": 0.08,
+      "mag_system": "AB",
+      "obs_mjd": 61196.16055555555,
+      "obs_time": "2026-06-05T03:51:12.000Z",
+      "is_detection": true
+    }
+  ],
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-flurry-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

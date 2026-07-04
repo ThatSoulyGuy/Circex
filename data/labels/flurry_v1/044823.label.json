@@ -1,0 +1,18 @@
+{
+  "circular_id": 44823,
+  "event": {
+    "event_name": "GRB 260604C"
+  },
+  "localization": {
+    "ra": 224.3461,
+    "dec": 28.6558
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-flurry-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

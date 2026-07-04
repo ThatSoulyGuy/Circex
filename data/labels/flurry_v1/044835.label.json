@@ -1,0 +1,45 @@
+{
+  "circular_id": 44835,
+  "event": {
+    "event_name": "GRB 260604C"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "bandpass": "bessellr",
+      "mag": 17.43,
+      "mag_error": 0.03,
+      "mag_system": "Vega",
+      "obs_mjd": 61195.90847222222,
+      "obs_time": "2026-06-04T21:48:12.000Z",
+      "is_detection": true
+    },
+    {
+      "filter": "r",
+      "bandpass": "sdssr",
+      "mag": 18.41,
+      "mag_error": 0.05,
+      "mag_system": "AB",
+      "obs_mjd": 61195.97930555555,
+      "obs_time": "2026-06-04T23:30:12.000Z",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "bandpass": "bessellr",
+      "mag": 18.43,
+      "mag_error": 0.06,
+      "mag_system": "Vega",
+      "obs_mjd": 61196.01430555555,
+      "obs_time": "2026-06-05T00:20:36.000Z",
+      "is_detection": true
+    }
+  ],
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-flurry-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

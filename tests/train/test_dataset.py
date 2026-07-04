@@ -82,3 +82,22 @@ def test_vidushi_examples_skips_empty_text() -> None:
         predicted_telescope=None, predicted_redshift_type=None,
     )
     assert list(vidushi_examples([row])) == []
+
+
+def test_label_dir_examples_reads_labels_and_bodies(tmp_path) -> None:
+    from circex.schema import Event, PhotometryExt
+    from circex.train import label_dir_examples
+
+    ex = CircularExtraction(
+        circular_id=5,
+        event=Event(event_name="GRB 010101A"),
+        photometry=[PhotometryExt(filter="r", mag=19.0, obs_mjd=60000.0)],
+        extraction_meta=_meta(),
+    )
+    (tmp_path / "000005.label.json").write_text(ex.model_dump_json())
+    examples = list(
+        label_dir_examples(tmp_path, lambda cid: "GRB 010101A r = 19." if cid == 5 else None)
+    )
+    assert len(examples) == 1
+    completion = json.loads(examples[0]["messages"][1]["content"])
+    assert completion["photometry"][0]["filter"] == "r"
