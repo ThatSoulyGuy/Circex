@@ -16,6 +16,7 @@ from circex.extract.regex.coords import parse_coords_with_span
 from circex.extract.regex.dates import parse_time_offsets_with_spans
 from circex.extract.regex.mag_table import (
     parse_mag_table_with_spans,
+    parse_pipe_table_with_spans,
     parse_single_mags_with_spans,
 )
 from circex.extract.regex.redshift import (
@@ -99,17 +100,15 @@ class RegexExtractor(Extractor):
             localization = Localization(ra=ra, dec=dec)
             provenance["localization"] = loc_span
 
-        # ---- photometry: prefer table over prose ----
-        table_hits = parse_mag_table_with_spans(body)
-        if table_hits:
-            photometry = [row for row, _ in table_hits]
-            for idx, (_, span) in enumerate(table_hits):
-                provenance[f"photometry[{idx}]"] = span
-        else:
-            single_hits = parse_single_mags_with_spans(body)
-            photometry = [row for row, _ in single_hits]
-            for idx, (_, span) in enumerate(single_hits):
-                provenance[f"photometry[{idx}]"] = span
+        # ---- photometry: prefer pipe table, then whitespace table, then prose ----
+        photo_hits = (
+            parse_pipe_table_with_spans(body, circular.trigger_time)
+            or parse_mag_table_with_spans(body)
+            or parse_single_mags_with_spans(body)
+        )
+        photometry = [row for row, _ in photo_hits]
+        for idx, (_, span) in enumerate(photo_hits):
+            provenance[f"photometry[{idx}]"] = span
 
         # ---- redshift (point) ----
         redshift = None

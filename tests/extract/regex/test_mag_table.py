@@ -200,3 +200,61 @@ def test_reference_star_photometry_excluded() -> None:
 
     rows = parse_single_mags("OT at R = 20.1 +/- 0.1. The comparison star has R = 15.3 +/- 0.02.")
     assert sorted(p.mag for p in rows if p.mag is not None) == [20.1]
+
+
+# ---- pipe-delimited (markdown) tables ----
+
+
+def test_pipe_table_relative_time_with_trigger() -> None:
+    """'| Tmid-TGRB (hrs) | Filter | Magnitude |' resolves rows against T0 (GCN 44835)."""
+    from datetime import UTC, datetime
+
+    from circex.extract.regex.mag_table import parse_pipe_table_with_spans
+
+    text = (
+        "| Tmid-TGRB (hrs) | Filter    | Magnitude      |\n"
+        "| --------------- | --------- | -------------- |\n"
+        "| 1.47            | Rc (Vega) | 17.43 +/- 0.03 |\n"
+        "| 3.17            | r (AB)    | 18.41 +/- 0.05 |\n"
+    )
+    t0 = datetime(2026, 6, 4, 20, 20, tzinfo=UTC)
+    rows = [r for r, _ in parse_pipe_table_with_spans(text, t0)]
+    assert len(rows) == 2
+    assert rows[0].bandpass == "bessellr" and rows[0].mag == 17.43 and rows[0].mag_error == 0.03
+    assert rows[0].obs_mjd is not None
+    assert rows[1].bandpass == "sdssr"
+
+
+def test_pipe_table_two_column_with_limit() -> None:
+    """'Filter | Mag (AB)' (single pipe) with '(Magnitude limit: X)' (GCN 44857)."""
+    from circex.extract.regex.mag_table import parse_pipe_table_with_spans
+
+    text = (
+        "Filter | Mag (AB)\n"
+        "     g | 22.0938 ± 0.0008 (Magnitude limit: 24.6925)\n"
+        "     r | 21.7162 ± 0.0005 (Magnitude limit: 23.9245)\n"
+    )
+    rows = [r for r, _ in parse_pipe_table_with_spans(text)]
+    assert len(rows) == 2
+    assert rows[0].filter == "g" and rows[0].bandpass == "sdssg"
+    assert rows[0].mag == 22.0938 and rows[0].limiting_mag == 24.6925
+    assert rows[0].obs_mjd is None  # time is in prose, resolved separately
+
+
+def test_pipe_table_absolute_time_column() -> None:
+    from circex.extract.regex.mag_table import parse_pipe_table_with_spans
+
+    text = (
+        "| mid-time(UT)        | Filter | ABmag        |\n"
+        "| 2026-06-04 23:46:15 | r      | 18.45 ± 0.04 |\n"
+    )
+    rows = [r for r, _ in parse_pipe_table_with_spans(text)]
+    assert len(rows) == 1 and rows[0].mag == 18.45 and rows[0].obs_mjd is not None
+
+
+def test_pipe_table_unmappable_filter_skipped() -> None:
+    """Clear/unfiltered rows (no canonical bandpass) are not emitted."""
+    from circex.extract.regex.mag_table import parse_pipe_table_with_spans
+
+    text = "| Tmid-T0 (h) | Mag (AB) |\n| 0.33 | 16.42 +/- 0.02 |\n"
+    assert parse_pipe_table_with_spans(text) == []  # no filter column -> nothing postable

@@ -13,9 +13,10 @@ Mag-system inference rules (matching docs/labeling_spec.md):
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import Final
 
-from circex.extract.timing import epoch_from_absolute
+from circex.extract.timing import epoch_from_absolute, epoch_from_offset
 from circex.schema import MagSystem, PhotometryExt, Span
 
 # Filter classification.
@@ -270,6 +271,107 @@ def _classify_columns(header_line: str) -> dict[int, str]:
         elif token in {"exp", "exptime", "exposure"}:
             classification[i] = "exposure"
     return classification
+
+
+# ---- Markdown / pipe-delimited tables ----
+#
+# "| Tmid-T0 (h) | Filter | Mag (AB) |" — common in modern circulars (GRANDMA,
+# GOTO, LAST, ICARE style). Columns split on "|"; the "| --- | --- |" separator
+# row is skipped. Time columns are an absolute UT datetime OR a relative offset
+# (Tmid-T0 / t-t0 / TGRB, in hours) resolved against a supplied trigger time.
+# Mag cells carry "X +/- Y" and optionally "(... limit: Z)".
+
+_PIPE_MAG_RE = re.compile(r"(?P<mag>\d{1,2}\.\d{1,4})\s*(?:±|\+/-|\+/−)\s*(?P<err>\d+\.\d+)")
+_PIPE_LIMIT_RE = re.compile(r"limit[:\s]*(?P<lim>\d{1,2}\.\d{1,4})", re.IGNORECASE)
+
+
+def _pipe_cells(line: str) -> list[str]:
+    return [c.strip() for c in line.strip().strip("|").split("|")]
+
+
+def _is_separator_row(cells: list[str]) -> bool:
+    return all(re.fullmatch(r"[-:\s]*", c) for c in cells)
+
+
+def _classify_pipe_columns(cells: list[str]) -> dict[int, str]:
+    roles: dict[int, str] = {}
+    for i, tok in enumerate(cells):
+        t = tok.lower()
+        if "filter" in t or t == "band":
+            roles[i] = "filter"
+        elif "mag" in t:  # mag / magnitude / abmag / mag (ab)
+            roles[i] = "mag"
+        elif re.search(r"t0|tgrb|t-t|tmid", t) and re.search(r"h\b|hour|hr", t):
+            roles[i] = "rel_hours"
+        elif re.search(r"mid-?time|date|\but\b|utc", t):
+            roles[i] = "abs_time"
+    return roles
+
+
+def _parse_pipe_row(
+    cells: list[str], roles: dict[int, str], trigger_time: datetime | None
+) -> PhotometryExt | None:
+    by = {role: cells[idx] for idx, role in roles.items() if idx < len(cells)}
+    m = _PIPE_MAG_RE.search(by.get("mag", ""))
+    mag = float(m.group("mag")) if m else None
+    err = float(m.group("err")) if m else None
+    lim_m = _PIPE_LIMIT_RE.search(by.get("mag", ""))
+    limit = float(lim_m.group("lim")) if lim_m else None
+    if mag is None and limit is None:
+        return None
+    # Filter: "Rc (Vega)" -> "Rc" -> R. Require a recognized, mappable filter.
+    raw = by.get("filter")
+    base = normalize_filter(re.split(r"[ (]", raw.strip())[0]) if raw else None
+    if base is None or base not in _KNOWN_FILTERS:
+        return None
+    obs_mjd = obs_time = None
+    if by.get("abs_time") and (ep := epoch_from_absolute(by["abs_time"])) is not None:
+        obs_mjd, obs_time = ep
+    if obs_mjd is None and by.get("rel_hours") and trigger_time is not None:
+        num = re.search(r"[-+]?\d+(?:\.\d+)?", by["rel_hours"])
+        if num and (ep := epoch_from_offset(trigger_time, float(num.group()), "h")) is not None:
+            obs_mjd, obs_time = ep
+    return PhotometryExt(
+        filter=base, mag=mag, mag_error=err, limiting_mag=limit,
+        mag_system=infer_mag_system(base), bandpass=infer_bandpass(base),
+        obs_mjd=obs_mjd, obs_time=obs_time,
+    )
+
+
+def parse_pipe_table_with_spans(
+    text: str, trigger_time: datetime | None = None
+) -> list[tuple[PhotometryExt, Span]]:
+    """Parse pipe-delimited magnitude tables. Per-row Spans; relative times use T0."""
+    rows: list[tuple[PhotometryExt, Span]] = []
+    lines = text.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+    i = 0
+    while i < len(lines):
+        if "|" not in lines[i]:
+            i += 1
+            continue
+        roles = _classify_pipe_columns(_pipe_cells(lines[i]))
+        # Header needs a mag column plus at least one more recognized column
+        # (filter / time) — guards against a stray prose line with a "|".
+        if "mag" not in roles.values() or len(roles) < 2:
+            i += 1
+            continue
+        j = i + 1
+        while j < len(lines) and "|" in lines[j]:
+            cells = _pipe_cells(lines[j])
+            if not _is_separator_row(cells):
+                row = _parse_pipe_row(cells, roles, trigger_time)
+                if row is not None:
+                    row_text = lines[j].rstrip("\r\n")
+                    rows.append((
+                        row,
+                        Span(start=offsets[j], end=offsets[j] + len(row_text), snippet=row_text),
+                    ))
+            j += 1
+        i = max(j, i + 1)
+    return rows
 
 
 def parse_mag_table(text: str) -> list[PhotometryExt]:
