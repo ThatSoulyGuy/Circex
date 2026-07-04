@@ -258,3 +258,47 @@ def test_pipe_table_unmappable_filter_skipped() -> None:
 
     text = "| Tmid-T0 (h) | Mag (AB) |\n| 0.33 | 16.42 +/- 0.02 |\n"
     assert parse_pipe_table_with_spans(text) == []  # no filter column -> nothing postable
+
+
+# ---- fixed-width SAO-RAS / IKI template ----
+
+
+def test_fixed_width_saoras_template_plus_minus() -> None:
+    """'2026.06.08 20:01:14 ... Rc 23.08 +/- 0.18 23.8' (GCN 44877): dotted date, +/-, UL."""
+    from circex.extract.regex.mag_table import parse_fixed_width_table_with_spans
+
+    text = (
+        "Date       UTstart  t-T0    Exp.   Filter Mag +/- Err.    UL\n"
+        "                    (mid,d) (n*s)                         (3-sigma)\n"
+        "2026.06.08 20:01:14 4.01102 12*300 Rc     23.08 +/- 0.18  23.8\n"
+    )
+    rows = [r for r, _ in parse_fixed_width_table_with_spans(text)]
+    assert len(rows) == 1
+    r = rows[0]
+    assert r.bandpass == "bessellr" and r.mag == 23.08 and r.mag_error == 0.18
+    assert r.limiting_mag == 23.8
+    assert r.obs_mjd is not None and abs(r.obs_mjd - 61199.834) < 0.01
+
+
+def test_fixed_width_space_separated_err_and_dash_date() -> None:
+    """'2026-06-05 21:31:13 ... R 21.35 0.14 22.4' (GCN 44858): dash date, no +/-, 2 rows."""
+    from circex.extract.regex.mag_table import parse_fixed_width_table_with_spans
+
+    text = (
+        "Date       UTstart  t-T0    Exp.   Filter Mag    Err.    UL\n"
+        "                    (mid,d) (n*s)                      (3-sigma)\n"
+        "2026-06-05 21:31:13 1.07291 26x150 R      21.35  0.14   22.4\n"
+        "2026-06-06 20:09:21 2.03341 46x150 R      21.53  0.19   22.3\n"
+    )
+    rows = [r for r, _ in parse_fixed_width_table_with_spans(text)]
+    assert len(rows) == 2
+    assert rows[0].mag == 21.35 and rows[0].mag_error == 0.14 and rows[0].limiting_mag == 22.4
+    assert rows[1].mag == 21.53 and rows[1].obs_mjd is not None
+
+
+def test_fixed_width_ignores_loose_generic_table() -> None:
+    """A loose table (no exp/utstart header, minute-precision time) is left to parse_mag_table."""
+    from circex.extract.regex.mag_table import parse_fixed_width_table_with_spans
+
+    text = "Date              Filter  Mag     Err\n2024-01-02 04:30  r       20.42   0.05\n"
+    assert parse_fixed_width_table_with_spans(text) == []

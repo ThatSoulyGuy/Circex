@@ -374,6 +374,81 @@ def parse_pipe_table_with_spans(
     return rows
 
 
+# ---- Fixed-width "Date UTstart t-T0 Exp. Filter Mag Err. UL" tables ----
+#
+# The SAO-RAS / IKI GRB follow-up template (GCN 44852, 44858, 44862, 44877):
+#
+#   Date       UTstart  t-T0    Exp.   Filter Mag +/- Err.    UL
+#   2026.06.08 20:01:14 4.01102 12*300 Rc     23.08 +/- 0.18  23.8
+#
+# The Date and UTstart columns are ONE datetime token in the data but TWO header
+# columns, which defeats the whitespace-column parser. Parse the row directly,
+# anchored on a leading datetime with mandatory seconds (so looser generic tables
+# like "2024-01-02 04:30 r ..." are left to parse_mag_table). Mag/Err come as
+# "23.08 +/- 0.18" or space-separated "21.35  0.14"; the trailing float is the UL.
+
+_FIXEDW_ROW_RE = re.compile(
+    r"""^[ \t]*
+    (?P<dt>\d{4}[.\-]\d{2}[.\-]\d{2}[ T]\d{2}:\d{2}:\d{2})   # date + time (secs required)
+    \s+[\d.]+                                                 # t-T0 (days)
+    \s+\S+                                                    # exposure (12*300, 26x150)
+    \s+(?P<filter>[A-Za-z']{1,4})                             # filter (Rc, R)
+    \s+(?P<mag>\d{1,2}\.\d{1,3})                              # mag
+    \s*(?:\+/-\s*)?(?P<err>\d{1,2}\.\d{1,3})                  # err (+/- optional)
+    (?:\s+(?P<ul>\d{1,2}\.\d{1,3}))?                          # UL (3-sigma limit)
+    """,
+    re.VERBOSE,
+)
+
+
+def _looks_like_fixedw_header(line: str) -> bool:
+    low = line.lower()
+    return (
+        "date" in low and "filter" in low and "mag" in low
+        and ("utstart" in low or "t-t0" in low or "exp" in low)
+    )
+
+
+def parse_fixed_width_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
+    """Parse the SAO-RAS/IKI fixed-width photometry template. Per-row Spans.
+
+    A row is only accepted when a matching header sits within the preceding few
+    lines (a units subheader can intervene), keeping the datetime-anchored regex
+    from matching stray prose elsewhere in the body.
+    """
+    rows: list[tuple[PhotometryExt, Span]] = []
+    lines = text.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+    for j, line in enumerate(lines):
+        if not any(_looks_like_fixedw_header(lines[k]) for k in range(max(0, j - 3), j)):
+            continue
+        m = _FIXEDW_ROW_RE.match(line)
+        if m is None:
+            continue
+        base = normalize_filter(m.group("filter"))
+        if base not in _KNOWN_FILTERS:
+            continue
+        ep = epoch_from_absolute(m.group("dt").replace(".", "-"))
+        obs_mjd, obs_time = ep if ep is not None else (None, None)
+        row_text = line.rstrip("\r\n")
+        rows.append((
+            PhotometryExt(
+                filter=base,
+                mag=float(m.group("mag")),
+                mag_error=float(m.group("err")),
+                limiting_mag=float(m.group("ul")) if m.group("ul") else None,
+                mag_system=infer_mag_system(base),
+                bandpass=infer_bandpass(base),
+                obs_mjd=obs_mjd,
+                obs_time=obs_time,
+            ),
+            Span(start=offsets[j], end=offsets[j] + len(row_text), snippet=row_text),
+        ))
+    return rows
+
+
 def parse_mag_table(text: str) -> list[PhotometryExt]:
     """Detect column-aligned magnitude tables and parse rows.
 

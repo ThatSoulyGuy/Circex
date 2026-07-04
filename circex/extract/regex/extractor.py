@@ -15,6 +15,7 @@ from circex.extract.regex.classification import parse_classification_with_span
 from circex.extract.regex.coords import parse_coords_with_span
 from circex.extract.regex.dates import parse_time_offsets_with_spans
 from circex.extract.regex.mag_table import (
+    parse_fixed_width_table_with_spans,
     parse_mag_table_with_spans,
     parse_pipe_table_with_spans,
     parse_single_mags_with_spans,
@@ -103,6 +104,7 @@ class RegexExtractor(Extractor):
         # ---- photometry: prefer pipe table, then whitespace table, then prose ----
         photo_hits = (
             parse_pipe_table_with_spans(body, circular.trigger_time)
+            or parse_fixed_width_table_with_spans(body)
             or parse_mag_table_with_spans(body)
             or parse_single_mags_with_spans(body)
         )
