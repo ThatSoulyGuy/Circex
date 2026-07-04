@@ -10,8 +10,11 @@ import re
 
 from circex.schema import Redshift, RedshiftMeasure, RedshiftType, Span
 
+# The negative lookbehind rejects a color index ("g-z = 0.48", "i-z = 0.9"): the
+# trailing "z" is a filter band, not a redshift. "photo-z" (preceded by "o-") is
+# not a filter letter, so it still matches (and is filtered by context instead).
 _Z_RE = re.compile(
-    r"\bz\s*[=~≈]\s*(\d+\.\d+)(?:\s*±\s*(\d+\.\d+))?",
+    r"(?<![ugrizyUBVRIJHK]-)\bz\s*[=~≈]\s*(\d+\.\d+)(?:\s*±\s*(\d+\.\d+))?",
     re.IGNORECASE,
 )
 _ALT_RE = re.compile(

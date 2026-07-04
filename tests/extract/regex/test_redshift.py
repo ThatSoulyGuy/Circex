@@ -116,3 +116,14 @@ def test_zband_magnitude_is_not_a_redshift() -> None:
 def test_high_but_plausible_redshift_still_parses() -> None:
     r = parse_redshift("The GRB is at a spectroscopic z = 8.2.")
     assert r is not None and r.redshift == 8.2
+
+
+def test_color_index_is_not_a_redshift() -> None:
+    """'g-z = 0.48' is a colour (g minus z magnitude), not a redshift (GCN 44873)."""
+    assert parse_redshift("The colour g-z = 0.48 +/- 0.10 suggests a red source.") is None
+    assert parse_redshift("We measure i-z = 0.9.") is None
+
+
+def test_standalone_redshift_still_matches_after_color_guard() -> None:
+    r = parse_redshift("A spectroscopic z = 0.48 was measured from Halpha.")
+    assert r is not None and r.redshift == 0.48

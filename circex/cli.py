@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import typer
 from pydantic import ValidationError
@@ -505,6 +505,117 @@ def post(
         f"source={'yes' if actions.source else 'no'}  "
         f"photometry={len(actions.photometry)}  "
         f"redshift={'yes' if actions.redshift else 'no'}  "
+        f"comments={len(actions.comments)}  skipped_rows={actions.skipped_rows}\n"
+    )
+    console.print(render_plan(plan) or "(no actions)")
+
+
+@app.command()
+def event(
+    seed: int = typer.Option(
+        0, "--seed", help="a circular id; walks its GCN cross-references to gather the event"
+    ),
+    circulars_dir: Path | None = typer.Option(
+        None, "--circulars-dir", help="folder of raw circular JSONs (one event) instead of --seed"
+    ),
+    circular_ids: str = typer.Option(
+        "", "--circular-ids", help="explicit comma-separated circular ids to fetch"
+    ),
+    max_hops: int = typer.Option(1, "--max-hops", help="cross-reference walk depth for --seed"),
+    event_name: str = typer.Option("", "--event-name", help="override the source name"),
+    extractor: str = typer.Option("regex", "--extractor", help="regex | claude-haiku | ollama"),
+    trigger_time: str | None = typer.Option(
+        None, "--trigger-time", help="event T0 (ISO-8601) for resolving relative offsets"
+    ),
+    instrument_map: Path | None = typer.Option(
+        None, "--instrument-map", help="JSON {telescope_canonical: skyportal_instrument_id}"
+    ),
+    default_instrument_id: int | None = typer.Option(
+        None, "--default-instrument-id", help="generic instrument id for unmapped telescopes"
+    ),
+    group_ids: str = typer.Option("", "--group-ids", help="comma-separated SkyPortal group ids"),
+    live: bool = typer.Option(False, "--live", help="actually POST to SkyPortal; default dry-run"),
+    url: str = typer.Option("", "--url", help="SkyPortal API base URL (with --live)"),
+    token: str = typer.Option("", "--token", help="SkyPortal token (with --live)"),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
+) -> None:
+    """Aggregate one event's circulars into a single SkyPortal source (dry-run by default).
+
+    Examples:
+      circex event --seed 44877 --extractor regex --default-instrument-id 4
+      circex event --circulars-dir flurry/ --group-ids 1988 --live --url ... --token ...
+    """
+    import json as _json
+
+    from circex.bot import aggregate_event, gather_by_xref
+    from circex.bot.poster import SkyPortalPoster, render_plan
+    from circex.fetch.gcn_poller import fetch_circular
+
+    def _fetch(cid: int) -> dict[str, Any] | None:
+        text = fetch_circular(cid)
+        if text is None:
+            return None
+        d = _json.loads(text)
+        return {
+            "circularId": d.get("circularId", cid),
+            "subject": d.get("subject", ""),
+            "body": d.get("body", ""),
+            "eventId": d.get("eventId"),
+        }
+
+    # ---- gather the event's circulars ----
+    if circulars_dir is not None:
+        records = [
+            json.loads(p.read_text(encoding="utf-8"))
+            for p in sorted(circulars_dir.glob("*.json"))
+        ]
+    elif seed:
+        records = gather_by_xref(seed, _fetch, max_hops=max_hops)
+    elif circular_ids:
+        records = [
+            r for cid in circular_ids.split(",") if (r := _fetch(int(cid.strip()))) is not None
+        ]
+    else:
+        raise typer.BadParameter("pass --seed, --circulars-dir, or --circular-ids")
+
+    if not records:
+        console.print("[red]no circulars gathered[/]")
+        raise typer.Exit(code=2)
+
+    t0 = None
+    if trigger_time is not None:
+        from dateutil import parser as _dp
+
+        t0 = _dp.parse(trigger_time)
+
+    imap: dict[str, int] = {}
+    if instrument_map is not None:
+        imap = {k: int(v) for k, v in json.loads(instrument_map.read_text()).items()}
+    gids = [int(g) for g in group_ids.split(",") if g.strip()]
+    cache = cache_db if extractor != "regex" else None
+
+    actions = aggregate_event(
+        records,
+        _build_extractor(extractor, cache),
+        trigger_time=t0,
+        instrument_map=imap,
+        default_instrument_id=default_instrument_id,
+        group_ids=gids,
+        event_name=event_name or None,
+    )
+
+    poster = SkyPortalPoster(
+        base_url=url or "https://skyportal.example/api", token=token or None, live=live
+    )
+    plan = poster.post(actions)
+
+    mode = "LIVE POST" if (live and token) else "DRY-RUN (nothing sent)"
+    src = actions.source
+    console.print(f"\n[bold]circex event — {mode}[/]")
+    console.print(
+        f"circulars={len(records)}  extractor={extractor}  "
+        f"source={src.id if src else 'NONE (no position found)'}  "
+        f"photometry={len(actions.photometry)}  redshift={'yes' if actions.redshift else 'no'}  "
         f"comments={len(actions.comments)}  skipped_rows={actions.skipped_rows}\n"
     )
     console.print(render_plan(plan) or "(no actions)")

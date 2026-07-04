@@ -56,3 +56,16 @@ def test_post_positionless_follow_up_creates_no_source() -> None:
 def test_post_requires_a_source() -> None:
     result = runner.invoke(app, ["post", "--extractor", "regex"])
     assert result.exit_code != 0
+
+
+def test_event_aggregates_fixtures_dry_run() -> None:
+    """`circex event --circulars-dir` fuses the fixtures into one source (dry-run)."""
+    result = runner.invoke(
+        app,
+        ["event", "--circulars-dir", "docs/fixtures", "--extractor", "regex",
+         "--default-instrument-id", "4", "--group-ids", "1988"],
+    )
+    assert result.exit_code == 0, result.output
+    assert "DRY-RUN" in result.output
+    assert "source=GRB260604C" in result.output
+    assert "POST /sources" in result.output
