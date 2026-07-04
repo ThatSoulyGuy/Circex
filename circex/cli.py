@@ -622,6 +622,42 @@ def event(
 
 
 @app.command()
+def dataset(
+    source: str = typer.Option("vidushi", "--source", help="vidushi | path/to/labels/dir"),
+    out: Path = typer.Option(Path("data/finetune"), "--out", help="output dir for train/val jsonl"),
+    max_examples: int = typer.Option(0, "--max", help="cap number of examples (0 = all)"),
+    val_every: int = typer.Option(10, "--val-every", help="hold out every Nth example for val"),
+) -> None:
+    """Build a Mistral instruction-tuning dataset (chat JSONL) from labeled circulars.
+
+    Examples:
+      circex dataset --source vidushi --out data/finetune
+      circex dataset --source data/labels/hand_v1 --out data/finetune_labels
+    """
+    import itertools
+
+    from circex.train import label_dir_examples, vidushi_examples, write_jsonl
+
+    if source == "vidushi":
+        from circex.eval.vidushi_adapter import load_vidushi_eval
+
+        examples = vidushi_examples(load_vidushi_eval().rows)
+    else:
+        from circex.data.archive import iter_circulars
+
+        def _body(cid: int) -> str | None:
+            recs = list(iter_circulars(circular_ids=[cid]))
+            return str(recs[0].get("body")) if recs else None
+
+        examples = label_dir_examples(Path(source), _body)
+
+    if max_examples:
+        examples = itertools.islice(examples, max_examples)
+    n_train, n_val = write_jsonl(examples, out, val_every=val_every)
+    console.print(f"[green]wrote {n_train} train + {n_val} val examples to {out}/[/]")
+
+
+@app.command()
 def annotate(
     from_file: Path | None = typer.Option(
         None, "--from-file", help="one raw circular JSON to annotate"
