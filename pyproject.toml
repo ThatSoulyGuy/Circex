@@ -38,6 +38,11 @@ taxonomy = [
 plot = [
     "matplotlib>=3.9",
 ]
+# `circex consume --kafka` (live GCN circular stream). Optional: the replay path
+# and everything else work without it.
+live = [
+    "gcn-kafka>=0.3",
+]
 dev = [
     "matplotlib>=3.9",
     "pytest>=8.3",

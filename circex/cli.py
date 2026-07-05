@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -734,6 +735,104 @@ def classify_train(
     console.print(f"[bold]classification F1 on {gold.name} gold:[/]")
     console.print(f"  Naive Bayes : F1 {nf:.3f}  (P {np_:.3f} / R {nr:.3f})")
     console.print(f"  regex       : F1 {rf:.3f}  (P {rp:.3f} / R {rr:.3f})")
+
+
+@app.command()
+def consume(
+    from_dir: Path | None = typer.Option(
+        None, "--from-dir", help="replay circulars from a dir of {id}.json (test/demo)"
+    ),
+    kafka: bool = typer.Option(
+        False, "--kafka", help="consume live from GCN Kafka (needs GCN_CLIENT_ID/SECRET env)"
+    ),
+    model: Path | None = typer.Option(
+        None, "--model", help="SN-type classifier model for the classification field"
+    ),
+    default_instrument_id: int | None = typer.Option(None, "--default-instrument-id"),
+    instrument_map: Path | None = typer.Option(None, "--instrument-map"),
+    group_ids: str = typer.Option("", "--group-ids", help="comma-separated SkyPortal group ids"),
+    live: bool = typer.Option(False, "--live", help="actually POST to SkyPortal; default dry-run"),
+    url: str = typer.Option("", "--url"),
+    token: str = typer.Option("", "--token"),
+) -> None:
+    """Process every incoming GCN circular into SkyPortal (dry-run by default).
+
+    Examples:
+      circex consume --from-dir flurry/ --model data/models/sn_type.json --default-instrument-id 4
+      circex consume --kafka --live --url ... --token ... --group-ids 1988
+    """
+    from circex.bot.poster import SkyPortalPoster
+    from circex.consume import dir_fetch, gcn_kafka_records, replay_dir_records, run
+    from circex.extract.regex import RegexExtractor
+    from circex.fetch.gcn_poller import fetch_circular
+
+    clf = None
+    if model is not None:
+        from circex.classify import SNTypeClassifier
+
+        clf = SNTypeClassifier.load(model)
+    extractor = RegexExtractor(sn_classifier=clf)
+    gids = [int(g) for g in group_ids.split(",") if g.strip()]
+    imap: dict[str, int] = {}
+    if instrument_map is not None:
+        imap = {k: int(v) for k, v in json.loads(instrument_map.read_text()).items()}
+    poster = SkyPortalPoster(
+        base_url=url or "https://skyportal.example/api", token=token or None, live=live
+    )
+
+    if from_dir is not None:
+        records = replay_dir_records(from_dir)
+        fetch = dir_fetch(from_dir)
+    elif kafka:
+        client_id, secret = os.environ.get("GCN_CLIENT_ID"), os.environ.get("GCN_CLIENT_SECRET")
+        if not (client_id and secret):
+            raise typer.BadParameter("set GCN_CLIENT_ID and GCN_CLIENT_SECRET for --kafka")
+        records = gcn_kafka_records(client_id, secret)
+
+        def fetch(cid: int) -> dict[str, Any] | None:
+            text = fetch_circular(cid)
+            return json.loads(text) if text else None
+    else:
+        raise typer.BadParameter("pass --from-dir or --kafka")
+
+    prime = None
+    if live and token and url:
+        import requests
+
+        def prime(obj_id: str) -> set[tuple[Any, ...]]:
+            resp = requests.get(
+                f"{url.rstrip('/')}/sources/{obj_id}/photometry",
+                headers={"Authorization": f"token {token}"},
+                timeout=30,
+            )
+            pts = resp.json().get("data", []) if resp.status_code < 400 else []
+            return {(obj_id, p.get("filter"), round(p.get("mjd"), 4)) for p in pts}
+
+    mode = "LIVE POST" if (live and token) else "DRY-RUN (nothing sent)"
+    tag = "regex+classifier" if clf else "regex"
+    console.print(f"\n[bold]circex consume — {mode}[/]  (extractor: {tag})\n")
+
+    def report(result: Any) -> None:
+        if result.status == "posted":
+            console.print(
+                f"  GCN {result.circular_id} -> {result.obj_id}: "
+                f"+{result.photometry_posted} photometry "
+                f"({result.photometry_skipped} already present)"
+            )
+        else:
+            console.print(f"  GCN {result.circular_id}: {result.status}")
+
+    run(
+        records,
+        extractor=extractor,
+        poster=poster,
+        fetch=fetch,
+        group_ids=gids,
+        instrument_map=imap,
+        default_instrument_id=default_instrument_id,
+        prime=prime,
+        on_result=report,
+    )
 
 
 @app.command()

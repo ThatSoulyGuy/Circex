@@ -8,7 +8,7 @@ classifications — measure the gap, do not over-engineer.
 from __future__ import annotations
 
 import time
-from typing import Final
+from typing import TYPE_CHECKING, Final
 
 from circex.extract.protocol import Circular, Extractor
 from circex.extract.regex.classification import parse_classification_with_span
@@ -32,6 +32,7 @@ from circex.extract.regex.regex_events import (
 from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
 from circex.schema import (
     CircularExtraction,
+    Classification,
     Event,
     ExtractionMeta,
     FollowUp,
@@ -39,11 +40,21 @@ from circex.schema import (
     Span,
 )
 
+if TYPE_CHECKING:
+    from circex.classify import SNTypeClassifier
+
 REGEX_EXTRACTOR_ID: Final[str] = "regex-v1"
 
 
 class RegexExtractor(Extractor):
-    """Regex baseline. Implements the Extractor protocol."""
+    """Regex baseline. Implements the Extractor protocol.
+
+    An optional `sn_classifier` (the trained NB model) overrides the weak regex
+    classification field — the classifier learns to abstain, which regex can't.
+    """
+
+    def __init__(self, sn_classifier: SNTypeClassifier | None = None) -> None:
+        self._sn_classifier = sn_classifier
 
     @property
     def extractor_id(self) -> str:
@@ -136,6 +147,13 @@ class RegexExtractor(Extractor):
         if cls_hit is not None:
             classification, cls_span = cls_hit
             provenance["classification"] = cls_span
+        # The trained classifier, when supplied, is authoritative: it abstains on
+        # non-classification circulars (where regex over-fires) and predicts a
+        # canonical SN type otherwise.
+        if self._sn_classifier is not None:
+            predicted = self._sn_classifier.predict_type(f"{subject}\n{body}")
+            classification = Classification(classification=predicted) if predicted else None
+            provenance.pop("classification", None)
 
         # ---- time offsets ----
         offset_hits = parse_time_offsets_with_spans(body)
