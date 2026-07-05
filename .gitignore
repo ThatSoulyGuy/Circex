@@ -56,3 +56,4 @@ runs/
 node_modules/
 *.tsbuildinfo
 /data/models/
+/data/finetune*/
