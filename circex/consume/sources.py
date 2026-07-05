@@ -37,7 +37,6 @@ def gcn_kafka_records(
     client_secret: str,
     *,
     topic: str = "gcn.circulars",
-    domain: str = "gcn.nasa.gov",
 ) -> Iterator[dict[str, Any]]:
     """Yield circulars live from the GCN Kafka stream (production path).
 
@@ -45,12 +44,14 @@ def gcn_kafka_records(
     optional `gcn-kafka` dependency. Imported lazily so the rest of the package
     has no hard Kafka dependency.
     """
-    from gcn_kafka import Consumer  # type: ignore[import-not-found]  # optional dep + creds
+    from gcn_kafka import Consumer
 
-    consumer = Consumer(client_id=client_id, client_secret=client_secret, domain=domain)
+    consumer = Consumer(client_id=client_id, client_secret=client_secret)
     consumer.subscribe([topic])
     while True:
         for message in consumer.consume(timeout=1):
             if message.error():
                 continue
-            yield json.loads(message.value())
+            value = message.value()
+            if value is not None:
+                yield json.loads(value)

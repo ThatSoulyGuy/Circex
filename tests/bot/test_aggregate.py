@@ -72,3 +72,25 @@ def test_gather_by_xref_tolerates_404() -> None:
     db = {40001: {"circularId": 40001, "subject": "seed", "body": "cites GCN 40099 (missing)"}}
     got = gather_by_xref(40001, lambda cid: db.get(cid), max_hops=1)
     assert [r["circularId"] for r in got] == [40001]
+
+
+def test_aggregate_prefers_refined_position_over_coarse_trigger() -> None:
+    """The optical-counterpart position must win over a coarse gamma-ray trigger box."""
+    records = [
+        {
+            "circularId": 1,
+            "subject": "GRB 010101A: Fermi GBM Final Real-time Localization",
+            "body": "The Fermi GBM team reports GRB 010101A at RA = 220.5, Dec = +33.4 (J2000).",
+        },
+        {
+            "circularId": 2,
+            "subject": "GRB 010101A: MASTER OT optical counterpart discovery",
+            "body": (
+                "We discovered the optical counterpart (OT) at RA = 224.456, Dec = +28.817. "
+                "Observed on 2024-01-02 03:00 UTC at r = 19.5 +/- 0.05."
+            ),
+        },
+    ]
+    actions = aggregate_event(records, RegexExtractor(), group_ids=[3], default_instrument_id=7)
+    assert actions.source is not None
+    assert abs(actions.source.ra - 224.456) < 0.01  # OT, not the coarse GBM box (220.5)
