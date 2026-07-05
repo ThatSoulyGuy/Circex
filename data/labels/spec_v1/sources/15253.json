@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 130925A: Initial Similarities to Swift J1644+57",
+  "eventId": "GRB 130925A",
+  "bibcode": "2013GCN.15253....1B",
+  "createdOn": 1380121181000,
+  "circularId": 15253,
+  "submitter": "S. Bradley Cenko at Caltech  <cenko@srl.caltech.edu>",
+  "email": "cenko@srl.caltech.edu",
+  "body": "D. N. Burrows (PSU), D. Malesani (DARK/NBI), A. Y. Lien (NASA/GSFC/ORAU),\nS. B. Cenko (NASA/GSFC), and N. Gehrels (NASA/GSFC) report:\n\nAt 04:11:24 UT on 25 September 2013, the Swift BAT triggered on an object\ndenoted as GRB 130925A on the assumption that it is a gamma-ray burst\n(Lien et al., GCN 15246).  Here we note that this source presents several\nunusual features that are atypical of GRBs.\n\nThe initial XRT observations show extremely rapid and dramatic flaring\nover the first 10^4 s, far in excess of what we typically see in GRBs.\nThe high X-ray flux at these relatively late times is likely what resulted\nin the detection of this source by MAXI ~ 1 hour after the GRB (Suzuki\net al., GCN 15248).  The Swift/XRT light curve is available at the\nfollowing URL:\n\nhttp://www.swift.ac.uk/xrt_curves/00571830/\n\nWe note that this behavior is at first glance similar to the highly\nvariable soft X-ray light curve observed from Swift J1644+57 (GRB\n110328A), which has been interpreted as a newly formed relativistic jet\nresulting from the tidal disruption of a star by a super-massive black\nhole (Burrows et al. 2011; Levan et al. 2011; Zauderer et al. 2011; Bloom\net al. 2011).  Like Swift J1644+57, GRB 130925A is a BAT image trigger,\nis associated with highly absorbed optical/NIR transient emission\n(Sudilovsky et al., GCN 15247), and lies at a relatively low redshift\n(z = 0.347; Vreeswijk et al., GCN 15249; Sudilovsky et al., GCN 15250).\n\nWe encourage observations at all wavelengths to help determine the nature\nof this interesting source."
+}

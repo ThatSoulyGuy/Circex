@@ -42,7 +42,7 @@ def test_save_load_roundtrip(tmp_path) -> None:
 def test_label_of_extracts_sn_types() -> None:
     assert label_of("The spectrum matches a type Ia supernova.") == {"Ia"}
     assert label_of("SNID gives a good match with a type Ic supernova") == {"Ic"}
-    assert label_of("we report a tidal disruption event (TDE)") == {"TDE"}
+    assert label_of("we report a tidal disruption event (TDE)") == {"Tidal Disruption Event"}
 
 
 def test_label_of_excludes_grb_duration_type() -> None:

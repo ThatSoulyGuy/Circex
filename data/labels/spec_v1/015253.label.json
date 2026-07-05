@@ -1,0 +1,27 @@
+{
+  "circular_id": 15253,
+  "event": {
+    "event_name": "GRB 130925A"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Tidal Disruption Event",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Nonstellar",
+      "Galactic Nuclei",
+      "Tidal Disruption Event"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.347,
+    "redshift_measure": "spectroscopic"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "circular_id": 25483,
+  "event": {
+    "event_name": "AT2019npv"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Ib",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ib"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.056,
+    "redshift_measure": "spectroscopic"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

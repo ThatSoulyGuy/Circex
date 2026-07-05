@@ -1,0 +1,9 @@
+{
+  "subject": "LIGO/Virgo G211117: PESSTO classification of  MASTER J165420.77-615258",
+  "eventId": "LIGO/Virgo G211117",
+  "createdOn": 1452348854000,
+  "submitter": "S. J. Smartt at Queens U Belfast  <s.smartt@qub.ac.uk>",
+  "circularId": 18847,
+  "email": "s.smartt@qub.ac.uk",
+  "body": "C. Frohmaier, G. Dimitriadis, R. Firth (Southampton), E. Cappellaro (INAF, Padova)\nM. Dennefeld (IAP, UPMC), C. Inserra (QUB), E. Kankare (QUB), K. Maguire, \nS. J. Smartt (QUB), K. W. Smith (QUB), M. Sullivan (Southampton), S. Valenti (UC Davis), \nO. Yaron (Weizmann), D. Young (QUB), I. Manulis (Weizmann)\n\nFurther to Lipunov et al.���s discovery of a transient by MASTER in \nESO 138-006  which is in the localisation region of G211117\n(see GCN 18835), at (RA, Dec) = 16h 54m 20.77s \n-61d 52m 58.0s on 2016-01-06.06807 UT.\n\nPESSTO, the Public ESO Spectroscopic Survey for Transient Objects \n(see Smartt et al. 2015, A&A, 579, 40 http://www.pessto.org) \nreports a classification spectrum. The transient is a type II supernova, \nmost likely a II-P, at +30d, with a redshift (z=0.018) consistent with that of the \nlikely host  (ESO 138-006). \n\nObservations were performed on the ESO New Technology Telescope \nat La Silla on 2016 Jan 08, using EFOSC2 and Grism 13 (3985-9315A, \n18A resolution). Classifications was done with SNID (Blondin & Tonry, 2007, \nApJ, 666, 1024) and GELATO (Harutyunyan et al., 2008, A&A, 488, 383). \nClassification spectrum can be obtained from http://www.pessto.org (via WISeREP)."
+}

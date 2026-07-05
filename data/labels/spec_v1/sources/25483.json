@@ -1,0 +1,10 @@
+{
+  "subject": "LIGO/Virgo S190814bv : Magellan IMACS Spectrum of AT2019npv classified as a Type Ib supernova",
+  "eventId": "LIGO/Virgo S190814bv",
+  "bibcode": "2019GCN.25483....1G",
+  "createdOn": 1566876814000,
+  "circularId": 25483,
+  "submitter": "Sebastian Gomez at Harvard U  <sgomez@cfa.harvard.edu>",
+  "email": "sgomez@cfa.harvard.edu",
+  "body": "S. Gomez, G. Hosseinzadeh, E. Berger, P. K. Blanchard, T. Eftekhari, J. Gill, L. Patton,\nV. A. Villar, P. K. G. Williams (Harvard U), P. S. Cowperthwaite (Carnegie Obs), R. Chornock (Ohio U),\nW. Fong, R. Margutti, K. D. Alexander (Northwestern U), and M. Nicholl (U Edinburgh) report:\n\nWe observed AT2019npv (Goldstein et al. GCN 25393) with the IMACS optical spectrograph on the \nMagellan 6.5m telescope (Dressler et al. 2011) on 2019 Aug 26 09:26:09UT. We corroborate \nthe redshift measurement of z = 0.056 from Jonker et al. (GCN 25454) and De. et al. \n(GCN 25480, 25461) by measuring the location of prominent host emision lines. We see \nmainly emision lines of Ca II 7291, 7323, O I 6300, and He I 5876. Leading to the \nclassification of this transient as a Type Ib supernova, and therefore unrelated\nto the LIGO event S190814bv (GCN 25324, GCN 25333). We find a best match to a supernova\n~50 days after peak using template matching with SNID (Blondin & Tonry, 2007, ApJ, 666, 1024).\n\nWe thank Dave Osip for taking these observations at Magellan."
+}

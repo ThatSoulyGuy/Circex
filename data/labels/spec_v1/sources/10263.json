@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 091208B: Gemini-North redshift",
+  "eventId": "GRB 091208B",
+  "bibcode": "2009GCN.10263....1W",
+  "createdOn": 1260284986000,
+  "circularId": 10263,
+  "submitter": "Klaas Wiersema at U of Leicester  <kw113@star.le.ac.uk>",
+  "email": "kw113@star.le.ac.uk",
+  "body": "K. Wiersema, N. R. Tanvir (U. Leicester), A. Cucchiara (PSU),\nA. J. Levan (U. Warwick) & D. Fox (PSU) report:\n\nWe observed the afterglow of GRB 091208B (Pagani et al. GCN 10256;\nde Ugarte Postigo et al. GCN 10255) with the GMOS-N spectrograph on Gemini\nNorth, beginning at 11:17 UT on December 8. We use the R400 grism.\nThe resulting spectrum covers the wavelength range 4000-8400 A and shows \nclear absorption lines of the MgII doublet (2796,2803), MgI (2853), FeI \n(2967), FeII (2586,2600) and MnII (2576,2594,2606) at a common redshift\nof z = 1.063.\n\nWe thank the Gemini-N staff, in particular K. Chiboucas, for\nperforming this observation."
+}

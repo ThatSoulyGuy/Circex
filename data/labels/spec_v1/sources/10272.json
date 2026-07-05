@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 091208B: Keck HIRES redshift confirmation",
+  "eventId": "GRB 091208B",
+  "bibcode": "2009GCN.10272....1P",
+  "createdOn": 1260339091000,
+  "circularId": 10272,
+  "submitter": "Daniel Perley at U.C. Berkeley  <dperley@astro.berkeley.edu>",
+  "email": "dperley@astro.berkeley.edu",
+  "body": "D. A. Perley (UC Berkeley), J. X. Prochaska (UCSC), P. Kalas, A. Howard, \nM. Fitzgerald, G. Marcy, and J. Graham (UCB) report:\n\nStarting at 10:58:17 UT on December 8 we initiated a single 1200 second \nexposure of the afterglow of GRB 091208B (GCN 12055, de Ugarte Postigo \net al.; GCN 10256, Pagani et al.) with HIRES-r on the 10m Keck I \ntelescope.  Consistent with the result of Wiersema et al. (GCN 10263), \nwe detect absorption lines from MgII and MnII at a redshift of \nz=1.0633+/-0.0003.  Additionally, we detect fine-structure transitions \nof FeII confirming that this is the redshift of the GRB."
+}

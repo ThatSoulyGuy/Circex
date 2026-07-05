@@ -1,0 +1,25 @@
+{
+  "circular_id": 18359,
+  "event": {
+    "event_name": "LIGO/VIRGO G184098 "
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Ia",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ia"
+    ]
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

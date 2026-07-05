@@ -1,0 +1,10 @@
+{
+  "subject": "GRB091018: Magellan Echellette Observations",
+  "eventId": "GRB 091018",
+  "bibcode": "2009GCN.10038....1C",
+  "createdOn": 1255916954000,
+  "circularId": 10038,
+  "submitter": "Hsiao-Wen Chen at U Chicago  <hchen@oddjob.uchicago.edu>",
+  "email": "hchen@oddjob.uchicago.edu",
+  "body": "Hsiao-Wen Chen, Jennifer Helsby (UChicago), Stephen Shectman, Ian \nThompson, Jeffrey Crane (Carnegie Observatory) report on behalf of a \nlarger collaboration:\n\n\"We observed the afterglow of GRB091018 reported by Stamatikos et al. (GCN\n10034) and confirmed by Schaefer et al. (GCN10036) using the MagE \nechellette spectrograph on the Magellan Clay Telescope.  The observations \nstarted at UT 00:28 on October 19, 2009, ~ 3.5 hours after the inital \ntrigger.  We obtained 2x900s exposures.  Our preliminary reduction shows \nthat the afterglow spectrum displays strong absorption transitions due to \nMgII, FeII, MnII at redshift z=0.971, which we tentatively identify as the \nhost redsdhift of the GRB.\n\nFurther analysis is underway.\n\nThis message may be cited.\""
+}

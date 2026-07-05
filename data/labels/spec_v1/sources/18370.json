@@ -1,0 +1,10 @@
+{
+  "subject": "LIGO/Virgo G184098: Liverpool Telescope Spectroscopy of PS15ccx",
+  "eventId": "LIGO/Virgo G184098",
+  "bibcode": "2015GCN.18370....1S",
+  "createdOn": 1443367984000,
+  "circularId": 18370,
+  "submitter": "Iain Steele at Liverpool/JMU  <i.a.steele@ljmu.ac.uk>",
+  "email": "i.a.steele@ljmu.ac.uk",
+  "body": "I.A. Steele, C.M. Copperwheat, A.S. Piascik (Liverpool JMU)\nreport on behalf of the larger ARI-LJMU collaboration.\n\nThe extragalactic transient PS15ccx was reported by Smartt et al. (GCN 18362)\non 2015-09-24 as part of the Pan-STARRS EM followup of GW trigger G184098.\n\nA spectrum of the transient with exposure time 1800 seconds was obtained using the\nSPRAT spectrograph on the 2.0 metre Liverpool Telescope on La Palma on 2015-09-27 starting\nat 05:32 UT.  The spectrum was obtained in morning twilight, and consequently has poor signal\nto-noise ratio.\n\nDue to the poor signal-to-noise no automatic classification could be made using SNID.  However\na ���by eye��� comparison with template spectra shows that the spectrum is consistent with a Supernova\nType Ia with redshift around 0.07.\n\n\n\n________________________________\nImportant Notice: the information in this email and any attachments is for the sole use of the intended recipient(s). If you are not an intended recipient, or a person responsible for delivering it to an intended recipient, you should delete it from your system immediately without disclosing its contents elsewhere and advise the sender by returning the email or by telephoning a number contained in the body of the email. No responsibility is accepted for loss or damage arising from viruses or changes made to this message after it was sent. The views contained in this email are those of the author and not necessarily those of Liverpool John Moores University."
+}

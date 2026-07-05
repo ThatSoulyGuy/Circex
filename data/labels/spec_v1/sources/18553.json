@@ -1,0 +1,9 @@
+{
+  "subject": "LIGO/Virgo G194575: LT Spectroscopy of iPTF-15dmk",
+  "eventId": "LIGO/Virgo G194575",
+  "createdOn": 1446551781000,
+  "submitter": "Iain Steele at Liverpool/JMU  <i.a.steele@ljmu.ac.uk>",
+  "circularId": 18553,
+  "email": "i.a.steele@ljmu.ac.uk",
+  "body": "I.A. Steele, C.M. Copperwheat, A.S. Piascik (Liverpool JMU) report on behalf\nof a larger collaboration:\n\nA spectrum of the iPTF candidate iPTYF-15dmk (GCN 18497) was obtained with the\nSPRAT spectrograph on the Liverpool Telescope on 2015-11-02 at 23:37UT.  The\nwavelength range is 4000-8000 Angstroms and the spectral resolution R=350.\n\nClassification using SNID indicates the transient is a Type II supernova with\nredshift z=0.065 and near maximum light.\n\nDisclaimerNone"
+}

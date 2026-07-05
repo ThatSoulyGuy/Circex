@@ -1,0 +1,29 @@
+{
+  "circular_id": 18536,
+  "event": {
+    "event_name": "iPTF15dkm"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "II-norm",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type II",
+      "II-norm"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.026,
+    "redshift_measure": "spectroscopic"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

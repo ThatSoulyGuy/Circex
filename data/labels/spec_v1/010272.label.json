@@ -1,0 +1,19 @@
+{
+  "circular_id": 10272,
+  "event": {
+    "event_name": "GRB 091208B"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "redshift": {
+    "redshift": 1.0633,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

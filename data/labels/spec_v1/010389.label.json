@@ -1,0 +1,19 @@
+{
+  "circular_id": 10389,
+  "event": {
+    "event_name": "GRB 100206A"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "redshift": {
+    "redshift": 0.41,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

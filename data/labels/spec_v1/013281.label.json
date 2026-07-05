@@ -1,0 +1,29 @@
+{
+  "circular_id": 13281,
+  "event": {
+    "event_name": "GRB 120422A"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Ic",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ic"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.283,
+    "redshift_measure": "spectroscopic"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

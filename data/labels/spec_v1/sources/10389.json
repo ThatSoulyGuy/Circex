@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 100206A - Keck/LRIS Spectroscopy",
+  "eventId": "GRB 100206A",
+  "bibcode": "2010GCN.10389....1C",
+  "createdOn": 1265525368000,
+  "circularId": 10389,
+  "submitter": "S. Bradley Cenko at Caltech  <cenko@srl.caltech.edu>",
+  "email": "cenko@srl.caltech.edu",
+  "body": "S. B. Cenko, J. S. Bloom, D. A. Perley, B. E. Cobb, A. N. Morgan, and A.\nA. Miller, Maryam Modjaz (UC Berkeley) and B. James (DARK) report on\nbehalf of a larger collaboration:\n\nWe have obtained spectra of the likely host galaxy (Miller et al., GCN\n10377) and afterglow (Levan et al., GCN 10386) of the short-hard\nGRB100206A (Krimm et al, GCN 10376) with the Low Resolution Imaging\nSpectrometer mounted on the 10-m Keck I telescope.  Observations began at\n06:17 UT on 7 February (~ 16.8 hours after the burst) and cover the\nwavelength range from approximately 3500 - 10000 A.\n\nAt the location of the candidate host galaxy, we detect a strongly red\ncontinuum consistent with the published photometry (Leloudas et al., GCN\n10387).  We detect strong, clearly resolved emission lines from H-alpha\nand [NII] at a redshift of z = 0.41.  No other obvious lines are visible\nover spectral range in our preliminary reduction.  The lack of H-beta,\ncoupled with the red spectrum and colors, suggest a relatively dusty\nenvironment.  At this redshift, the projected offset of ~ 6.8\" from the\ncandidate afterglow corresponds to a distance of ~ 35 kpc.\n\nNo obvious trace is visible at the location of the afterglow.\n\nObservations and reduction are ongoing."
+}

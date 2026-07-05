@@ -1,0 +1,25 @@
+{
+  "circular_id": 10543,
+  "event": {
+    "event_name": "GRB 100316D"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Ic",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ic"
+    ]
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

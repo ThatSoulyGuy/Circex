@@ -1,0 +1,29 @@
+{
+  "circular_id": 18118,
+  "event": {
+    "event_name": "iPTF P48"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Ia",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ia"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.07,
+    "redshift_measure": "spectroscopic"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

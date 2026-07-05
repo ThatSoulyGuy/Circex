@@ -1,0 +1,10 @@
+{
+  "subject": "LIGO/Virgo G274296: P200 classification of EM candidates",
+  "eventId": "LIGO/Virgo G274296",
+  "bibcode": "2017GCN.20747....1L",
+  "createdOn": 1488094287000,
+  "circularId": 20747,
+  "submitter": "Mansi M. Kasliwal at Caltech  <mansi@astro.caltech.edu>",
+  "email": "mansi@astro.caltech.edu",
+  "body": "R. Lunnan (Caltech), D. Cook (Caltech), K. De (Caltech) and M. M. Kasliwal\n(Caltech)\n\nreport on behalf of the iPTF and GROWTH collaborations\n\nUnder cloudy and windy weather conditions, the following classification\nspectra were obtained with the Palomar 200-in telescope using the DBSP\nspectrograph (Oke & Gunn, 1982, PASP, 94, 586).\n\nATLAS17aic (=iPTF17jg) was observed on 2017-02-23 13:03 UT. The spectrum\nshows strong galaxy emission lines at z=0.013 and a broad P-cygni Halpha\nprofile, consistent with a Type II SN a few weeks after maximum light.\n\nPS17bew (=iPTF17bbq) was observed on 2017-02-23 10:33 UT . The spectrum\nshows broad Halpha emission, consistent with a Type II SN, confirming the\nclassification reported by PESSTO (ATel #10127).\n\niPTF17bdd was observed on 2017-02-23 11:48 UT. The spectrum is dominated by\ngalaxy light, as was also the case in the spectrum reported from Liverpool\nTelescope (LVC GCN #20734)."
+}

@@ -145,16 +145,19 @@ runs in CI and on the Mac (a transformer stays a drop-in on the same interface).
 - **The decisive feature is the NONE class** — regex fires a classification on
   nearly every circular (precision 0.10); trained on real negatives, NB abstains.
 
-On the held-out `spec_v1` gold:
+On the held-out `spec_v1` gold, grown to **39 circulars (21 typed / 18 untyped)**
+across Ia/Ib/Ic/II/TDE for a robust number:
 
 | classifier | F1 | P / R |
 |---|---|---|
-| regex | 0.143 | 0.10 / 0.25 |
-| **Naive Bayes** | **0.615** | 0.44 / **1.00** |
+| regex | 0.067 | 0.05 / 0.10 |
+| **Naive Bayes** | **0.500** | 0.40 / 0.67 |
 
-**4.3× the F1, and recall 1.0** (catches every SN type) — with real precision
-headroom (0.44: it still over-fires on some negatives). The model
+**7.5× the F1.** On the larger gold regex is confirmed near-useless (precision
+0.05 — it fires a type on almost every circular); NB's win is the NONE class it
+learns to predict. Labels use tdtax-canonical names (`II-norm`, `Tidal Disruption
+Event`) so classifier output and gold match. The model
 (`data/models/sn_type.json`, gitignored — derived from the gitignored archive) is
 built with `circex classify-train`. Next increments: wire it in as the
-`classification` source behind a model-path flag; grow the gold to tighten
+`classification` source behind a model-path flag; grow the gold further to tighten
 precision; a transformer if the ceiling demands it.

@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 091127: Gemini-N redshift",
+  "eventId": "GRB 091127",
+  "bibcode": "2009GCN.10202....1C",
+  "createdOn": 1259407666000,
+  "circularId": 10202,
+  "submitter": "Antonino Cucchiara at PSU  <cucchiara@astro.psu.edu>",
+  "email": "cucchiara@astro.psu.edu",
+  "body": "A. Cucchiara, D. Fox (PSU), A. Levan (Warwick U.) and\nN. Tanvir (U. Leicester) report:\n\nOn November 28.40 UT we observed the afterglow of the Swift\nGRB 091127 (Troja et al. GCN 10191; Smith et al. GCN 10192)\nwith the GMOS-N spectrograph on Gemini North. \n\nThe observation consists of 2 exposures of 900 seconds each\nwith the R400 grating, covering 4000-8000A wavelength range.\n\nThe spectra shows a bright featureless continuum and two emission\nlines which we identified as [OIII]4959 and 5007 respectively\nat the common redshift of z = 0.490.\n\nTherefore we suggest this as redshift for GRB 091127.\n\nWe thank the Gemini-N support staff, in particular A. Stephens,\nfor performing these observations."
+}

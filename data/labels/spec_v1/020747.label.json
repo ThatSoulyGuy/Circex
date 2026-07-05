@@ -1,0 +1,29 @@
+{
+  "circular_id": 20747,
+  "event": {
+    "event_name": "LIGO/Virgo G274296"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "II-norm",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type II",
+      "II-norm"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.013,
+    "redshift_measure": "spectroscopic"
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}

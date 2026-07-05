@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 091024 Gemini-North redshift",
+  "eventId": "GRB 091024",
+  "bibcode": "2009GCN.10065....1C",
+  "createdOn": 1256392155000,
+  "circularId": 10065,
+  "submitter": "Nial Tanvir at IofA U.Cambridge  <nrt@ast.cam.ac.uk>",
+  "email": "nrt@ast.cam.ac.uk",
+  "body": "A. Cucchiara, D. Fox (PSU) & N. Tanvir (U. Leicester) report:\n\nWe observed the afterglow of GRB 091024 (Marshall et al. GCN 10062;\nMundell et al. GCN 10063) with the GMOS-N spectrograph on Gemini North\nbeginning at 10.43 UT.  The resultant spectrum, which spans 5925A to 10200A,\nshows a strong continuum and well detected lines of CaII H & K, MgI (2853A)\nat a common redshift of z=1.092.  Further analysis is ongoing.\n\nWe thank the Gemini-N support staff, in particular R. Pike, for\nobtaining these observations."
+}

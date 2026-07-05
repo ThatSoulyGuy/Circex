@@ -1,0 +1,10 @@
+{
+  "subject": "GRB 120422A: SN identification from GTC",
+  "eventId": "GRB 120422A",
+  "bibcode": "2012GCN.13281....1S",
+  "createdOn": 1336416942000,
+  "circularId": 13281,
+  "submitter": "Antonio de Ugarte Postigo at IAA-CSIC  <deugarte@iaa.es>",
+  "email": "deugarte@iaa.es",
+  "body": "R. Sanchez-Ramirez (IAA-CSIC), G. Leloudas (OKC, Stockholm), \nA. de Ugarte Postigo (IAA-CSIC, DARK/NBI), C.C. Thoene (IAA-CSIC), \nJ. Gorosabel (IAA-CSIC), D. Malesani (DARK/NBI), S. Schulze (Univ. Iceland), \nJ. P. U. Fynbo (DARK/NBI), N. R. Tanvir (Univ. Leicester), J. Hjorth (DARK/NBI), \nD. Xu (WIS) report on behalf of a larger collaboration:\n\nWe have obtained spectroscopy of the optical counterpart of GRB 120422A \n(Troja et al. GCN 13243, Cucchiara et al. GCN 13245) and its host galaxy, at \na redshift of 0.283 (Tanvir et al. GCN 13251, Schulze et al. GCN 13257) in two \nepochs, 3.6 and 14.6 days after the burst. Both spectra were obtained with a \nresolution of ~500 and cover the range between 4800 and 10000 AA. \n\nThe first epoch is close to the minimum of the light  curve, before the detection \nof the SN component (Malesani et al. GCN 13275), the spectrum is blue, \nflattening at ~5000 AA. It shows nebular emissions but no clear characteristic \nbroad features of a SN spectrum. \n\nIn the second spectrum, we clearly detect SN features, as reported by Wiersema \n(GCN 13276) and Malesani (GCN 13277). These features are now prominent \nand give an excellent match with those of broad-lined Ic SNe close to maximum, \nusing SNID (Blondin & Tonry 2007, ApJ, 666, 1024).\n\nIn our spectra we included an object located 5\" East of the host galaxy, which has \nemission lines at the same redshift as the host and a projected distance at \nz=0.283 of 22 kpc. This could indicate the existence of an interacting system.\n\nWe acknowledge the excellent support of the GTC staff, in particular Jose Miguel \nGonzalez Perez, Daniel Reverte Paya, Antonio Cabrera Lavers and Rene Rutten."
+}

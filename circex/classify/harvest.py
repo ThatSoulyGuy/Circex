@@ -15,16 +15,16 @@ from pathlib import Path
 
 from circex.classify.sn_type import NONE_LABEL
 
-# Type patterns -> canonical label; rare subtypes fold to their family (IIn->II,
-# Ic-BL->Ic) so each class has enough support to learn.
+# Type patterns -> tdtax CANONICAL label (so classifier output and gold labels
+# match, and gold validates). Rare subtypes fold to their family (IIn/IIP->II-norm,
+# Ic-BL->Ic). SLSN is absent from this taxonomy, so it is not harvested.
 _TYPE_PATTERNS: list[tuple[str, re.Pattern[str]]] = [
     ("Ic", re.compile(r"\b(?:broad[- ]lined\s+(?:type\s+)?Ic|type\s+Ic[- ]BL|Ic[- ]BL)\b", re.I)),
     ("Ia", re.compile(r"\b(?:type[- ]?Ia|SNe?\s+Ia|Ia\s+supernova)\b", re.I)),
     ("Ib", re.compile(r"\b(?:type[- ]?Ib|SN\s+Ib)\b(?![/-]?c)", re.I)),
     ("Ic", re.compile(r"\b(?:type[- ]?Ic|SN\s+Ic)\b", re.I)),
-    ("II", re.compile(r"\b(?:type[- ]?II[bnP]?|SN\s+II)\b", re.I)),
-    ("SLSN", re.compile(r"\b(?:superluminous|SLSN)\b", re.I)),
-    ("TDE", re.compile(r"\b(?:tidal disruption|TDE)\b", re.I)),
+    ("II-norm", re.compile(r"\b(?:type[- ]?II[bnP]?|SN\s+II)\b", re.I)),
+    ("Tidal Disruption Event", re.compile(r"\b(?:tidal disruption|TDE)\b", re.I)),
 ]
 _SN_CTX = re.compile(r"supernova|SNID|classif|spectrum|spectroscop|\bSNe?\b", re.I)
 _GRB_DUR = re.compile(
@@ -42,7 +42,9 @@ def label_of(text: str) -> set[str]:
         for match in pattern.finditer(text):
             ctx = text[max(0, match.start() - 70) : match.end() + 70]
             near = text[max(0, match.start() - 40) : match.end() + 40]
-            if lab in ("SLSN", "TDE") or (_SN_CTX.search(ctx) and not _GRB_DUR.search(near)):
+            if lab == "Tidal Disruption Event" or (
+                _SN_CTX.search(ctx) and not _GRB_DUR.search(near)
+            ):
                 hits.add(lab)
     return hits
 

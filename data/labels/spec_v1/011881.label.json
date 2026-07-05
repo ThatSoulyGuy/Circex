@@ -1,0 +1,23 @@
+{
+  "circular_id": 11881,
+  "event": {
+    "event_name": "GRB 110328A"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "classification": {
+    "classification": "Tidal Disruption Event",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Nonstellar",
+      "Galactic Nuclei",
+      "Tidal Disruption Event"
+    ]
+  },
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-spec-v1",
+    "cache_hit": false,
+    "notes": []
+  }
+}
