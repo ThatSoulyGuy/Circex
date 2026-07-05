@@ -673,6 +673,69 @@ def dataset(
     console.print(f"[green]wrote {n_train} train + {n_val} val examples to {out}/[/]")
 
 
+@app.command(name="classify-train")
+def classify_train(
+    archive: Path = typer.Option(
+        Path("data/archive_2025/archive.json"), "--archive", help="dir of circular JSONs"
+    ),
+    out: Path = typer.Option(Path("data/models/sn_type.json"), "--out", help="model output path"),
+    none_ratio: int = typer.Option(6, "--none-ratio", help="NONE examples per positive"),
+    gold: Path | None = typer.Option(
+        Path("data/labels/spec_v1"), "--gold", help="label dir to score classification on"
+    ),
+) -> None:
+    """Train the SN-type Naive Bayes classifier from harvested archive labels.
+
+    The final model trains on ALL harvested silver labels (the hand gold, held out
+    from training, is the generalization test reported below).
+    """
+    from circex.classify import SNTypeClassifier, harvest_training_data
+    from circex.extract.protocol import Circular
+    from circex.extract.regex import RegexExtractor
+
+    gold_ids: set[int] = set()
+    if gold is not None and gold.is_dir():
+        gold_ids = {int(p.stem.split(".")[0]) for p in gold.glob("*.label.json")}
+    data = harvest_training_data(archive, none_ratio=none_ratio, exclude_ids=gold_ids)
+    clf = SNTypeClassifier.fit([t for t, _ in data], [lab for _, lab in data])
+    clf.save(out)
+    console.print(f"[green]trained on {len(data)} examples[/] ({len(gold_ids)} gold held out)")
+    console.print(f"model -> {out}  (classes: {', '.join(clf.classes)})\n")
+
+    if not gold_ids:
+        return
+
+    # Score the classification field on the hand gold — NB vs regex, same circulars.
+    def _f1(pairs: list[tuple[str | None, str | None]]) -> tuple[float, float, float]:
+        tp = sum(1 for g, p in pairs if g and p and g == p)
+        fp = sum(1 for g, p in pairs if p and g != p)
+        fn = sum(1 for g, p in pairs if g and g != p)
+        prec = tp / (tp + fp) if tp + fp else 0.0
+        rec = tp / (tp + fn) if tp + fn else 0.0
+        f1 = 2 * prec * rec / (prec + rec) if prec + rec else 0.0
+        return prec, rec, f1
+
+    assert gold is not None  # gold_ids is only populated when gold is a directory
+    regex = RegexExtractor()
+    nb_pairs: list[tuple[str | None, str | None]] = []
+    rx_pairs: list[tuple[str | None, str | None]] = []
+    for label_path in sorted(gold.glob("*.label.json")):
+        cid = int(label_path.stem.split(".")[0])
+        gold_ext = CircularExtraction.model_validate_json(label_path.read_text(encoding="utf-8"))
+        gold_type = gold_ext.classification.classification if gold_ext.classification else None
+        body = json.loads((gold / "sources" / f"{cid}.json").read_text())
+        subject, text_body = body.get("subject", ""), body.get("body", "")
+        nb_pairs.append((gold_type, clf.predict_type(f"{subject}\n{text_body}")))
+        rx = regex.extract(Circular(circular_id=cid, subject=subject, body=text_body))
+        rx_type = rx.classification.classification if rx.classification else None
+        rx_pairs.append((gold_type, rx_type))
+    np_, nr, nf = _f1(nb_pairs)
+    rp, rr, rf = _f1(rx_pairs)
+    console.print(f"[bold]classification F1 on {gold.name} gold:[/]")
+    console.print(f"  Naive Bayes : F1 {nf:.3f}  (P {np_:.3f} / R {nr:.3f})")
+    console.print(f"  regex       : F1 {rf:.3f}  (P {rp:.3f} / R {rr:.3f})")
+
+
 @app.command()
 def annotate(
     from_file: Path | None = typer.Option(

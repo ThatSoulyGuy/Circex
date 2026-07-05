@@ -55,3 +55,4 @@ runs/
 # Node (Sprint 5 leanmcp_bridge)
 node_modules/
 *.tsbuildinfo
+/data/models/

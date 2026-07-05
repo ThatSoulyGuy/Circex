@@ -129,3 +129,32 @@ Ordered path to a *justified* fine-tune:
 | Training-data pipeline | ✅ `circex dataset`; 544 validated examples generated |
 | Full-field labels | ⏳ needs the annotate → human-validation pass |
 | Compute (GPU fine-tune) | ⏸ deferred (out of scope) |
+
+## 5. SN-type classifier — built (`circex classify-train`)
+
+The classification field (regex F1 0.143) was the clear fine-tune target, so it's
+now built — as a **dependency-free multinomial Naive Bayes** classifier, not a
+transformer: the signal is lexical, the data is small, and a closed-form CPU fit
+runs in CI and on the Mac (a transformer stays a drop-in on the same interface).
+
+- **Training data** is harvested from the 40,506-circular archive
+  (`circex/classify/harvest.py`): 187 single-type positives (Ia/II/Ic/TDE/…) plus
+  a deterministic NONE sample of real GRB/afterglow/detection circulars, with the
+  GRB "type I/II" (short/long population) trap excluded. The `spec_v1` gold is
+  held out of training.
+- **The decisive feature is the NONE class** — regex fires a classification on
+  nearly every circular (precision 0.10); trained on real negatives, NB abstains.
+
+On the held-out `spec_v1` gold:
+
+| classifier | F1 | P / R |
+|---|---|---|
+| regex | 0.143 | 0.10 / 0.25 |
+| **Naive Bayes** | **0.615** | 0.44 / **1.00** |
+
+**4.3× the F1, and recall 1.0** (catches every SN type) — with real precision
+headroom (0.44: it still over-fires on some negatives). The model
+(`data/models/sn_type.json`, gitignored — derived from the gitignored archive) is
+built with `circex classify-train`. Next increments: wire it in as the
+`classification` source behind a model-path flag; grow the gold to tighten
+precision; a transformer if the ceiling demands it.
