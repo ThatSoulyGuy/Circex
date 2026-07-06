@@ -800,14 +800,18 @@ def consume(
     if live and token and url:
         import requests
 
-        def prime(obj_id: str) -> set[tuple[Any, ...]]:
+        def prime(obj_id: str) -> list[tuple[str, str, float]]:
             resp = requests.get(
                 f"{url.rstrip('/')}/sources/{obj_id}/photometry",
                 headers={"Authorization": f"token {token}"},
                 timeout=30,
             )
             pts = resp.json().get("data", []) if resp.status_code < 400 else []
-            return {(obj_id, p.get("filter"), round(p.get("mjd"), 4)) for p in pts}
+            return [
+                (obj_id, p.get("filter"), p.get("mjd"))
+                for p in pts
+                if p.get("filter") and p.get("mjd") is not None
+            ]
 
     mode = "LIVE POST" if (live and token) else "DRY-RUN (nothing sent)"
     tag = "regex+classifier" if clf else "regex"

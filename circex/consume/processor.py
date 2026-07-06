@@ -27,10 +27,26 @@ class ProcessResult:
     status: str  # posted | nothing-postable
 
 
-def _key(point: Any) -> tuple[Any, ...]:
-    # No mag: SkyPortal converts magsys->AB on ingest (stored mag != posted mag),
-    # but preserves filter + mjd, so this key survives the round-trip for dedup.
-    return (point.obj_id, point.filter, round(point.mjd, 4))
+# A photometry point is "already present" if the source already has a point in the
+# same filter within this many days of it. Tolerant on purpose: the same stacked
+# observation gets reported at its start / mid / end epoch across circulars (a few
+# to tens of minutes apart), and an exact-mjd key would treat those as new points
+# and duplicate them. ~0.02 d = ~29 min covers that without merging genuinely
+# distinct measurements of a transient in one band. No mag in the key: SkyPortal
+# converts magsys->AB on ingest, so the stored mag differs from the posted one.
+_DEDUP_MJD_TOL = 0.02
+
+# Session memory: (obj_id, filter) -> mjds already present/posted.
+SeenPhotometry = dict[tuple[str, str], list[float]]
+
+
+def _is_duplicate(seen: SeenPhotometry, point: Any, tol: float = _DEDUP_MJD_TOL) -> bool:
+    mjds = seen.get((point.obj_id, point.filter))
+    return mjds is not None and any(abs(m - point.mjd) <= tol for m in mjds)
+
+
+def _remember(seen: SeenPhotometry, obj_id: str, filter_name: str, mjd: float) -> None:
+    seen.setdefault((obj_id, filter_name), []).append(mjd)
 
 
 def process_circular(
@@ -42,8 +58,8 @@ def process_circular(
     group_ids: list[int],
     instrument_map: dict[str, int] | None = None,
     default_instrument_id: int | None = None,
-    seen: set[tuple[Any, ...]] | None = None,
-    prime: Callable[[str], Iterable[tuple[Any, ...]]] | None = None,
+    seen: SeenPhotometry | None = None,
+    prime: Callable[[str], Iterable[tuple[str, str, float]]] | None = None,
     primed: set[str] | None = None,
 ) -> ProcessResult:
     """Reconstruct the circular's event, aggregate it, and post the new photometry."""
@@ -65,12 +81,16 @@ def process_circular(
         # Live idempotency: prime `seen` once per object from SkyPortal's existing
         # photometry so restarts don't re-post; then dedup within the session.
         if prime is not None and primed is not None and obj_id not in primed:
-            seen.update(prime(obj_id))
+            for oid, filter_name, mjd in prime(obj_id):
+                _remember(seen, oid, filter_name, mjd)
             primed.add(obj_id)
-        fresh = [p for p in actions.photometry if _key(p) not in seen]
+        fresh = []
+        for point in actions.photometry:
+            if _is_duplicate(seen, point):
+                continue
+            fresh.append(point)
+            _remember(seen, point.obj_id, point.filter, point.mjd)
         skipped = len(actions.photometry) - len(fresh)
-        for point in fresh:
-            seen.add(_key(point))
         actions = replace(actions, photometry=fresh)
 
     # Suppress the aggregate's informational note-comments on the live feed — they
@@ -90,11 +110,11 @@ def run(
     group_ids: list[int],
     instrument_map: dict[str, int] | None = None,
     default_instrument_id: int | None = None,
-    prime: Callable[[str], Iterable[tuple[Any, ...]]] | None = None,
+    prime: Callable[[str], Iterable[tuple[str, str, float]]] | None = None,
     on_result: Callable[[ProcessResult], None] | None = None,
 ) -> list[ProcessResult]:
     """Drive the consumer over a stream of circulars with session idempotency."""
-    seen: set[tuple[Any, ...]] = set()
+    seen: SeenPhotometry = {}
     primed: set[str] = set()
     results: list[ProcessResult] = []
     for record in records:

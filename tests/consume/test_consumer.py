@@ -59,3 +59,20 @@ def test_extractor_uses_sn_classifier_and_abstains() -> None:
         Circular(circular_id=2, subject="", body="GRB 200103A optical afterglow detection r = 20")
     )
     assert untyped.classification is None  # classifier abstains where regex would over-fire
+
+
+def test_dedup_is_epoch_tolerant() -> None:
+    """Same measurement reported ~10 min apart (start vs end epoch) must not duplicate."""
+    from types import SimpleNamespace
+
+    from circex.consume.processor import _DEDUP_MJD_TOL, _is_duplicate, _remember
+
+    seen: dict = {}
+    _remember(seen, "GRB1", "sdssg", 61196.1606)  # existing: 03:51 epoch
+    incoming = SimpleNamespace(obj_id="GRB1", filter="sdssg", mjd=61196.1535)  # 03:41 epoch
+    assert _DEDUP_MJD_TOL > 61196.1606 - 61196.1535  # within the ~29 min window
+    assert _is_duplicate(seen, incoming)  # recognized as already present, not re-posted
+    # a genuinely different epoch (next day) is NOT a duplicate
+    assert not _is_duplicate(seen, SimpleNamespace(obj_id="GRB1", filter="sdssg", mjd=61197.16))
+    # different filter, same epoch, is not a duplicate
+    assert not _is_duplicate(seen, SimpleNamespace(obj_id="GRB1", filter="sdssr", mjd=61196.1606))
