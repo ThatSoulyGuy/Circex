@@ -26,6 +26,7 @@ class SkyPortalPoster:
     token: str | None = None
     live: bool = False
     timeout: float = 30.0
+    continue_on_error: bool = False  # log + continue instead of raising (unattended use)
 
     def post(self, actions: SkyPortalActions) -> list[dict[str, Any]]:
         """Apply the actions. Returns the list of {method, path, payload} planned.
@@ -83,16 +84,29 @@ class SkyPortalPoster:
         headers = {"Authorization": f"token {self.token}", "Content-Type": "application/json"}
         for req in plan:
             url = self.base_url.rstrip("/") + req["path"]
-            resp = requests.request(
-                req["method"], url, headers=headers,
-                data=json.dumps(req["payload"]), timeout=self.timeout,
-            )
-            resp.raise_for_status()
+            try:
+                resp = requests.request(
+                    req["method"], url, headers=headers,
+                    data=json.dumps(req["payload"]), timeout=self.timeout,
+                )
+                resp.raise_for_status()
+                # SkyPortal also signals failure as HTTP 200 with status="error".
+                body = resp.json()
+                if isinstance(body, dict) and body.get("status") == "error":
+                    raise RuntimeError(str(body.get("message", "skyportal error"))[:200])
+            except Exception as exc:
+                if not self.continue_on_error:
+                    raise
+                # Unattended: one bad request (e.g. a filter the instrument lacks)
+                # must not kill the stream.
+                log.warning(
+                    "skyportal_post_failed",
+                    method=req["method"], path=req["path"], error=str(exc)[:200],
+                )
+                continue
             log.info(
                 "skyportal_posted",
-                method=req["method"],
-                path=req["path"],
-                status=resp.status_code,
+                method=req["method"], path=req["path"], status=resp.status_code,
             )
 
 

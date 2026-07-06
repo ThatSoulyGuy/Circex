@@ -258,3 +258,32 @@ def test_row_with_neither_mag_nor_limit_is_unpostable() -> None:
     a = to_actions(ex, default_instrument_id=4)
     assert a.photometry == []
     assert a.skipped_rows == 1
+
+
+def test_poster_continue_on_error(monkeypatch) -> None:
+    """continue_on_error tolerates a failed POST (unattended); default re-raises."""
+    import pytest
+    import requests
+
+    from circex.bot.poster import SkyPortalPoster
+    from circex.bot.skyportal_map import SkyPortalActions, SourceUpsert
+
+    class _Resp:
+        status_code = 400
+
+        def raise_for_status(self) -> None:
+            raise requests.HTTPError("400 Bad Request")
+
+        def json(self) -> dict:
+            return {}
+
+    monkeypatch.setattr(requests, "request", lambda *a, **k: _Resp())
+    actions = SkyPortalActions(
+        source=SourceUpsert(id="X", ra=1.0, dec=2.0, group_ids=[1]),
+        photometry=[], redshift=None, comments=[], skipped_rows=0,
+    )
+    # tolerant: logs and continues, no raise
+    SkyPortalPoster(token="t", live=True, continue_on_error=True).post(actions)
+    # strict (default): propagates
+    with pytest.raises(requests.HTTPError):
+        SkyPortalPoster(token="t", live=True).post(actions)

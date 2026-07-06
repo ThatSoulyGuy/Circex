@@ -73,6 +73,10 @@ def process_circular(
             seen.add(_key(point))
         actions = replace(actions, photometry=fresh)
 
+    # Suppress the aggregate's informational note-comments on the live feed — they
+    # are not deduplicated and would repeat on every circular of the event. The
+    # provenance survives in each photometry point's altdata.
+    actions = replace(actions, comments=[])
     poster.post(actions)
     return ProcessResult(circular_id, obj_id, len(actions.photometry), skipped, "posted")
 

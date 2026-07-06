@@ -777,7 +777,8 @@ def consume(
     if instrument_map is not None:
         imap = {k: int(v) for k, v in json.loads(instrument_map.read_text()).items()}
     poster = SkyPortalPoster(
-        base_url=url or "https://skyportal.example/api", token=token or None, live=live
+        base_url=url or "https://skyportal.example/api", token=token or None, live=live,
+        continue_on_error=True,  # unattended: a single bad POST must not kill the stream
     )
 
     if from_dir is not None:
