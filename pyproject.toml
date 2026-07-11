@@ -10,6 +10,15 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.13"
 authors = [{ name = "Circex contributors" }]
+keywords = ["astronomy", "GCN", "circulars", "SkyPortal", "transients", "extraction"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Operating System :: OS Independent",
+]
 
 dependencies = [
     "anthropic>=0.40",
@@ -59,6 +68,11 @@ dev = [
 
 [project.scripts]
 circex = "circex.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/skyportal/Circex"
+Repository = "https://github.com/skyportal/Circex"
+Issues = "https://github.com/skyportal/Circex/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["circex"]

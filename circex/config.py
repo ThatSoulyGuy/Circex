@@ -3,6 +3,10 @@ from pathlib import Path
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# Taxonomy YAML vendored into the package (circex/taxonomy_data), so a pip-installed
+# circex is self-contained. Overridable via CIRCEX_TAXONOMY_DIR.
+_BUNDLED_TAXONOMY_DIR = Path(__file__).resolve().parent / "taxonomy_data"
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -17,11 +21,11 @@ class Settings(BaseSettings):
     db_path: Path = Field(default=Path("./data/circex.sqlite"), alias="CIRCEX_DB_PATH")
     max_usd_per_run: float = Field(default=10.0, alias="CIRCEX_MAX_USD_PER_RUN")
     taxonomy_dir: Path = Field(
-        default=Path("./references/timedomain-taxonomy/tdtax"),
+        default=_BUNDLED_TAXONOMY_DIR,
         alias="CIRCEX_TAXONOMY_DIR",
         description=(
             "Directory containing the timedomain-taxonomy YAML files. "
-            "Defaults to the local clone in references/."
+            "Defaults to the copy vendored into the package."
         ),
     )
 

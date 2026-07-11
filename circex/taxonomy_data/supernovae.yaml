@@ -1,0 +1,158 @@
+class: Supernova
+tags: [explosive, transient]
+other names: [SN, sn, sne, supernova, supernovae]
+subclasses:
+- class: Type I
+  tags: [hydrogen poor]
+  other names: [SN Type I]
+  subclasses:
+  - class: Ia
+    tags: [white dwarf, cosmology, thermonuclear]
+    other names: [Ia-p, SN Ia, SNIa, supernovae Ia, SNe Ia]
+    subclasses:
+    - class: Ia-pec
+      tags: [peculiar]
+      other names: [SN Ia-pec, SNIa-pec, Ia-p]
+    - class: Ia-norm
+      tags: [normal]
+      other names: [SN Ia-normal, normal SN Ia]
+    - class: Ia-91T
+      tags: [over-luminous]
+      other names: [SN Ia-91T, 1991T-like]
+    - class: Ia-91bg
+      tags: [under-luminous]
+      other names: [SN Ia-91bg, 1991bg-like]
+    - class: Ia-99aa
+      tags: [over-luminous]
+      other names: [SN Ia-99aa, 1999aa-like]
+      comments: Like Ia-91T, but weak Ca II H/K and Si II before peak.
+      links:
+        - https://arxiv.org/abs/2209.06301
+    - class: Ia-00cx
+      tags: [over-luminous]
+      other names: [SN Ia-00cx, 2000cx-like]
+      links:
+        - https://arxiv.org/abs/1307.3555
+    - class: Ia-02cx
+      tags: [under-luminous]
+      other names: [SN Ia-02cx, 2002cx-like, Iax, SN Iax]
+    - class: Ia-CSM
+      tags: [over-luminous, interacting, narrow line]
+      other names: [SN Ia-CSM, interacting SN Ia, 2002ic-like, SN Ia-02ic]
+    - class: Ia-03fg
+      tags: [over-luminous]
+      other names: [SN Ia-03fg, 2003fg-like, super Chandra, Ia-SC]
+    - class: Ia-18byg
+      tags: []
+      other names: [SN Ia-18byg, 2018byg-like]
+  - class: Ib
+    tags: [core collapse, helium rich]
+    other names: [SN Ib, SNIb, supernovae Ib, SNe Ib]
+    subclasses:
+      - class: Ib-pec
+        tags: [peculiar]
+        other names: [SN Ib-p, Ib-p]
+      - class: Ib-norm
+        tags: [normal]
+        other names: [SN Ib-norm, normal SN Ib]
+      - class: Ibn
+        tags: [interacting, narrow line]
+        other names: [SN Ibn, 2006jc-like]
+  - class: Ic
+    tags: [core collapse, no helium]
+    other names: [SN Ic, SNIc, supernovae Ic, SNe Ic]
+    subclasses:
+      - class: Ic-BL
+        tags: [broad lines, high-velocity, massive stars]
+        other names: [SN IcBL, SN Ic-BL, hypernova, broad-lined supernova]
+      - class: Ic-SLSN
+        tags: [bright, super-luminous]
+        other names: [SLSN Type I, SLSN-I, super-luminous SN, SLSN I]
+      - class: Ic.5-SLSN
+        tags: [bright, super-luminous]
+        other names: [SLSN Type I.5, SLSN-I.5, SLSN I.5]
+        comments: |
+            Similar to SLSN-I at early times, but H lines visible after peak
+        links: 
+          - https://arxiv.org/abs/2202.02059
+          - https://arxiv.org/abs/2207.12059
+      - class: Ic-pec
+        tags: [peculiar]
+        other names: [SN Ic-p, Ic-p]
+      - class: Ic-norm
+        tags: [normal]
+        other names: [SN Ic-norm, normal SN Ic]
+      - class: Icn
+        tags: [interacting, narrow line]
+        other names: [SN Icn]  
+  - class: Ib/c
+    tags: [core collapse, unclear which subclass]
+    other names: [SN Ib/c, SNIb/c, SN Ibc, Ibc]
+- class: Type II
+  tags: [hydrogen rich]
+  other names: [SN Type II]
+  subclasses:
+    - class: IIn
+      tags: [interacting, narrow line]
+      other names: [SN IIn, SNe IIn]
+    - class: II-norm
+      tags: [normal]
+      other names: [SN II-norm, normal SN II, SNII, SN II]
+      subclasses:
+        - class: IIP
+          tags: [plateau]
+          other names: [SNIIP, SN II-P, SN Type IIP] 
+        - class: IIL
+          tags: [linear]
+          other names: [SNIIL, SN II-L, SN Type IIL]
+    - class: IIb
+      tags: [helium rich]
+      other names: [SNIIb, SN II-b, SN Type IIb]
+    - class: IIb-pec
+      tags: [helium rich, peculiar]
+      other names: [SNIIb-pec, SN II-bp, SN Type IIb-pec]
+    - class: II-pec
+      tags: [peculiar]
+      comments: SN 1987a
+      other names: [SNIIp, SN II-p, SN Type IIp, IIpec, II-p]
+    - class: II-SLSN
+      tags: [bright, super-luminous, H lines]
+      other names: [SLSN Type II, SLSN-II, super-luminous SN-II, SLSN II] 
+- class: FBOT
+  comments: |
+      This is a newly-discovered class of engine-driven explosions.
+  tags: [fast blue optical transient, fast-evolving luminous transient]
+  other names: [FELT]
+  links:
+    - https://en.wikipedia.org/wiki/Fast_blue_optical_transient
+- class: Ca-rich
+  tags: [hydrogen poor]
+  other names: [Ca strong]
+- class: ILRT
+  comments: |
+      Transient of uncertain origin with luminosity between classical novae and core-collapse SNe.
+  tags: [intermediate luminosity red transient]
+  links:
+    - https://arxiv.org/abs/1908.02323
+- class: Id
+  tags: [hydrogen poor]
+  comments: |
+    SNe with O/Ne/Mg-rich (and C/He/H-poor) outer layers
+  other names: [SN Id, SNId]
+  links:
+    - https://arxiv.org/abs/2409.02054
+  subclasses:
+    - class: Idn
+      tags: [interacting, narrow line]
+      other names: [SN Idn, SNIdn]
+- class: Ie
+  tags: [hydrogen poor]
+  comments: |
+    SNe with O/Si/S-rich (and Mg/Ne/He/H-poor) outer layers
+  other names: [SN Ie, SNIe]
+  links:
+    - https://arxiv.org/abs/2409.02054
+  subclasses:
+    - class: Ien
+      tags: [interacting, narrow line]
+      other names: [SN Ien, SNIen]
