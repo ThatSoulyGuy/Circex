@@ -73,8 +73,12 @@ single Pydantic v2 model, `CircularExtraction`, that every extractor emits;
 this is what makes the four-way comparison apples to apples. Three
 extractors implement a common `Extractor` interface: a regex baseline with
 six sub-parsers, a Claude extractor that uses forced tool-use against the
-JSON Schema dump of the model (Pezoa et al. 2016), and an Ollama extractor
-running the same Mistral-7B model S25 used. An evaluation harness produces
+JSON Schema dump of the model (Pezoa et al. 2016), and a Mistral-7B extractor
+running the same weights S25 used — served either in JSON mode, where the
+schema is a post-hoc check, or with grammar-constrained decoding, where the
+schema is enforced during sampling. Holding the model fixed and varying only
+that output channel is the controlled comparison this paper turns on. An
+evaluation harness produces
 per-field precision, recall, and F1 against either S25's Swift-validated
 gold or a local hand-labeled set, with set-semantics matching for list
 fields. A long-lived asynchronous worker exposes seven structured query
