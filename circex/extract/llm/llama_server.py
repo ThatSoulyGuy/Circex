@@ -43,6 +43,10 @@ DEFAULT_LLAMA_MODEL = os.environ.get("CIRCEX_LLAMA_MODEL", "mistral-7b")
 # Grammar-constrained decoding on the full CircularExtraction schema is far slower
 # than free generation on a dense circular; give it room. Override for tuning.
 DEFAULT_LLAMA_TIMEOUT = float(os.environ.get("CIRCEX_LLAMA_TIMEOUT", "300"))
+# Hard cap on generated tokens. Belt-and-braces with the schema's maxItems: even a
+# looping model stops here instead of grinding out 10k tokens under constrained
+# sampling. A rich extraction fits comfortably in this budget.
+DEFAULT_LLAMA_MAX_TOKENS = int(os.environ.get("CIRCEX_LLAMA_MAX_TOKENS", "2048"))
 
 
 class LlamaServerExtractor(Extractor):
@@ -141,6 +145,7 @@ class LlamaServerExtractor(Extractor):
                 "model": self._model_id,
                 "messages": messages,
                 "temperature": 0,
+                "max_tokens": DEFAULT_LLAMA_MAX_TOKENS,
                 "response_format": {
                     "type": "json_schema",
                     "json_schema": {

@@ -306,6 +306,13 @@ def llm_grammar_schema() -> dict[str, Any]:
     """
     full = CircularExtraction.model_json_schema()
     props = {k: v for k, v in full.get("properties", {}).items() if k in _GRAMMAR_FIELDS}
+    # Bound the arrays. Unbounded, a small model loops — emitting photometry rows
+    # forever (we measured >10k-token runaways that blew a 300 s timeout). maxItems
+    # is compiled into the GBNF, so the model structurally *cannot* run away.
+    for field, cap in (("photometry", 50), ("time_offsets", 20)):
+        prop = props.get(field)
+        if isinstance(prop, dict) and prop.get("type") == "array":
+            props[field] = {**prop, "maxItems": cap}
     defs = full.get("$defs", {})
     used = _reachable_defs(props, defs, set())
     lean: dict[str, Any] = {"type": "object", "properties": props, "required": []}
