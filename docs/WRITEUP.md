@@ -656,15 +656,20 @@ tools, the same model becomes the substrate for the live SkyPortal ingestion
 path described in §3.5, which posts extracted photometry directly into an
 observatory database.
 
-The work whose absence is most acutely felt by this report is the live
-Claude and Ollama columns of the four-way comparison, and a hand-labeled
-gold set that covers the ~20 fields beyond S25's four. Both are scoped,
-implemented at the harness level, and gated only on credentials and
-human-labeler time. With those in hand, the schema, the regex floor, and
-the comparator established here should support a fully populated four-way
-evaluation table and, in turn, the cost-quality trade-off curves needed
-to decide which extractor a deployment such as SkyPortal should adopt at
-the per-field level.
+The work whose absence is most acutely felt by this report is the Claude
+columns and a hand-labeled gold set covering the ~20 fields beyond S25's four.
+Both are scoped, implemented at the harness level, and gated only on
+credentials and human-labeler time. The second is the more consequential
+omission: the fields on which we expect a constrained language model to
+separate most sharply from regex — multi-row photometry tables, in-prose
+classification, unlabeled coordinates — are precisely the fields S25 did not
+extract, so no gold exists against which to score them. The redshift result of
+§4.1 is thus a lower bound on the constrained model's advantage, measured on
+the one semantically mediated field for which ground truth happens to exist.
+With that gold in hand, the schema, the regex floor, and the comparator
+established here should support a fully populated evaluation table and the
+per-field cost-quality trade-off curves a deployment such as SkyPortal needs
+in order to decide which extractor to route each field to.
 
 ## 8. Reproducibility
 
