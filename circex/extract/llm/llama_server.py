@@ -40,6 +40,9 @@ log = structlog.get_logger(__name__)
 
 DEFAULT_LLAMA_URL = os.environ.get("CIRCEX_LLAMA_URL", "http://localhost:8080")
 DEFAULT_LLAMA_MODEL = os.environ.get("CIRCEX_LLAMA_MODEL", "mistral-7b")
+# Grammar-constrained decoding on the full CircularExtraction schema is far slower
+# than free generation on a dense circular; give it room. Override for tuning.
+DEFAULT_LLAMA_TIMEOUT = float(os.environ.get("CIRCEX_LLAMA_TIMEOUT", "300"))
 
 
 class LlamaServerExtractor(Extractor):
@@ -50,7 +53,7 @@ class LlamaServerExtractor(Extractor):
         base_url: str = DEFAULT_LLAMA_URL,
         model_id: str = DEFAULT_LLAMA_MODEL,
         cache: LLMCache | None = None,
-        timeout: float = 120.0,
+        timeout: float = DEFAULT_LLAMA_TIMEOUT,
         session: Any | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
