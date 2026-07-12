@@ -54,6 +54,9 @@ def _build_extractor(
     if name == "ollama":
         from circex.extract.llm import OllamaExtractor
         return OllamaExtractor(cache=cache)
+    if name == "llama-server":
+        from circex.extract.llm import LlamaServerExtractor
+        return LlamaServerExtractor(cache=cache)
     raise typer.BadParameter(
         f"unknown extractor {name!r}; choose regex | claude-haiku | claude-sonnet | ollama"
     )
