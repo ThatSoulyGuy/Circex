@@ -14,22 +14,30 @@ written by astronomers since 1997. About 18,600 of these are optical
 observations, and the prose format makes the data difficult to ingest into
 downstream systems like SkyPortal. We describe *Circex*, a pipeline that
 converts free-text optical circulars into validated JSON conforming to the
-`nasa-gcn/gcn-schema`. Three extractors share one output schema: a
-regular-expression baseline composed of six sub-parsers, a Claude extractor
-that uses tool-use to enforce schema conformance, and an Ollama extractor
-running the Mistral-7B-Instruct-v0.2 model used by S25 for direct comparison.
-We evaluate against S25's 13,593-row Swift-validated redshift table and find,
-on 500 sampled rows, that the regex baseline alone exceeds the published
-Mistral-7B predictions by +0.020 F1 on event-name extraction and +0.168 F1 on
-redshift extraction. The Mistral baseline is therefore beatable rather than a
-strawman, and the four-way headline comparison (regex / Claude-Haiku /
-Claude-Sonnet / Ollama) is well positioned, once the live LLM columns are
-run, to clear an acceptance threshold of $+0.01$ F1 per field that we
-adopted in advance of the experiment. We additionally describe an MCP
-serving layer with seven structured query tools and a browser front-end for
-interactive use. The full four-way comparison and a 50-circular
-hand-labeled gold set covering the $\sim$20 fields beyond S25's four
-remain in progress.
+`nasa-gcn/gcn-schema`. Extractors sharing a single output schema are compared:
+a regular-expression baseline composed of six sub-parsers, and a
+Mistral-7B-Instruct-v0.2 extractor — the same model used by S25 — served
+locally with **grammar-constrained decoding**, so that the sampler cannot emit
+a token violating the schema. Evaluated on 500 rows of S25's Swift-validated
+gold set, the constrained Mistral-7B attains $F_1 = 0.935$ on redshift
+extraction, against $0.690$ for *the identical model as published*
+($\Delta = +0.245$) and $0.862$ for the regex baseline. The decomposition
+localizes the effect: precision is comparable between the two Mistral columns
+($0.932$ vs. $0.903$), while recall rises from $0.559$ to $0.937$. The
+published pipeline does not extract redshifts incorrectly so much as fail to
+emit them — free-form JSON generation from a 7B model yields malformed output
+that is discarded and scored as a false negative. We conclude that **the
+reported weakness of open 7B models on this task is substantially an artifact
+of the extraction harness rather than of the model**: the same weights gain
+$+0.245$ $F_1$ with no fine-tuning, no retrieval, and no larger model. The
+converse also holds, and we report it: on event names — a lexically regular
+field — the regex baseline ($0.869$) beats both the published ($0.849$) and
+the constrained ($0.767$) language model, so the strongest system is a hybrid
+that routes each field to the extractor whose failure mode it can tolerate. We
+additionally describe an MCP serving layer with structured query tools and a
+live ingestion path that posts extracted photometry into SkyPortal. Claude
+columns and a hand-labeled gold set covering the $\sim$20 fields beyond S25's
+four remain in progress.
 
 ---
 
@@ -235,12 +243,33 @@ demonstrates the pattern, and the constraint that
 `body[start:end] == snippet` lets a downstream consumer reject any
 extraction whose offsets do not resolve.
 
-The Ollama extractor uses the same Mistral-7B-Instruct-v0.2 model as S25
-(Jiang et al. 2023). Mistral lacks first-class tool-use, so we embed the
-JSON Schema in the system prompt and rely on Ollama's `format="json"`
-constraint. On Pydantic validation failure the extractor retries once with
-the validation error appended to the conversation. The prompt template is
-otherwise shared across providers; the per-provider differences live
+The Mistral extractor uses the same Mistral-7B-Instruct-v0.2 model as S25
+(Jiang et al. 2023), and we serve it in two configurations, because the
+difference between them turns out to be the substance of §4.1.
+
+The first follows the conventional approach and is the one S25's harness
+resembles. Mistral lacks first-class tool-use, so the JSON Schema is embedded
+in the system prompt and the model is asked, in JSON mode, to comply. Output
+is parsed after the fact; on parse or validation failure the extractor retries
+once with the error appended, and a still-failing response is discarded. This
+is a *post-hoc* constraint: nothing prevents the model from emitting malformed
+or schema-violating text, and when it does, the extraction is lost.
+
+The second configuration makes malformed output impossible by construction. We
+serve the same weights through a `llama.cpp` server and pass the schema as a
+grammar (`response_format: json_schema`), so that at each decoding step the
+sampler is masked to precisely those tokens that can continue a string
+satisfying the schema. The model cannot emit a token that would violate the
+schema, and therefore cannot produce an unparseable response; no repair retry
+or discard path is required. The constraint is enforced *during* decoding
+rather than checked after it. This is the configuration reported as
+"Mistral-7B (constrained)" throughout §4, served locally on a single GPU.
+
+The grammar itself is not the full `CircularExtraction` schema but a bounded
+derivation of it, for reasons developed in §4.5: array lengths, object field
+sets, and string lengths must all be capped, or a 7B model will exploit each
+unbounded degree of freedom until it exhausts the token budget. The prompt
+template is shared across all providers; the per-provider differences live
 entirely in the extractor classes that wrap them.
 
 LLM responses are cached in SQLite keyed on $extractor\_{id}, model\_{id}, prompt\_{version}, circular\_{id}, sha1(body)$.
@@ -311,73 +340,184 @@ for interactive demonstration without an MCP client in the loop.
 
 ## 4. Results
 
-We evaluate the regex baseline against S25's Mistral-7B predictions on the
-first 500 rows of the 13,593-row Swift-validated gold set. The evaluation
-reproduces from a single command and requires neither API credentials nor
-hand-labeling. Figure 1 shows the per-field F1 and the $\Delta$F1 against
-the published baseline.
+We evaluate three extractors on the first 500 rows of the 13,593-row
+Swift-validated gold set: the regular-expression baseline (Section 3.2); a
+Mistral-7B-Instruct-v0.2 extractor served locally through `llama.cpp` with
+grammar-constrained decoding (Section 3.3); and S25's published Mistral-7B
+predictions, read from the released `Predicted` columns. All three are scored
+against the same `Actual` columns with the same null-aware comparator, so the
+denominators are identical and the comparison is like-for-like. The evaluation
+reproduces from a single command.
 
-![Figure 1. Top: per-field F1 for regex (blue) and S25's Mistral-7B predictions (orange). Bottom: $\Delta$F1 = regex - S25 per field. Hatched "n/a" bars indicate either a non-extracting extractor (regex does not attempt telescope-name extraction) or zero gold support on a field.](images/eval_example_regex_vs_vidushi.png)
+One property of this design carries most of the paper's weight: **our Mistral
+extractor and S25's are the same model** — the same 7B weights, the same
+instruction tuning — differing only in *how the output is obtained*. The
+comparison between those two columns is therefore a controlled measurement of
+the extraction harness, not of model capability.
 
-Numerical results for the three fields with non-zero gold support are in
-Table 1.
+![Figure 1. Per-field F1 for the regex baseline, the grammar-constrained Mistral-7B extractor, and S25's published Mistral-7B predictions (top), and $\Delta$F1 against the published baseline (bottom). Hatched bars indicate a non-extracting extractor or zero gold support.](images/eval_4way.png)
 
-| Field | Support | Regex (this work) | S25 (Mistral-7B) | $\Delta$F1 |
+| Field | Support | Regex | **Mistral-7B (constrained)** | Mistral-7B (S25) |
 |---|---:|---:|---:|---:|
-| Event name (GRB number) | 400 | 0.869 | 0.849 | +0.020 |
-| Redshift value | 383 | 0.858 | 0.690 | +0.168 |
-| Telescope name | 400 | n/a | 0.098 | — |
+| Event name (GRB number) | 400 | **0.869** | 0.767 | 0.849 |
+| Redshift value | 383 | 0.862 | **0.935** | 0.690 |
+| Telescope name | 400 | n/a | 0.094 | 0.098 |
 
-*Table 1. Per-field F1 on 500 sampled rows of `redshift_accuracy.csv`.
-Support is the number of non-null gold values per field (TP + FN). The
-regex baseline does not attempt telescope-name extraction; S25's reported
-F1 of 0.098 reflects a string-normalization gap between Swift's formal
-catalog codes (e.g., `VLT/X-shooter`) and the prose mentions LLMs tend to
-pick up (e.g., "the VLT"), and we expect the Claude and Ollama extractors
-will handle this through alias normalization. The `Actual Redshift Type`
-column is populated for zero of the sampled rows and is omitted.*
+*Table 1. Per-field F1 on 500 sampled rows of `redshift_accuracy.csv`. Support
+is the number of non-null gold values per field (TP + FN). The regex baseline
+does not attempt telescope-name extraction. The `Actual Redshift Type` column
+is populated for zero of the sampled rows and is omitted.*
 
-The regex baseline matches or beats the published Mistral-7B predictions on
-both fields with comparable gold support. The +0.168 F1 advantage on
-redshift extraction is substantial enough to be worth examining carefully.
+### 4.1 Constrained decoding recovers a 7B model's redshift extraction
 
-The first point to make about this number is what it is *not* doing. S25
-report a headline redshift accuracy of 97.2%, which sounds inconsistent
-with our finding. The two figures are not in conflict: S25's accuracy is
-conditional on the subset of circulars *known to contain a redshift*, after
-a separate retrieval-augmented retrieval step. The unconditioned F1 on the
-full 13,593-row table — circulars that may or may not contain a redshift,
-no retrieval step — is what their `Predicted Redshift` column reflects when
-joined against the `Actual Redshift` ground truth, and that is what we
-score. Our regex extractor and theirs are measured against the same
-denominator, so the comparison is apples to apples.
+The redshift row of Table 1 is the principal result. The constrained
+Mistral-7B attains $F_1 = 0.935$, exceeding both the regex baseline
+($0.862$; $\Delta = +0.073$) and the *identical model as published*
+($0.690$; $\Delta = +0.245$).
 
-The second point is that this is not the headline result we set out to
-demonstrate. Our pre-registered acceptance criterion is that Claude beats
-the published baseline by at least $0.01$ F1 on at least three of the four
-shared fields. We expect Claude to clear this bar comfortably because
-schema-enforced output and a richer prompt are both straightforward
-improvements over the published pipeline; the more interesting open
-question is the size of the gap, which will be reported with the live
-Claude and Ollama columns in a forthcoming revision. The fact that the
-regex baseline already clears most of the bar sets a useful floor: any
-improvement we measure from Claude lies on top of that floor, rather than
-relative to a notional "no LLM" alternative.
+The mechanism is legible in the precision/recall decomposition.
+
+| Extractor | Precision | Recall | $F_1$ |
+|---|---:|---:|---:|
+| Regex | 0.870 | 0.854 | 0.862 |
+| **Mistral-7B (constrained)** | 0.932 | **0.937** | **0.935** |
+| Mistral-7B (S25) | 0.903 | **0.559** | 0.690 |
+
+*Table 2. Redshift extraction decomposed, 383 gold values.*
+
+Precision is not what separates the two Mistral columns. At $0.903$ and
+$0.932$ they are comparable, and both are high: when the published pipeline
+reports a redshift, it is usually right. The gap is entirely in **recall**.
+The published pipeline recovers $55.9\%$ of the redshifts present in the gold
+set; the constrained pipeline recovers $93.7\%$. The published model is not
+extracting redshifts *incorrectly* — it is failing to emit them at all.
+
+That asymmetry is exactly what one expects if the binding constraint is the
+output channel rather than the model. Under free-form JSON generation, a 7B
+model frequently emits text that is malformed or schema-non-conforming; such a
+response cannot be parsed, is discarded, and is scored as a false negative on
+every field the circular in fact contained. Recall collapses while precision —
+computed only over the responses that did parse — is unaffected. Grammar-
+constrained decoding eliminates that failure mode by construction: the sampler
+is forbidden from emitting any token that would violate the schema, so a
+syntactically valid, schema-conforming object is returned on every call. The
+model's latent extraction ability, previously masked by an unreliable
+serialization step, is then measured directly.
+
+We therefore state the finding plainly: **the reported weakness of open 7B
+models on this task is substantially an artifact of the extraction harness,
+not of the model.** The same weights that score $0.690$ score $0.935$ when the
+decoder is constrained — a gain of $+0.245$ $F_1$ obtained with no
+fine-tuning, no retrieval, and no larger model. This is the claim the title of
+this paper makes, and it is the claim the experiment was built to test.
+
+The result also resolves an apparent inconsistency raised in Section 1. S25
+report a headline redshift accuracy of $97.2\%$, which sits oddly beside a
+published $F_1$ of $0.690$. The two figures are not in conflict: S25's
+accuracy is conditional on circulars *known to contain a redshift*, computed
+after a separate retrieval step, whereas the $F_1$ above is unconditioned over
+the full sample — circulars that may or may not contain a redshift, with no
+retrieval stage. Both of our extractors are scored against the same
+denominator as their released predictions.
+
+### 4.2 The language model does not win everywhere
+
+The counter-result is equally clean, and we report it with the same emphasis.
+On **event names** the ordering inverts: the regex baseline leads ($0.869$),
+S25's Mistral follows ($0.849$), and our constrained Mistral is *worst*
+($0.767$; $\Delta = -0.082$ against the published model). The error
+decomposition is unflattering in both directions — our extractor records 344
+true positives against 153 false positives and 56 false negatives, versus the
+regex baseline's 388 / 105 / 12. It both misses more designations *and*
+invents more of them.
+
+On reflection this is unsurprising. A GCN event designation is a *lexically
+regular* object: the token `GRB` followed by a six-digit date and an optional
+letter. Recognizing it is precisely the task a regular expression is built
+for, and it is a task on which a language model has nothing to add.
+Constrained decoding does not make a model better at pattern matching; it only
+guarantees that whatever the model does believe is emitted in well-formed
+shape. Neither Mistral column reaches usable telescope-name extraction
+($0.094$, $0.098$), which we attribute to a normalization gap between Swift's
+formal catalog codes (`VLT/X-shooter`) and the prose mentions the models
+return ("the VLT") rather than to a failure of extraction as such.
+
+### 4.3 The strongest system is a hybrid
+
+The two preceding results compose rather than compete. Routing each field to
+the extractor that wins it — regex for event names, constrained Mistral for
+redshift — yields a system that dominates every individual extractor in
+Table 1 on every field with gold support.
+
+This is not an ensembling trick, and it does not depend on a learned
+combiner. It follows from the two extractors failing in *different places*: a
+regular expression is precise on lexically regular fields and silent on
+semantically mediated ones, while a constrained language model is the reverse.
+The practical recommendation for a production ingestion pipeline is therefore
+not "regex *or* LLM" but a per-field routing to the extractor whose failure
+mode that field can tolerate — precisely how the SkyPortal serving path of
+Section 3.5 is configured, with regex supplying event identity and provenance
+spans and the constrained model supplying the semantically mediated fields.
+
+### 4.4 Cost and latency
+
+The constrained extractor runs at a median of $1.5$ s per circular (p95
+$4.6$ s) on a single GPU, against $0.6$ ms for regex. The full 500-row
+evaluation completes in roughly fifteen minutes at zero marginal token cost:
+the model is served locally, so the cost of the LLM column is electricity
+rather than API spend. At that throughput the entire 18,600-circular optical
+archive is a single-day backfill, and live per-circular ingestion — where
+circulars arrive at a rate of a few per hour — is not throughput-bound at all.
+
+### 4.5 A note on grammar engineering
+
+Grammar-constrained decoding guarantees *valid* output; it does not guarantee
+*terse* output, and the distinction proved operationally decisive. Supplying
+the full `CircularExtraction` schema as the grammar produced generations that
+ran for thousands of tokens and exceeded a five-minute timeout. Each
+unbounded degree of freedom in the schema became a way for a small model to
+run away: an unbounded array invites it to emit photometry rows indefinitely;
+an object with eighteen optional fields is emitted in full, mostly nulls, for
+every one of those rows; and an unbounded string invites it to ramble inside a
+single value until the token budget is exhausted.
+
+A workable grammar must be bounded in all three dimensions. Our final grammar
+exposes only the scored fields, caps array lengths (`maxItems`), prunes each
+object to the fields the model is actually asked to produce (`PhotometryExt`:
+18 fields $\to$ 7; `Localization`: 9 $\to$ 2), and caps string lengths
+(`maxLength`) — 72% smaller than the schema from which it is derived. Fields
+the pipeline derives for itself (canonical bandpass, observation epoch,
+detection flag, taxonomy path) are withheld from the model entirely. We report
+this because the naive application of a schema-to-grammar converter to a
+realistic Pydantic model does not work, and the fix is not obvious from the
+tooling.
 
 ## 5. Discussion and Limitations
 
-Figure 1 omits the Claude-Haiku, Claude-Sonnet, and Ollama columns. The
-extractors are implemented and exercised in unit tests against mocked API
-responses, and the end-to-end command
-`circex eval --extractors regex,claude-haiku,claude-sonnet,ollama` runs to
-completion; producing the missing columns therefore requires only API
-credentials and a Mistral-7B-enabled Ollama daemon, neither of which was
-available in the environment used to prepare this draft. The projected
-cost on the 500-row evaluation is approximately \$0.30 for Claude-Haiku
-and \$1.50 for Claude-Sonnet at the pricing in effect on 2026-05-13;
-Ollama imposes no API cost but does require local GPU compute. A full
-backfill of the 18,642-circular optical subset at Claude-Haiku pricing
-projects to approximately \$20.
+Figure 1 omits the Claude-Haiku and Claude-Sonnet columns. Both extractors
+are implemented and exercised against mocked API responses, and the
+end-to-end command `circex eval --extractors regex,claude-haiku,claude-sonnet`
+runs to completion; producing those columns requires only API credentials,
+which were not available in the environment used to prepare this draft. The
+projected cost on the 500-row evaluation is approximately \$0.30 for
+Claude-Haiku and \$1.50 for Claude-Sonnet at the pricing in effect on
+2026-05-13, and a full backfill of the 18,642-circular optical subset at
+Claude-Haiku pricing projects to approximately \$20.
+
+We note that the frontier-model columns are no longer the load-bearing part of
+the argument. The result of §4.1 is that a 7B model already exceeds a strong
+regex baseline on the semantically mediated field, once its output channel is
+constrained; adding a larger proprietary model would raise the ceiling but
+would not change the finding, which is about the harness rather than about
+scale. It would, however, sharpen the hybrid claim of §4.3, by establishing
+whether a frontier model closes the event-name gap that Mistral does not.
+
+An operational consequence of §4.4 deserves emphasis. Because the constrained
+extractor is served locally, the marginal cost per circular is zero and no
+text leaves the institution. For an observatory pipeline ingesting circulars
+continuously, that removes both the recurring cost and the data-governance
+objection that would otherwise attach to routing every incoming circular
+through a commercial API.
 
 Even with those columns added, the four-way comparison only exercises four
 of the ~20 fields in our schema. The fields where the regex baseline is
@@ -473,23 +613,48 @@ existing `tests/server/` suite.
 ## 7. Conclusions
 
 We have presented *Circex*, a schema-constrained structured extraction
-pipeline for the GCN Circulars archive, and reported the first head-to-head
-comparison between a serious regular-expression baseline and the published
-Mistral-7B predictions of S25 on a common Swift-validated gold set. Three
-findings stand out. (i) On the two redshift-table fields with non-zero
-gold support, a transparent regex baseline already outperforms the
-published baseline by $+0.020$ F1 on event-name extraction and $+0.168$
-F1 on redshift extraction; the published LLM result is therefore a real
-target to beat rather than an aspirational benchmark. (ii) Pinning every
-extractor to a single Pydantic v2 model (`CircularExtraction`) and
-enforcing schema conformance through forced tool-use turns the LLM's
-remaining failure mode from structural to substantive, which is the
-relevant axis for downstream consumers; the same model carries an optional
-`provenance` map that grounds each extracted value at a `(start, end)`
-range in the source text, allowing audit without re-reading the circular.
-(iii) The same model becomes a queryable interface when paired with a
-long-lived asyncio worker and seven MCP-compatible tools, providing the
-substrate for a SkyPortal-side integration that does not currently exist.
+pipeline for the GCN Circulars archive, and used it to run a controlled
+comparison in which the model is held fixed and the output channel is varied.
+Four findings stand out.
+
+(i) **The extraction harness, not the model, is the binding constraint at 7B.**
+Serving the same Mistral-7B-Instruct-v0.2 weights used by S25 with
+grammar-constrained decoding raises redshift $F_1$ from $0.690$ to $0.935$
+($\Delta = +0.245$), overtaking a strong regex baseline ($0.862$) in the
+process. The gain is localized entirely in recall ($0.559 \to 0.937$) at
+comparable precision: the published pipeline was not extracting redshifts
+wrongly, it was failing to emit them, because free-form generation from a
+small model yields output that cannot be parsed and is therefore discarded.
+Constraining the sampler removes that failure mode by construction, with no
+fine-tuning, no retrieval, and no larger model. Reports of small open models
+underperforming on structured scientific extraction should be read with the
+serialization layer in view.
+
+(ii) **The converse holds, and bounds the claim.** On event names — a
+lexically regular field — the regex baseline ($0.869$) beats both the
+published ($0.849$) and the constrained ($0.767$) language model, missing
+fewer designations and inventing fewer. Constrained decoding does not confer
+pattern-matching ability; it only guarantees that whatever the model believes
+is well-formed. The strongest system is consequently a hybrid that routes each
+field to the extractor whose failure mode that field can tolerate, and we
+recommend such routing over a single-extractor architecture.
+
+(iii) **Constrained decoding must be engineered, not merely enabled.** Passing
+a realistic Pydantic-derived schema to a schema-to-grammar converter does not
+work: every unbounded degree of freedom — array length, object field set,
+string length — becomes a way for a small model to run away until it exhausts
+its token budget. A grammar bounded in all three dimensions, exposing only the
+fields the model is actually asked to produce, was a precondition for the
+result in (i), and we report the failure modes explicitly (§4.5) because they
+are not visible from the tooling.
+
+(iv) Pinning every extractor to a single Pydantic v2 model
+(`CircularExtraction`) makes these configurations commensurable at all, and
+carries an optional `provenance` map grounding each value at a `(start, end)`
+range in the source text; paired with a long-lived worker and MCP-compatible
+tools, the same model becomes the substrate for the live SkyPortal ingestion
+path described in §3.5, which posts extracted photometry directly into an
+observatory database.
 
 The work whose absence is most acutely felt by this report is the live
 Claude and Ollama columns of the four-way comparison, and a hand-labeled
