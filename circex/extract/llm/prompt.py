@@ -267,3 +267,48 @@ def llm_input_schema() -> dict[str, Any]:
     required = schema.get("required", [])
     schema["required"] = [k for k in required if k != "extraction_meta"]
     return schema
+
+
+# Fields the eval actually scores. Everything else — `provenance` (a free-form
+# dict of {start,end,snippet} per field), spectroscopy, reporter, follow_up,
+# datetime — is dropped for grammar-constrained decoding.
+_GRAMMAR_FIELDS = frozenset(
+    {"event", "localization", "photometry", "redshift", "classification", "time_offsets"}
+)
+
+
+def _reachable_defs(node: Any, defs: dict[str, Any], seen: set[str]) -> set[str]:
+    """Names of $defs reachable from `node`, so unused ones don't bloat the grammar."""
+    if isinstance(node, dict):
+        ref = node.get("$ref")
+        if isinstance(ref, str) and ref.startswith("#/$defs/"):
+            name = ref.rsplit("/", 1)[-1]
+            if name in defs and name not in seen:
+                seen.add(name)
+                _reachable_defs(defs[name], defs, seen)
+        for value in node.values():
+            _reachable_defs(value, defs, seen)
+    elif isinstance(node, list):
+        for value in node:
+            _reachable_defs(value, defs, seen)
+    return seen
+
+
+def llm_grammar_schema() -> dict[str, Any]:
+    """Lean schema for grammar-constrained decoding (llama.cpp `response_format`).
+
+    The full CircularExtraction schema is impractical as a grammar: it makes a huge
+    GBNF *and* forces the model to emit a huge object (every provenance span), and
+    constrained sampling pays per token. On dense circulars that ran for minutes and
+    timed out. This keeps only the scored fields, which shrinks both the grammar and
+    the output — provenance is recovered from the regex path anyway, and the model's
+    offsets were never reliable.
+    """
+    full = CircularExtraction.model_json_schema()
+    props = {k: v for k, v in full.get("properties", {}).items() if k in _GRAMMAR_FIELDS}
+    defs = full.get("$defs", {})
+    used = _reachable_defs(props, defs, set())
+    lean: dict[str, Any] = {"type": "object", "properties": props, "required": []}
+    if used:
+        lean["$defs"] = {name: defs[name] for name in used}
+    return lean

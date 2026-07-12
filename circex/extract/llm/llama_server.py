@@ -30,7 +30,7 @@ from circex.extract.llm.prompt import (
     PROMPT_V1,
     build_messages,
     build_system_text,
-    llm_input_schema,
+    llm_grammar_schema,
 )
 from circex.extract.protocol import Circular, Extractor
 from circex.extract.timing import resolve_relative_epochs
@@ -143,7 +143,10 @@ class LlamaServerExtractor(Extractor):
                 "temperature": 0,
                 "response_format": {
                     "type": "json_schema",
-                    "json_schema": {"name": "circular_extraction", "schema": llm_input_schema()},
+                    "json_schema": {
+                        "name": "circular_extraction",
+                        "schema": llm_grammar_schema(),  # lean: scored fields only
+                    },
                 },
             },
             timeout=self._timeout,
