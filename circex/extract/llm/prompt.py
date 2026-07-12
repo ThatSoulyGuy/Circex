@@ -15,6 +15,7 @@ for what changed vs Vidushi's published prompt (Sharma et al. 2025).
 
 from __future__ import annotations
 
+import copy
 import json
 from typing import Any, TypedDict
 
@@ -294,6 +295,25 @@ _LEAN_DEF_FIELDS: dict[str, frozenset[str]] = {
 }
 
 
+def _bound_strings(node: Any, max_len: int = 128) -> None:
+    """Add maxLength to unbounded string schemas, in place.
+
+    Arrays and objects are bounded, but a *string* is not: a small model can ramble
+    inside one value until it burns the whole token budget (we saw generations open
+    a string at char 94 and never close it, truncating mid-string). Every string we
+    ask for here is a short identifier — a filter, a telescope, an event name — so a
+    cap costs nothing. Enums are already bounded; leave them be.
+    """
+    if isinstance(node, dict):
+        if node.get("type") == "string" and "enum" not in node and "maxLength" not in node:
+            node["maxLength"] = max_len
+        for value in node.values():
+            _bound_strings(value, max_len)
+    elif isinstance(node, list):
+        for value in node:
+            _bound_strings(value, max_len)
+
+
 def _reachable_defs(node: Any, defs: dict[str, Any], seen: set[str]) -> set[str]:
     """Names of $defs reachable from `node`, so unused ones don't bloat the grammar."""
     if isinstance(node, dict):
@@ -346,4 +366,8 @@ def llm_grammar_schema() -> dict[str, Any]:
     lean: dict[str, Any] = {"type": "object", "properties": props, "required": []}
     if used:
         lean["$defs"] = {name: pruned[name] for name in used}
+    # Deep-copy before mutating: the dicts above are shallow copies that still share
+    # nested nodes with CircularExtraction.model_json_schema().
+    lean = copy.deepcopy(lean)
+    _bound_strings(lean)
     return lean
