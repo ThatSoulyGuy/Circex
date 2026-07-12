@@ -277,6 +277,23 @@ _GRAMMAR_FIELDS = frozenset(
 )
 
 
+# Per-object fields the model should actually emit. Everything else is either
+# DERIVED by circex (bandpass, obs_time, is_detection, telescope_canonical,
+# taxonomy_path) or unscored — making the model generate them under constrained
+# sampling just burns tokens. PhotometryExt alone drops 18 fields -> 7, which is
+# what was blowing the token budget on multi-row circulars.
+_LEAN_DEF_FIELDS: dict[str, frozenset[str]] = {
+    "Event": frozenset({"event_name"}),
+    "Localization": frozenset({"ra", "dec"}),
+    "Redshift": frozenset({"redshift", "redshift_error", "redshift_measure", "redshift_type"}),
+    "Classification": frozenset({"classification"}),
+    "PhotometryExt": frozenset(
+        {"filter", "mag", "mag_error", "mag_system", "limiting_mag", "obs_mjd", "telescope"}
+    ),
+    "TimeOffset": frozenset({"value", "unit", "reference"}),
+}
+
+
 def _reachable_defs(node: Any, defs: dict[str, Any], seen: set[str]) -> set[str]:
     """Names of $defs reachable from `node`, so unused ones don't bloat the grammar."""
     if isinstance(node, dict):
@@ -309,13 +326,24 @@ def llm_grammar_schema() -> dict[str, Any]:
     # Bound the arrays. Unbounded, a small model loops — emitting photometry rows
     # forever (we measured >10k-token runaways that blew a 300 s timeout). maxItems
     # is compiled into the GBNF, so the model structurally *cannot* run away.
-    for field, cap in (("photometry", 50), ("time_offsets", 20)):
+    for field, cap in (("photometry", 15), ("time_offsets", 10)):
         prop = props.get(field)
         if isinstance(prop, dict) and prop.get("type") == "array":
             props[field] = {**prop, "maxItems": cap}
-    defs = full.get("$defs", {})
-    used = _reachable_defs(props, defs, set())
+
+    # Slim each nested object to the fields the model should emit (see above).
+    pruned: dict[str, Any] = {}
+    for name, definition in full.get("$defs", {}).items():
+        node = dict(definition)
+        keep = _LEAN_DEF_FIELDS.get(name)
+        if keep is not None and isinstance(node.get("properties"), dict):
+            node["properties"] = {k: v for k, v in node["properties"].items() if k in keep}
+            if isinstance(node.get("required"), list):
+                node["required"] = [k for k in node["required"] if k in keep]
+        pruned[name] = node
+
+    used = _reachable_defs(props, pruned, set())
     lean: dict[str, Any] = {"type": "object", "properties": props, "required": []}
     if used:
-        lean["$defs"] = {name: defs[name] for name in used}
+        lean["$defs"] = {name: pruned[name] for name in used}
     return lean
