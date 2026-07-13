@@ -699,6 +699,15 @@ mirroring the References section is provided alongside this manuscript at
 
 ## Acknowledgments
 
+We thank Sushant Sharma Chaudhary for deploying the Mistral-7B `llama.cpp`
+server used for the constrained-decoding experiments of §4, and for pointing us
+to grammar-constrained decoding via the server's `response_format` interface —
+the mechanism on which the central result of this paper rests.
+
+The authors acknowledge the Minnesota Supercomputing Institute (MSI) at the
+University of Minnesota for providing the GPU resources that contributed to the
+research results reported within this paper.
+
 This work builds directly on S25 and uses three of their data products —
 the full circulars archive, the topic labels, and the Swift-validated
 redshift gold — along with the
