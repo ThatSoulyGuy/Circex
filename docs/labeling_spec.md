@@ -183,6 +183,39 @@ the rules above:
            Open question: schema for lower/upper bounds?
 ```
 
+### hand_v2 pass (2026-07-15) — policies applied while validating drafts
+
+Machine drafts (`hybrid:regex-v1+llama-server:mistral-7b`) corrected to gold.
+Standing rulings for this pass (confirmed with project owner):
+
+- **follow_up:** populate ONLY for genuine cross-event follow-up. GW/neutrino→
+  optical counterparts get `event` = the GW/neutrino event and `follow_up`
+  = {ref_type, ref_instrument, ref_ID (trigger), reference: alert circular}.
+  GRB optical circulars are self-reports → `follow_up = null` (the regex draft's
+  scraped `{"gcn_circulars": "..."}` lists were removed everywhere).
+- **photometry scope:** only the reported transient/source/counterpart (and its
+  own upper limits). Comparison stars, calibration standards, local-standard
+  tables, and unrelated field galaxies are dropped (noted).
+- **photometry rows:** keep a row only if it carries `mag` or `limiting_mag`.
+  A bare filter+telescope observation with no value goes to `datetime` instead.
+- **upper limits:** `limiting_mag` (+`limiting_mag_sigma`), `mag=null`.
+- **mag_system inference:** Sloan/PS1 ugrizy→AB, Bessel UBVRI→Vega, JHKKs→Vega,
+  unfiltered/clear/open→null. Applied unless the circular says otherwise.
+- **non-optical circulars** (X-ray: MAXI/Chandra/BeppoSAX-NFI; gamma: BAT,
+  Lomonosov/BDRG): `photometry=[]`; keep event/localization/trigger only; note
+  the band. The regex draft's keV "filters" and flux-as-magnitude were removed.
+- **cited (not measured) values** (redshifts/mags attributed to another GCN/IAUC)
+  are left out of structured fields and noted.
+- **dates/coords** converted with astropy (many draft `obs_mjd` were off by ~1
+  month; sexagesimal→decimal ICRS). Drafts populated `datetime`/`spectroscopy`/
+  `reporter` in zero files — stated obs times/livetimes added where convertible.
+- **extraction_meta** → `hand-v2`; provenance offsets regenerated from the
+  corrected values (backfill + per-row photometry anchoring).
+
+Progress: single_row_mag (10), photometric_upper_limit (10),
+gw_neutrino_counterpart (20) validated + committed. Remaining:
+spec_z_classification (40), multi_row_mag_table (40).
+
 Keep this section short. If a pattern recurs, lift it into the field rules
 above and bump to `hand_v2/`.
 
@@ -193,6 +226,16 @@ above and bump to `hand_v2/`.
 (Append as discovered. Items here become Sprint-1-end schema-revision proposals.)
 
 - (placeholder; fill in during labeling)
+- **Multi-source circulars can't be fully represented.** `classification`,
+  `redshift`, and `localization` are singular, but some circulars report N
+  distinct sources: e.g. GCN 21104 lists 19 spectroscopically-typed SNe
+  (per-source type + z + position), GCN 20493 lists 21 MASTER OTs (per-source
+  position + type), and multi-OT circulars generally. Only their per-source
+  magnitudes fit (as `photometry[]` rows); the per-source class/redshift/position
+  are lost to notes. Proposal: allow a list of `{classification, redshift,
+  localization}` "sources", or attach these to each `photometry` row.
+- **PhotometryExt has no per-row position.** When several OTs/limits at distinct
+  sky positions appear, their coordinates can't be attached to the rows.
 
 ---
 
