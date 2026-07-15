@@ -1,0 +1,127 @@
+{
+  "circular_id": 9006,
+  "event": {
+    "event_name": "GRB 090313"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "v",
+      "mag": 20.1,
+      "mag_error": 0.3,
+      "mag_system": "Vega",
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": true
+    },
+    {
+      "filter": "b",
+      "mag": 21.5,
+      "mag_error": 0.38,
+      "mag_system": "Vega",
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": true
+    },
+    {
+      "filter": "u",
+      "mag_system": "Vega",
+      "limiting_mag": 21.44,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvw1",
+      "mag_system": "Vega",
+      "limiting_mag": 21.78,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvm2",
+      "mag_system": "Vega",
+      "limiting_mag": 21.22,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvw2",
+      "mag_system": "Vega",
+      "limiting_mag": 21.58,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 3.375,
+    "redshift_measure": "spectroscopic"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 685,
+      "end": 745,
+      "snippet": "v          11.0          551      20.10 +/- 0.30 (3.6 sigma)"
+    },
+    "photometry[1]": {
+      "start": 746,
+      "end": 806,
+      "snippet": "b          11.2          770      21.50 +/- 0.38 (2.8 sigma)"
+    },
+    "photometry[2]": {
+      "start": 807,
+      "end": 848,
+      "snippet": "u          8.1           1024     > 21.44"
+    },
+    "photometry[3]": {
+      "start": 849,
+      "end": 890,
+      "snippet": "uvw1       8.6           1771     > 21.78"
+    },
+    "photometry[4]": {
+      "start": 891,
+      "end": 932,
+      "snippet": "uvm2       9.3           886      > 21.22"
+    },
+    "photometry[5]": {
+      "start": 933,
+      "end": 974,
+      "snippet": "uvw2       10.9          886      > 21.58"
+    },
+    "redshift.redshift": {
+      "start": 469,
+      "end": 528,
+      "snippet": "spectroscopic redshift z=3.375 (Chornock et al., GCN 8994)."
+    },
+    "redshift.redshift_measure": {
+      "start": 469,
+      "end": 528,
+      "snippet": "spectroscopic redshift z=3.375 (Chornock et al., GCN 8994)."
+    },
+    "event": {
+      "start": 180,
+      "end": 250,
+      "snippet": "observations of GRB 090313 for all optical and ultraviolet filters. A "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "UVOT v/b detections + u/uv upper limits (Vega). z=3.375 is GRB 090313's spectroscopic redshift (Chornock GCN 8994). T_mid epochs not resolved to absolute times"
+    ]
+  }
+}

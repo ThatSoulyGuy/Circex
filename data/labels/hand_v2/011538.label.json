@@ -1,0 +1,51 @@
+{
+  "circular_id": 11538,
+  "event": {
+    "event_name": "GRB 110106B"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "[O II] 3727",
+      "rest_wavelength": 3727.0
+    },
+    {
+      "line_id": "Hbeta",
+      "rest_wavelength": 4861.0
+    },
+    {
+      "line_id": "[O III] 5007",
+      "rest_wavelength": 5007.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.618,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 180,
+      "end": 247,
+      "snippet": "the XRT error circle of GRB 110106B (Sbarufatti et al., GCN 11525; "
+    },
+    "redshift.redshift": {
+      "start": 530,
+      "end": 550,
+      "snippet": "redshift of z=0.618."
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "[OII],Hbeta,[OIII] emission at z=0.618 from the XRT-error-circle galaxy (Gemini-N/GMOS)"
+    ]
+  }
+}

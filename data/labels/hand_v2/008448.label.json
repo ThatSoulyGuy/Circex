@@ -1,0 +1,155 @@
+{
+  "circular_id": 8448,
+  "event": {
+    "event_name": "GRB 081029"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Lyalpha (DLA)",
+      "rest_wavelength": 1215.67
+    },
+    {
+      "line_id": "Si IV 1393",
+      "rest_wavelength": 1393.0
+    },
+    {
+      "line_id": "Si IV 1402",
+      "rest_wavelength": 1402.0
+    },
+    {
+      "line_id": "Si II 1526",
+      "rest_wavelength": 1526.0
+    },
+    {
+      "line_id": "Si II 1260",
+      "rest_wavelength": 1260.0
+    },
+    {
+      "line_id": "Si II* 1264",
+      "rest_wavelength": 1264.0
+    },
+    {
+      "line_id": "C I 1560",
+      "rest_wavelength": 1560.0
+    },
+    {
+      "line_id": "C II 1334",
+      "rest_wavelength": 1334.0
+    },
+    {
+      "line_id": "C II* 1335",
+      "rest_wavelength": 1335.0
+    },
+    {
+      "line_id": "C IV 1548",
+      "rest_wavelength": 1548.0
+    },
+    {
+      "line_id": "C IV 1550",
+      "rest_wavelength": 1550.0
+    },
+    {
+      "line_id": "Fe II 1608",
+      "rest_wavelength": 1608.0
+    },
+    {
+      "line_id": "N V 1238",
+      "rest_wavelength": 1238.0
+    },
+    {
+      "line_id": "N V 1242",
+      "rest_wavelength": 1242.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 3.847,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[1]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[2]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[3]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[4]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[5]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[6]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[7]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[8]": {
+      "start": 554,
+      "end": 627,
+      "snippet": "SiIV(1393,1402), SiII1526 and 1260, SiII*1264, CI1560, CII1334, CII*1335,"
+    },
+    "spectroscopy[9]": {
+      "start": 628,
+      "end": 689,
+      "snippet": "CIV(1548,1550), FeII1608, NV(1238,1242) at the same redshift."
+    },
+    "spectroscopy[10]": {
+      "start": 628,
+      "end": 689,
+      "snippet": "CIV(1548,1550), FeII1608, NV(1238,1242) at the same redshift."
+    },
+    "spectroscopy[11]": {
+      "start": 628,
+      "end": 689,
+      "snippet": "CIV(1548,1550), FeII1608, NV(1238,1242) at the same redshift."
+    },
+    "spectroscopy[12]": {
+      "start": 628,
+      "end": 689,
+      "snippet": "CIV(1548,1550), FeII1608, NV(1238,1242) at the same redshift."
+    },
+    "spectroscopy[13]": {
+      "start": 628,
+      "end": 689,
+      "snippet": "CIV(1548,1550), FeII1608, NV(1238,1242) at the same redshift."
+    },
+    "event": {
+      "start": 204,
+      "end": 273,
+      "snippet": "counterpart of GRB 081029 (Sakamoto et al., GCN 8435, Rykoff  et al.,"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "DLA + metal absorption (fine-structure) confirms z=3.847 as GRB 081029 host redshift (Gemini-S/GMOS)"
+    ]
+  }
+}

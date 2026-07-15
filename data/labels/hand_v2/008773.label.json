@@ -1,0 +1,266 @@
+{
+  "circular_id": 8773,
+  "event": {
+    "event_name": "GRB 090102"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "trigger_time": "2009-01-02T02:55:45.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 19.75,
+      "mag_error": 0.13,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.15897,
+      "obs_time": "2009-01-02T03:48:55.200Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.02,
+      "mag_error": 0.06,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.183,
+      "obs_time": "2009-01-02T04:23:31.200Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.41,
+      "mag_error": 0.07,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.21122,
+      "obs_time": "2009-01-02T05:04:09.300Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.56,
+      "mag_error": 0.07,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.23749,
+      "obs_time": "2009-01-02T05:41:58.900Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.78,
+      "mag_error": 0.08,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.25991,
+      "obs_time": "2009-01-02T06:14:16.500Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.01,
+      "mag_error": 0.09,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.28488,
+      "obs_time": "2009-01-02T06:50:13.600Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.09,
+      "mag_error": 0.09,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.30891,
+      "obs_time": "2009-01-02T07:24:49.700Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.23,
+      "mag_error": 0.06,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.33643,
+      "obs_time": "2009-01-02T08:04:27.600Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.42,
+      "mag_error": 0.06,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.36084,
+      "obs_time": "2009-01-02T08:39:36.500Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.58,
+      "mag_error": 0.07,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.38544,
+      "obs_time": "2009-01-02T09:15:01.700Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.86,
+      "mag_error": 0.08,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.40946,
+      "obs_time": "2009-01-02T09:49:37.600Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.72,
+      "mag_error": 0.05,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.44606,
+      "obs_time": "2009-01-02T10:42:19.700Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 22.02,
+      "mag_error": 0.06,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.4946,
+      "obs_time": "2009-01-02T11:52:13.500Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 21.93,
+      "mag_error": 0.11,
+      "mag_system": "Vega",
+      "obs_mjd": 54833.54348,
+      "obs_time": "2009-01-02T13:02:36.300Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "SDSS",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 1.546,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 798,
+      "end": 831,
+      "snippet": "3190.2     120.0      19.75  0.13"
+    },
+    "photometry[1]": {
+      "start": 832,
+      "end": 865,
+      "snippet": "5266.2     120.0      20.02  0.06"
+    },
+    "photometry[2]": {
+      "start": 866,
+      "end": 899,
+      "snippet": "7704.3     120.0      20.41  0.07"
+    },
+    "photometry[3]": {
+      "start": 900,
+      "end": 933,
+      "snippet": "9973.9     120.0      20.56  0.07"
+    },
+    "photometry[4]": {
+      "start": 934,
+      "end": 967,
+      "snippet": "11911.5    120.0      20.78  0.08"
+    },
+    "photometry[5]": {
+      "start": 968,
+      "end": 1001,
+      "snippet": "14068.6    120.0      21.01  0.09"
+    },
+    "photometry[6]": {
+      "start": 1002,
+      "end": 1035,
+      "snippet": "16144.7    120.0      21.09  0.09"
+    },
+    "photometry[7]": {
+      "start": 1036,
+      "end": 1069,
+      "snippet": "18522.6    600.0      21.23  0.06"
+    },
+    "photometry[8]": {
+      "start": 1070,
+      "end": 1103,
+      "snippet": "20631.5    600.0      21.42  0.06"
+    },
+    "photometry[9]": {
+      "start": 1104,
+      "end": 1137,
+      "snippet": "22756.7    600.0      21.58  0.07"
+    },
+    "photometry[10]": {
+      "start": 1138,
+      "end": 1171,
+      "snippet": "24832.6    600.0      21.86  0.08"
+    },
+    "photometry[11]": {
+      "start": 1172,
+      "end": 1205,
+      "snippet": "27994.7   1200.0      21.72  0.05"
+    },
+    "photometry[12]": {
+      "start": 1206,
+      "end": 1239,
+      "snippet": "32188.5   1200.0      22.02  0.06"
+    },
+    "photometry[13]": {
+      "start": 1240,
+      "end": 1273,
+      "snippet": "36411.3   1200.0      21.93  0.11"
+    },
+    "redshift.redshift": {
+      "start": 1777,
+      "end": 1841,
+      "snippet": "strong absorption system at z = 1.546.  Given the lack of strong"
+    },
+    "event": {
+      "start": 104,
+      "end": 177,
+      "snippet": "We have imaged the field of GRB090102 (Mangano et al., GCN 8762) with the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "14-point R-band afterglow light curve (P60), Tmid seconds after trigger; obs_mjd = assumed trigger 02:55:45 UT + Tmid. SDSS DR7-calibrated (Jordi transforms).",
+      "z=1.546 single strong absorption system (P200/DBSP, confirms de Ugarte Postigo GCN 8766). Host bound: z<1.9 (redshift_bound; lack of strong Ly-alpha)"
+    ]
+  }
+}

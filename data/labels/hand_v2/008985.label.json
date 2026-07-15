@@ -1,0 +1,41 @@
+{
+  "circular_id": 8985,
+  "event": {
+    "event_name": "GRB 090313"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "I",
+      "mag": 17.7,
+      "mag_error": 0.4,
+      "mag_system": "Vega",
+      "telescope": "KAIT",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 540,
+      "end": 609,
+      "snippet": "and 120-second I-band exposures with a magnitude of I = 17.7 +/- 0.4 "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "marginal afterglow detection I=17.7+-0.4 (KAIT, USNO calib->Other), up to 2.9 hr post-burst.",
+      "z=0.0235 is a possible nearby foreground galaxy (SDSS, cited Berger GCN 8984), NOT the GRB redshift (GRB 090313 is z=3.375; see GCN 9006) - left out of redshift.",
+      "body text says 'GRB 080313' (typo); event is GRB 090313 per header/GCN chain"
+    ]
+  }
+}

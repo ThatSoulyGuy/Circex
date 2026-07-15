@@ -1,0 +1,141 @@
+{
+  "circular_id": 9774,
+  "event": {
+    "event_name": "GRB 090812"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "white",
+      "mag": 17.35,
+      "mag_error": 0.03,
+      "mag_system": "Vega",
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": true
+    },
+    {
+      "filter": "v",
+      "mag": 18.17,
+      "mag_error": 0.41,
+      "mag_system": "Vega",
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": true
+    },
+    {
+      "filter": "b",
+      "mag": 18.62,
+      "mag_error": 0.28,
+      "mag_system": "Vega",
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": true
+    },
+    {
+      "filter": "u",
+      "mag": 18.65,
+      "mag_error": 0.11,
+      "mag_system": "Vega",
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": true
+    },
+    {
+      "filter": "uvw1",
+      "mag_system": "Vega",
+      "limiting_mag": 19.2,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvm2",
+      "mag_system": "Vega",
+      "limiting_mag": 18.72,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvw2",
+      "mag_system": "Vega",
+      "limiting_mag": 19.13,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 2.452,
+    "redshift_measure": "spectroscopic"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 863,
+      "end": 914,
+      "snippet": "white      86         235       146    17.35+/-0.03"
+    },
+    "photometry[1]": {
+      "start": 915,
+      "end": 966,
+      "snippet": "v          628        647       19     18.17+/-0.41"
+    },
+    "photometry[2]": {
+      "start": 967,
+      "end": 1018,
+      "snippet": "b          554        573       19     18.62+/-0.28"
+    },
+    "photometry[3]": {
+      "start": 1019,
+      "end": 1070,
+      "snippet": "u          299        548       246    18.65+/-0.11"
+    },
+    "photometry[4]": {
+      "start": 1071,
+      "end": 1117,
+      "snippet": "uvw1       677        1124      58     > 19.20"
+    },
+    "photometry[5]": {
+      "start": 1118,
+      "end": 1164,
+      "snippet": "uvm2       652        1099      58     > 18.72"
+    },
+    "photometry[6]": {
+      "start": 1165,
+      "end": 1211,
+      "snippet": "uvw2       603        1050      58     > 19.13"
+    },
+    "event.event_name": {
+      "start": 94,
+      "end": 167,
+      "snippet": "The Swift/UVOT began settled observations of the field of GRB 090812 86s "
+    },
+    "redshift.redshift": {
+      "start": 525,
+      "end": 598,
+      "snippet": "consistent with the spectroscopic redshift of z=2.452 reported by Ugarte "
+    },
+    "redshift.redshift_measure": {
+      "start": 525,
+      "end": 598,
+      "snippet": "consistent with the spectroscopic redshift of z=2.452 reported by Ugarte "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "UVOT white/v/b/u detections + uv upper limits (Vega). z=2.452 is GRB 090812's spectroscopic redshift (de Ugarte Postigo GCN 9771)"
+    ]
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "circular_id": 11640,
+  "event": {
+    "event_name": "GRB 110205A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 16.7,
+      "mag_system": "Vega",
+      "obs_mjd": 55597.14236,
+      "obs_time": "2011-02-05T03:25:00.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "instrument": "ALFOSC",
+      "instrument_canonical": "ALFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": [
+    {
+      "line_id": "Lyalpha (DLA)",
+      "rest_wavelength": 1215.67
+    },
+    {
+      "line_id": "O I",
+      "rest_wavelength": 1302.0
+    },
+    {
+      "line_id": "C II",
+      "rest_wavelength": 1334.0
+    },
+    {
+      "line_id": "C IV",
+      "rest_wavelength": 1548.0
+    },
+    {
+      "line_id": "Al II",
+      "rest_wavelength": 1670.0
+    },
+    {
+      "line_id": "Fe II",
+      "rest_wavelength": 1608.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 2.22,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 464,
+      "end": 526,
+      "snippet": "optical afterglow is clearly detected at R ~ 16.7 (as compared"
+    },
+    "event.event_name": {
+      "start": 217,
+      "end": 281,
+      "snippet": "We have observed the field of GRB 110205A (Beardmore et al., GCN"
+    },
+    "redshift.redshift": {
+      "start": 733,
+      "end": 797,
+      "snippet": "z=2.22, confirming the redshift measurement by Cenko et al. (GCN"
+    },
+    "redshift.redshift_measure": {
+      "start": 556,
+      "end": 609,
+      "snippet": "Preliminary reduction of the subsequent spectroscopic"
+    },
+    "redshift.redshift_type": {
+      "start": 610,
+      "end": 669,
+      "snippet": "observations shows a clear DLA and several metal absorption"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "afterglow R~16.7 at 1.4 hr post-burst (NOT/ALFOSC, USNO-B1 calib->Other). DLA + metals (OI/OI*,CII/CII*,CIV,AlII,FeII) at z=2.22 (confirms Cenko GCN 11638)"
+    ]
+  }
+}

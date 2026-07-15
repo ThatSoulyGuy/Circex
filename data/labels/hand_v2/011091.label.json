@@ -1,0 +1,82 @@
+{
+  "circular_id": 11091,
+  "event": {
+    "event_name": "GRB 100814A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "trigger_time": "2010-08-14T03:50:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "r",
+      "mag": 18.0,
+      "mag_error": 0.1,
+      "mag_system": "AB",
+      "obs_mjd": 55422.17708,
+      "obs_time": "2010-08-14T04:15:00.000Z",
+      "telescope": "MPG/ESO 2.2m",
+      "instrument": "GROND",
+      "calibration_reference": "Other",
+      "seeing": 1.2,
+      "airmass": 2.0,
+      "is_detection": true
+    },
+    {
+      "filter": "r",
+      "mag": 19.5,
+      "mag_error": 0.1,
+      "mag_system": "AB",
+      "obs_mjd": 55422.40972,
+      "obs_time": "2010-08-14T09:50:00.000Z",
+      "telescope": "MPG/ESO 2.2m",
+      "instrument": "GROND",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 1.44,
+    "redshift_measure": "spectroscopic"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 894,
+      "end": 966,
+      "snippet": "0.5, decaying from r' = 18.0 +/- 0.1 at T+25 minutes down to r' = 19.5  "
+    },
+    "photometry[1]": {
+      "start": 894,
+      "end": 966,
+      "snippet": "0.5, decaying from r' = 18.0 +/- 0.1 at T+25 minutes down to r' = 19.5  "
+    },
+    "event.event_name": {
+      "start": 91,
+      "end": 162,
+      "snippet": "We observed the field of GRB 100814A (Swift trigger 431605; Beardmore  "
+    },
+    "redshift.redshift": {
+      "start": 738,
+      "end": 808,
+      "snippet": "consistent with the spectroscopic redshift of z=1.44 (O'Meara et al.  "
+    },
+    "redshift.redshift_measure": {
+      "start": 738,
+      "end": 808,
+      "snippet": "consistent with the spectroscopic redshift of z=1.44 (O'Meara et al.  "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "GROND detects the afterglow in g'r'i'z'JHK but only r' magnitudes are quoted: r'=18.0 at T+25min, r'=19.5 at T+6h (AB, USNO zeropoints->Other). g'/i'/z'/J/H/K detections have no quoted magnitude (dropped).",
+      "z=1.44 is GRB 100814A's spectroscopic redshift (O'Meara GCN 11089)"
+    ]
+  }
+}

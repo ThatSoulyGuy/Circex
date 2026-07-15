@@ -1,0 +1,180 @@
+{
+  "circular_id": 8893,
+  "event": {
+    "event_name": "GRB 090205"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [
+    {
+      "value": 92.0,
+      "unit": "s",
+      "reference": "trigger"
+    }
+  ],
+  "photometry": [
+    {
+      "filter": "white",
+      "mag_system": "Vega",
+      "limiting_mag": 21.1,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "white",
+      "mag_system": "Vega",
+      "limiting_mag": 21.9,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "v",
+      "mag_system": "Vega",
+      "limiting_mag": 20.7,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "b",
+      "mag_system": "Vega",
+      "limiting_mag": 21.7,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "u",
+      "mag_system": "Vega",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "u",
+      "mag_system": "Vega",
+      "limiting_mag": 21.4,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvw1",
+      "mag_system": "Vega",
+      "limiting_mag": 21.4,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvm2",
+      "mag_system": "Vega",
+      "limiting_mag": 21.4,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    },
+    {
+      "filter": "uvw2",
+      "mag_system": "Vega",
+      "limiting_mag": 21.5,
+      "limiting_mag_sigma": 3.0,
+      "telescope": "Swift/UVOT",
+      "telescope_canonical": "Swift",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 4.6,
+    "redshift_measure": "spectroscopic"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 662,
+      "end": 707,
+      "snippet": "white       92       242     148       > 21.1"
+    },
+    "photometry[1]": {
+      "start": 708,
+      "end": 753,
+      "snippet": "white       92      7633     824       > 21.9"
+    },
+    "photometry[2]": {
+      "start": 754,
+      "end": 799,
+      "snippet": "v          580     12829    1234       > 20.7"
+    },
+    "photometry[3]": {
+      "start": 800,
+      "end": 845,
+      "snippet": "b          506     34930    2073       > 21.7"
+    },
+    "photometry[4]": {
+      "start": 846,
+      "end": 891,
+      "snippet": "u          250       500     246       > 20.5"
+    },
+    "photometry[5]": {
+      "start": 892,
+      "end": 937,
+      "snippet": "u          298     18581    1660       > 21.4"
+    },
+    "photometry[6]": {
+      "start": 938,
+      "end": 983,
+      "snippet": "uvw1       629     17668    1415       > 21.4"
+    },
+    "photometry[7]": {
+      "start": 984,
+      "end": 1029,
+      "snippet": "uvm2       604     23148    1882       > 21.4"
+    },
+    "photometry[8]": {
+      "start": 1030,
+      "end": 1075,
+      "snippet": "uvw2       555     11915    1322       > 21.5"
+    },
+    "event.event_name": {
+      "start": 86,
+      "end": 159,
+      "snippet": "The Swift/UVOT began settled observations of the field of GRB 090205 92s "
+    },
+    "time_offsets[0]": {
+      "start": 160,
+      "end": 229,
+      "snippet": "after the BAT trigger (Perri et al., GCN 8884). We do not detect any "
+    },
+    "redshift.redshift": {
+      "start": 446,
+      "end": 516,
+      "snippet": "4.6 reported by Thoene et al. (GCN 8889).    Our 3-sigma upper limits "
+    },
+    "redshift.redshift_measure": {
+      "start": 375,
+      "end": 445,
+      "snippet": "UVOT non-detections are consistent with the spectroscopic redshift of "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "UVOT non-detections (3-sigma upper limits, Vega); source not detected. z=4.6 is GRB 090205's spectroscopic redshift (Thoene GCN 8889). Obs epochs (T_start/T_stop after trigger) not resolved to absolute times"
+    ]
+  }
+}
