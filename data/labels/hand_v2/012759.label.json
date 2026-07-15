@@ -1,0 +1,56 @@
+{
+  "circular_id": 12759,
+  "event": {
+    "event_name": "GRB 111228A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Mg II 2796",
+      "rest_wavelength": 2796.0
+    },
+    {
+      "line_id": "Mg II 2803",
+      "rest_wavelength": 2803.0
+    },
+    {
+      "line_id": "Fe II",
+      "rest_wavelength": 2600.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.714,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "redshift.redshift": {
+      "start": 328,
+      "end": 388,
+      "snippet": "redshift of z=0.714, which we consider to be the redshift of"
+    },
+    "redshift.redshift_type": {
+      "start": 260,
+      "end": 327,
+      "snippet": "3400-8500A and reveal absorption lines of MgII and FeII at a common"
+    },
+    "event": {
+      "start": 195,
+      "end": 259,
+      "snippet": "to observe GRB111228A (GCN #12737).  Our spectra cover the range"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "MgII + FeII absorption at z=0.714 (MMT/Blue Channel), taken as GRB 111228A redshift"
+    ]
+  }
+}

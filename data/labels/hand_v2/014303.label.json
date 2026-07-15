@@ -1,0 +1,59 @@
+{
+  "circular_id": 14303,
+  "event": {
+    "event_name": "GRB 130215A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": {
+    "classification": "Ic",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ic"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.597,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 384,
+      "end": 456,
+      "snippet": "We have observed the optical counterpart of GRB 130215A (D'Elia et al., "
+    },
+    "redshift.redshift": {
+      "start": 741,
+      "end": 817,
+      "snippet": "rest frame, considering a redshift of z=0.597 (Cucchiara et al. GCN 14207). "
+    },
+    "redshift.redshift_measure": {
+      "start": 524,
+      "end": 590,
+      "snippet": "equipped with the OSIRIS imager and spectrograph. A spectroscopic "
+    },
+    "redshift.redshift_type": {
+      "start": 1605,
+      "end": 1650,
+      "snippet": "consistent with the absorption line redshift."
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "spectrum (25.8d post-burst) matches SNe Ic (broad-lined and normal, e.g. SN 2002ap/1994I) near maximum via SNID -> classification Ic.",
+      "z=0.597 is the absorption-line redshift (Cucchiara GCN 14207); the SNID template fit gives z=0.58+-0.02, consistent"
+    ]
+  }
+}

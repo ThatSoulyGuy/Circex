@@ -1,0 +1,62 @@
+{
+  "circular_id": 13856,
+  "event": {
+    "event_name": "GRB 121011A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 21.76,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 56211.83,
+      "obs_time": "2012-10-11T19:55:12.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "instrument": "ALFOSC",
+      "instrument_canonical": "ALFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 0.58,
+    "redshift_measure": "spectroscopic"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 476,
+      "end": 544,
+      "snippet": "trigger). We found its magnitude R=21.76+/-0.10, calibrated with the"
+    },
+    "event.event_name": {
+      "start": 200,
+      "end": 265,
+      "snippet": "We observed the optical afterglow of GRB 121011A (Racusin et al.,"
+    },
+    "redshift.redshift": {
+      "start": 845,
+      "end": 876,
+      "snippet": "shows very weak sign of z~0.58."
+    },
+    "redshift.redshift_measure": {
+      "start": 640,
+      "end": 705,
+      "snippet": "We also carried out 2x20 min spectroscopic observations after the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "afterglow R=21.76+-0.10 at 8.666 hr post-burst (NOT/ALFOSC, USNO-B1 calib->Other). z~0.58 is a weak/preliminary sign (low S/N 1D spectrum)"
+    ]
+  }
+}

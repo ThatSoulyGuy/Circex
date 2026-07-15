@@ -1,0 +1,30 @@
+{
+  "circular_id": 14667,
+  "event": {
+    "event_name": "GRB 130515A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 94,
+      "end": 233,
+      "snippet": "We observed the location of GRB 130515A (Malesani et al. GCN 14650) with VLT/FORS2, beginning at ~03:30 UT, 2 hours after the burst. At thi"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "the brightest XRT-box source S1 is a Galactic M-dwarf (z=0), NOT the host - no GRB redshift measured. S2/S3 appear point-like.",
+      "nearest extended source is a galaxy at RA=283.437542 Dec=-54.280806 (~8\" from the enhanced XRT position), a candidate host - not stored as localization (not confirmed)"
+    ]
+  }
+}

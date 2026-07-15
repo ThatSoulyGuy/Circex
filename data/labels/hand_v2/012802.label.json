@@ -1,0 +1,100 @@
+{
+  "circular_id": 12802,
+  "event": {
+    "event_name": "GRB 111211A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "r",
+      "mag": 22.6,
+      "mag_system": "AB",
+      "obs_mjd": 55922.0,
+      "obs_time": "2011-12-27T00:00:00.000Z",
+      "telescope": "GTC",
+      "telescope_canonical": "GTC",
+      "instrument": "OSIRIS",
+      "instrument_canonical": "OSIRIS",
+      "calibration_reference": "SDSS",
+      "seeing": 0.9,
+      "is_detection": true
+    },
+    {
+      "filter": "r",
+      "mag": 22.7,
+      "mag_system": "AB",
+      "obs_mjd": 55927.0,
+      "obs_time": "2012-01-01T00:00:00.000Z",
+      "telescope": "GTC",
+      "telescope_canonical": "GTC",
+      "instrument": "OSIRIS",
+      "instrument_canonical": "OSIRIS",
+      "seeing": 1.0,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": [
+    {
+      "line_id": "[O II] 3727",
+      "rest_wavelength": 3727.0
+    },
+    {
+      "line_id": "Hbeta",
+      "rest_wavelength": 4861.0
+    },
+    {
+      "line_id": "[O III] 5007",
+      "rest_wavelength": 5007.0
+    },
+    {
+      "line_id": "Halpha",
+      "rest_wavelength": 6563.0
+    }
+  ],
+  "classification": {
+    "classification": "Ic",
+    "subtype": "similar to SN 2006aj near maximum",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ic"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.478,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 515,
+      "end": 719,
+      "snippet": "with a seeing of ~0.9\". This image clearly shows the afterglow of GRB 111211A at a magnitude of r ~ 22.6 (compared to SDSS stars) superposed to its resolved host galaxy but slightly offset towards the Nor"
+    },
+    "photometry[1]": {
+      "start": 802,
+      "end": 1006,
+      "snippet": "fter the burst) under good seeing conditions (~1\"). At that time, the afterglow was detected at r ~ 22.7 in the acquisition frame, implying an almost flat evolution since the previous epoch which indicate"
+    },
+    "event": {
+      "start": 189,
+      "end": 400,
+      "snippet": "uchachos Observatory (La Palma, Spain), we obtained late imaging and spectroscopy of the SuperAGILE GRB 111211A (Lazzarotto et al. GCN 12666, Kann et al. GCN 12668), located at a redshift of 0.478 (Vergani et al"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "host emission [OII]/Hbeta/[OIII]/Halpha at z=0.478 (=GRB z, Vergani GCN 12677). Afterglow r~22.6 (Dec 27, 15.3d) and r~22.7 (Jan 1, 20.3d), dates only.",
+      "afterglow spectrum shows SN-Ic undulations like SN 2006aj/GRB060218 near maximum -> classification Ic"
+    ]
+  }
+}

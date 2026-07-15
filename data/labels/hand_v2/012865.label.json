@@ -1,0 +1,97 @@
+{
+  "circular_id": 12865,
+  "event": {
+    "event_name": "GRB 120119A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Al III 1854",
+      "rest_wavelength": 1854.0
+    },
+    {
+      "line_id": "Al III 1862",
+      "rest_wavelength": 1862.0
+    },
+    {
+      "line_id": "Fe II 2586",
+      "rest_wavelength": 2586.0
+    },
+    {
+      "line_id": "Fe II 2600",
+      "rest_wavelength": 2600.0
+    },
+    {
+      "line_id": "Mn II 2606",
+      "rest_wavelength": 2606.0
+    },
+    {
+      "line_id": "Mg II 2796",
+      "rest_wavelength": 2796.0
+    },
+    {
+      "line_id": "Mg II 2803",
+      "rest_wavelength": 2803.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 1.728,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[0]": {
+      "start": 352,
+      "end": 416,
+      "snippet": "range reveals several absorption features, including AlIII1854, "
+    },
+    "spectroscopy[1]": {
+      "start": 417,
+      "end": 474,
+      "snippet": "1862, FeII2586,2600, MnII2606, MgII2796,2803 at a common "
+    },
+    "spectroscopy[2]": {
+      "start": 417,
+      "end": 474,
+      "snippet": "1862, FeII2586,2600, MnII2606, MgII2796,2803 at a common "
+    },
+    "spectroscopy[3]": {
+      "start": 417,
+      "end": 474,
+      "snippet": "1862, FeII2586,2600, MnII2606, MgII2796,2803 at a common "
+    },
+    "spectroscopy[4]": {
+      "start": 417,
+      "end": 474,
+      "snippet": "1862, FeII2586,2600, MnII2606, MgII2796,2803 at a common "
+    },
+    "spectroscopy[6]": {
+      "start": 417,
+      "end": 474,
+      "snippet": "1862, FeII2586,2600, MnII2606, MgII2796,2803 at a common "
+    },
+    "redshift.redshift": {
+      "start": 475,
+      "end": 493,
+      "snippet": "redshift of 1.728."
+    },
+    "event": {
+      "start": 148,
+      "end": 199,
+      "snippet": "we observed the optical counterpart of GRB 120119A "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "AlIII/FeII/MnII/MgII absorption at z=1.728 (Gemini-S). Intervening system at z=1.212 (strong MgII) also present (not stored)"
+    ]
+  }
+}

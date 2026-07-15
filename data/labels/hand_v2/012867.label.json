@@ -1,0 +1,62 @@
+{
+  "circular_id": 12867,
+  "event": {
+    "event_name": "GRB 120119A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "C II 1335",
+      "rest_wavelength": 1335.0
+    },
+    {
+      "line_id": "Mg I 2853",
+      "rest_wavelength": 2853.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 1.728,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 61,
+      "end": 129,
+      "snippet": "\"We obtained an optical spectrum of GRB 120119A (GCN 12859) with the"
+    },
+    "spectroscopy[0]": {
+      "start": 267,
+      "end": 336,
+      "snippet": "of absorption features (from CII1335 to MgI2853) at a common redshift"
+    },
+    "spectroscopy[1]": {
+      "start": 267,
+      "end": 336,
+      "snippet": "of absorption features (from CII1335 to MgI2853) at a common redshift"
+    },
+    "redshift.redshift": {
+      "start": 337,
+      "end": 401,
+      "snippet": "of z=1.728, confirming the results of Cucchiara & Prochaska (GCN"
+    },
+    "redshift.redshift_type": {
+      "start": 267,
+      "end": 336,
+      "snippet": "of absorption features (from CII1335 to MgI2853) at a common redshift"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "wide range of absorption features from CII1335 to MgI2853 at z=1.728 (MMT/Blue Channel), confirms Cucchiara GCN 12865; intermediate transitions not itemised"
+    ]
+  }
+}

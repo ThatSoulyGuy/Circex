@@ -1,0 +1,131 @@
+{
+  "circular_id": 12284,
+  "event": {
+    "event_name": "GRB 110818A"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 317.337667,
+    "dec": -63.981194,
+    "ra_dec_error": 0.000139
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 22.3,
+      "mag_system": "Vega",
+      "obs_mjd": 55792.11597,
+      "obs_time": "2011-08-19T02:47:00.000Z",
+      "telescope": "ESO VLT",
+      "telescope_canonical": "VLT",
+      "instrument": "X-shooter",
+      "instrument_canonical": "X-shooter",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": [
+    {
+      "line_id": "Si II"
+    },
+    {
+      "line_id": "C IV"
+    },
+    {
+      "line_id": "Al II"
+    },
+    {
+      "line_id": "Ca H",
+      "rest_wavelength": 3968.5
+    },
+    {
+      "line_id": "Ca K",
+      "rest_wavelength": 3933.7
+    },
+    {
+      "line_id": "Mg I",
+      "rest_wavelength": 2852.0
+    },
+    {
+      "line_id": "[O III]"
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 3.36,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 644,
+      "end": 716,
+      "snippet": "with an uncertainty of about 0.5\". The object has a magnitude R ~ 22.3, "
+    },
+    "event.event_name": {
+      "start": 268,
+      "end": 339,
+      "snippet": "We observed the field of GRB 110818A (Markwardt et al. GCN 12279) with "
+    },
+    "spectroscopy[0]": {
+      "start": 995,
+      "end": 1068,
+      "snippet": "features from Si II, C IV, Al II, Ca H, Ca K and Mg I. Emission from the "
+    },
+    "spectroscopy[1]": {
+      "start": 995,
+      "end": 1068,
+      "snippet": "features from Si II, C IV, Al II, Ca H, Ca K and Mg I. Emission from the "
+    },
+    "spectroscopy[2]": {
+      "start": 995,
+      "end": 1068,
+      "snippet": "features from Si II, C IV, Al II, Ca H, Ca K and Mg I. Emission from the "
+    },
+    "spectroscopy[3]": {
+      "start": 995,
+      "end": 1068,
+      "snippet": "features from Si II, C IV, Al II, Ca H, Ca K and Mg I. Emission from the "
+    },
+    "spectroscopy[4]": {
+      "start": 995,
+      "end": 1068,
+      "snippet": "features from Si II, C IV, Al II, Ca H, Ca K and Mg I. Emission from the "
+    },
+    "spectroscopy[5]": {
+      "start": 995,
+      "end": 1068,
+      "snippet": "features from Si II, C IV, Al II, Ca H, Ca K and Mg I. Emission from the "
+    },
+    "spectroscopy[6]": {
+      "start": 1069,
+      "end": 1102,
+      "snippet": "[O III] doublet is also observed."
+    },
+    "redshift.redshift": {
+      "start": 928,
+      "end": 994,
+      "snippet": "We report a redshift of z = 3.36 based on detection of absorption "
+    },
+    "redshift.redshift_measure": {
+      "start": 820,
+      "end": 890,
+      "snippet": "A total spectroscopic exposure of 4x1200 s was obtained, covering the "
+    },
+    "redshift.redshift_type": {
+      "start": 928,
+      "end": 994,
+      "snippet": "We report a redshift of z = 3.36 based on detection of absorption "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "z=3.36 from absorption (SiII,CIV,AlII,CaH/K,MgI) plus [OIII] emission. Afterglow R~22.3 (X-shooter acquisition, USNO-B1 calib->Other) at 6.15 hr post-burst"
+    ]
+  }
+}

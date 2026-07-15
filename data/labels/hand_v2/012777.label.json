@@ -1,0 +1,103 @@
+{
+  "circular_id": 12777,
+  "event": {
+    "event_name": "GRB 111229A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Fe II 2586",
+      "rest_wavelength": 2586.0
+    },
+    {
+      "line_id": "Fe II 2600",
+      "rest_wavelength": 2600.0
+    },
+    {
+      "line_id": "Mn II 2606",
+      "rest_wavelength": 2606.0
+    },
+    {
+      "line_id": "Mg II 2796",
+      "rest_wavelength": 2796.0
+    },
+    {
+      "line_id": "Mg II 2803",
+      "rest_wavelength": 2803.0
+    },
+    {
+      "line_id": "Mg II 2853",
+      "rest_wavelength": 2853.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 1.3805,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[0]": {
+      "start": 505,
+      "end": 564,
+      "snippet": "features, including FeII2586,2600, MnII2606, MgII2796,2803 "
+    },
+    "spectroscopy[1]": {
+      "start": 505,
+      "end": 564,
+      "snippet": "features, including FeII2586,2600, MnII2606, MgII2796,2803 "
+    },
+    "spectroscopy[2]": {
+      "start": 505,
+      "end": 564,
+      "snippet": "features, including FeII2586,2600, MnII2606, MgII2796,2803 "
+    },
+    "spectroscopy[3]": {
+      "start": 505,
+      "end": 564,
+      "snippet": "features, including FeII2586,2600, MnII2606, MgII2796,2803 "
+    },
+    "spectroscopy[4]": {
+      "start": 505,
+      "end": 564,
+      "snippet": "features, including FeII2586,2600, MnII2606, MgII2796,2803 "
+    },
+    "spectroscopy[5]": {
+      "start": 565,
+      "end": 609,
+      "snippet": "and MgII2853 at a common redshift of 1.3805."
+    },
+    "redshift.redshift": {
+      "start": 565,
+      "end": 609,
+      "snippet": "and MgII2853 at a common redshift of 1.3805."
+    },
+    "redshift.redshift_measure": {
+      "start": 369,
+      "end": 434,
+      "snippet": "Subsequent spectroscopic observation of the optical afterglow of "
+    },
+    "redshift.redshift_type": {
+      "start": 435,
+      "end": 504,
+      "snippet": "GRB 111229A  (range 5900-10080 Angstroms) reveals several absorption "
+    },
+    "event": {
+      "start": 154,
+      "end": 216,
+      "snippet": "we observed the field of GRB 111229A (Lien et al., GCN 12774) "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "FeII/MnII/MgII absorption at z=1.3805 (Gemini-S/GMOS). Afterglow detected (position GCN 12775) but no magnitude quoted"
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "circular_id": 13281,
+  "event": {
+    "event_name": "GRB 120422A"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": {
+    "classification": "Ic-BL",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ic",
+      "Ic-BL"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.283,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 347,
+      "end": 419,
+      "snippet": "We have obtained spectroscopy of the optical counterpart of GRB 120422A "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "z=0.283 (host nebular emission; = GRB z, Tanvir GCN 13251 / Schulze GCN 13257). Second-epoch spectrum matches broad-lined Ic SNe near maximum (SNID) -> classification Ic-BL.",
+      "an object 5\" E has emission lines at the same z (possible interacting system) - not stored"
+    ]
+  }
+}
