@@ -92,6 +92,7 @@ class LlamaServerExtractor(Extractor):
 
         started = time.perf_counter()
         chunk_results: list[CircularExtraction] = []
+        had_error = False
         for chunk in chunk_body(circular.body):
             try:
                 payload = self._call(
@@ -107,29 +108,43 @@ class LlamaServerExtractor(Extractor):
                 # server/transport error still shouldn't crash the run.
                 log.warning(
                     "llama_server_extract_failed",
-                    circular_id=circular.circular_id, error=str(exc)[:300],
+                    circular_id=circular.circular_id,
+                    error=str(exc)[:300],
                 )
                 payload = {}
+                had_error = True
             payload["circular_id"] = circular.circular_id
             llm_notes = payload.pop("_llm_notes", [])
             if not isinstance(llm_notes, list):
                 llm_notes = []
             payload["extraction_meta"] = {
-                "extractor": self.extractor_id, "model_id": self._model_id, "notes": llm_notes,
+                "extractor": self.extractor_id,
+                "model_id": self._model_id,
+                "notes": llm_notes,
             }
             chunk_results.append(CircularExtraction.model_validate(payload))
 
         latency_ms = (time.perf_counter() - started) * 1000.0
         meta = ExtractionMeta(
-            extractor=self.extractor_id, model_id=self._model_id,
-            prompt_version=PROMPT_V1, latency_ms=latency_ms, cache_hit=False,
+            extractor=self.extractor_id,
+            model_id=self._model_id,
+            prompt_version=PROMPT_V1,
+            latency_ms=latency_ms,
+            cache_hit=False,
         )
         merged = merge_extractions(circular.circular_id, chunk_results, meta)
-        if self._cache is not None:
+        # Never cache a partial/empty result produced by a transport failure — a
+        # tunnel blip would otherwise poison the cache and be silently skipped on
+        # re-run. Only persist extractions where every chunk actually returned.
+        if self._cache is not None and not had_error:
             self._cache.put(
-                extractor_id=self.extractor_id, model_id=self._model_id,
-                prompt_version=PROMPT_V1, circular_id=circular.circular_id,
-                body_sha1=body_hash, extraction=merged, latency_ms=latency_ms,
+                extractor_id=self.extractor_id,
+                model_id=self._model_id,
+                prompt_version=PROMPT_V1,
+                circular_id=circular.circular_id,
+                body_sha1=body_hash,
+                extraction=merged,
+                latency_ms=latency_ms,
             )
         resolve_relative_epochs(merged, circular.trigger_time)
         return merged

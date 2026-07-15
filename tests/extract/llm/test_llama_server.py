@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
+import requests
+
+from circex.cache.llm import LLMCache
 from circex.extract.llm import LlamaServerExtractor
 from circex.extract.protocol import Circular
 
@@ -52,3 +56,21 @@ def test_llama_server_uses_grammar_constrained_request() -> None:
     assert payload["response_format"]["type"] == "json_schema"
     assert payload["response_format"]["json_schema"]["schema"]["type"] == "object"
     json.dumps(payload)  # messages must be JSON-serializable for the real POST
+
+
+class _FailSession:
+    """Session whose POST always dies mid-flight, like a dropped tunnel."""
+
+    def post(self, url: str, json: dict, timeout: float) -> _FakeResp:  # noqa: A002
+        raise requests.ConnectionError("('Connection aborted.', ConnectionResetError(54, ...))")
+
+
+def test_llama_server_does_not_cache_on_transport_failure(tmp_path: Path) -> None:
+    # A transport error must fail soft (no crash) AND leave the cache empty, so a
+    # re-run re-hits the model instead of returning a poisoned empty extraction.
+    cache = LLMCache(tmp_path / "llm.sqlite")
+    ext = LlamaServerExtractor(cache=cache, session=_FailSession())
+    result = ext.extract(Circular(circular_id=6418, subject="", body="GRB 260604C at z = 0.5"))
+
+    assert result.circular_id == 6418  # fail-soft: returns an (empty) extraction
+    assert cache.count() == 0  # but nothing was persisted
