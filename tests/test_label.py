@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from circex.label import to_label_fields
+from circex.label import backfill_spans, to_label_fields
 from circex.schema import (
     CircularExtraction,
     Classification,
@@ -39,6 +39,35 @@ def test_pairs_value_with_snippet() -> None:
     assert f["redshift.redshift"]["value"] == "0.512"
     assert f["redshift.redshift"]["snippet"] == "z = 0.512"
     assert f["redshift.redshift"]["start"] == 60
+
+
+def test_backfill_spans_recovers_unique_matches_only() -> None:
+    # An LLM-style extraction with NO provenance at all.
+    ex = CircularExtraction(
+        circular_id=1,
+        redshift=Redshift(redshift=0.512),
+        classification=Classification(classification="Tidal Disruption Event"),
+        photometry=[
+            PhotometryExt(filter="g", bandpass="sdssg", mag=19.7),  # 19.7 unique -> span
+            PhotometryExt(filter="r", bandpass="sdssr", mag=20.5),  # 20.5 repeats -> no span
+        ],
+        provenance={},
+        extraction_meta=ExtractionMeta(extractor="llama-server:mistral-7b"),
+    )
+    body = (
+        "The transient at z = 0.512 is classified as a Tidal Disruption Event. "
+        "Photometry: g = 19.7 mag; r = 20.5 mag; a nearby star at 20.5 mag."
+    )
+    added = backfill_spans(ex, body)
+
+    f = to_label_fields(ex)
+    # unique values recovered
+    assert f["redshift.redshift"]["snippet"] and "z = 0.512" in f["redshift.redshift"]["snippet"]
+    assert "Tidal Disruption Event" in f["classification.classification"]["snippet"]
+    assert "19.7" in f["photometry[0].mag"]["snippet"]
+    # ambiguous value (20.5 appears twice) left without a snippet
+    assert f["photometry[1].mag"]["snippet"] is None
+    assert added >= 3
 
 
 def test_parent_span_covers_leaf_fields() -> None:

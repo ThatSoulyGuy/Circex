@@ -36,36 +36,49 @@ _CLAUDE_MODEL_IDS = {
 }
 
 
-def _build_extractor(
-    name: str, cache_path: Path | None
-) -> Extractor:
+def _build_extractor(name: str, cache_path: Path | None) -> Extractor:
     """Resolve an extractor name to an instance. Lazy imports so the CLI loads even
     when the LLM clients aren't usable yet (e.g., missing API keys)."""
     if name == "regex":
         from circex.extract.regex import RegexExtractor
+
         return RegexExtractor()
 
     from circex.cache.llm import LLMCache
+
     cache = LLMCache(cache_path) if cache_path is not None else None
 
     if name in _CLAUDE_MODEL_IDS:
         from circex.extract.llm import ClaudeExtractor
+
         return ClaudeExtractor(model_id=_CLAUDE_MODEL_IDS[name], cache=cache)
     if name == "ollama":
         from circex.extract.llm import OllamaExtractor
+
         return OllamaExtractor(cache=cache)
     if name == "llama-server":
         from circex.extract.llm import LlamaServerExtractor
+
         return LlamaServerExtractor(cache=cache)
+    if name == "hybrid":
+        # Per-field routing: regex owns event names + coordinates, the constrained
+        # LLM owns photometry / classification / redshift. See circex.extract.hybrid.
+        from circex.extract.hybrid import HybridExtractor
+        from circex.extract.llm import LlamaServerExtractor
+        from circex.extract.regex import RegexExtractor
+
+        return HybridExtractor(RegexExtractor(), LlamaServerExtractor(cache=cache))
     raise typer.BadParameter(
-        f"unknown extractor {name!r}; choose regex | claude-haiku | claude-sonnet | ollama"
+        f"unknown extractor {name!r}; "
+        "choose regex | claude-haiku | claude-sonnet | ollama | llama-server | hybrid"
     )
 
 
 @app.command()
 def extract(
     extractor: str = typer.Option(
-        "regex", "--extractor",
+        "regex",
+        "--extractor",
         help="regex | claude-haiku | claude-sonnet | ollama",
     ),
     circulars: Path = typer.Option(
@@ -73,7 +86,8 @@ def extract(
     ),
     out: Path = typer.Option(..., "--out", help="output directory for extraction results"),
     cache_db: Path = typer.Option(
-        Path("data/cache/llm.sqlite"), "--cache-db",
+        Path("data/cache/llm.sqlite"),
+        "--cache-db",
         help="SQLite cache file for LLM responses",
     ),
 ) -> None:
@@ -175,9 +189,7 @@ def subset_build(
     per_stratum: int = typer.Option(100, "--per-stratum"),
     max_optical: int = typer.Option(5000, "--max-optical", help="cap on optical pool for speed"),
     seed: int = typer.Option(42, "--seed"),
-    out: Path = typer.Option(
-        Path("data/subsets/optical_iter_v1.json"), "--out"
-    ),
+    out: Path = typer.Option(Path("data/subsets/optical_iter_v1.json"), "--out"),
 ) -> None:
     """Untar the archive, filter to optical, and build a stratified iteration subset."""
     from circex.data.archive import iter_circulars, untar_archive
@@ -199,24 +211,26 @@ def eval_cmd(
         "--extractors",
         help="Comma-separated: regex,claude-haiku,claude-sonnet,ollama. 'all' = all four.",
     ),
-    gold: str = typer.Option(
-        "vidushi", "--gold", help="vidushi | path/to/labels/dir"
-    ),
+    gold: str = typer.Option("vidushi", "--gold", help="vidushi | path/to/labels/dir"),
     circulars_dir: Path | None = typer.Option(
-        None, "--circulars-dir",
+        None,
+        "--circulars-dir",
         help="dir of {id}.json bodies for label-dir gold not in the local archive",
     ),
     report: Path = typer.Option(Path("reports/eval_v1.md"), "--report"),
     plot: Path | None = typer.Option(
-        None, "--plot",
+        None,
+        "--plot",
         help="Optional PNG path; writes a 2-panel F1 + Δ-vs-baseline figure.",
     ),
     plot_baseline: str = typer.Option(
-        "regex-v1", "--plot-baseline",
+        "regex-v1",
+        "--plot-baseline",
         help="Extractor ID to use as the baseline in the Δ panel.",
     ),
     max_circulars: int = typer.Option(
-        500, "--max-circulars",
+        500,
+        "--max-circulars",
         help="Cap to keep API costs bounded for vidushi-gold runs.",
     ),
     cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
@@ -241,11 +255,7 @@ def eval_cmd(
         sampled_rows = eval_set.rows[:max_circulars]
         ids = [r.circular_id for r in sampled_rows]
         records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
-        circulars = [
-            Circular.from_record(records[cid])
-            for cid in ids
-            if cid in records
-        ]
+        circulars = [Circular.from_record(records[cid]) for cid in ids if cid in records]
         # Trim gold to circulars we actually loaded.
         loaded_ids = {c.circular_id for c in circulars}
         gold_extractions = [g for g in gold_extractions if g.circular_id in loaded_ids]
@@ -304,9 +314,7 @@ def eval_cmd(
             f"  {stats.n_succeeded}/{stats.n_total} OK, "
             f"cost=${stats.cost_usd:.4f}, failed={stats.n_failed}"
         )
-        reports.append(
-            evaluate_extractor(ext.extractor_id, results, gold_extractions)
-        )
+        reports.append(evaluate_extractor(ext.extractor_id, results, gold_extractions))
 
     # Add Vidushi-predicted column for the Vidushi-gold case.
     if vidushi_pred:
@@ -317,6 +325,7 @@ def eval_cmd(
 
     if plot is not None:
         from circex.eval.plot import plot_eval
+
         try:
             n = len(circulars)
             title = f"gold={gold}, n={n}"
@@ -332,15 +341,18 @@ def serve(
     host: str = typer.Option("127.0.0.1", "--host"),
     port: int = typer.Option(8765, "--port"),
     store_path: Path = typer.Option(
-        Path("data/extractions.sqlite"), "--store",
+        Path("data/extractions.sqlite"),
+        "--store",
         help="SQLite file backing the extraction store.",
     ),
     db_path: Path = typer.Option(
-        Path("data/circex.sqlite"), "--db",
+        Path("data/circex.sqlite"),
+        "--db",
         help="SQLite FTS5 file for search_gcn_circulars.",
     ),
     default_extractor: str = typer.Option(
-        "regex", "--extractor",
+        "regex",
+        "--extractor",
         help="On-the-fly extractor for extract_properties cache misses.",
     ),
     cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
@@ -360,13 +372,15 @@ def serve(
         f"(store={store_path}, extractor={default_extractor})"
     )
     try:
-        _asyncio.run(_serve(
-            store_path=store_path,
-            host=host,
-            port=port,
-            db_path=db_path if db_path.exists() else None,
-            default_extractor=extractor,
-        ))
+        _asyncio.run(
+            _serve(
+                store_path=store_path,
+                host=host,
+                port=port,
+                db_path=db_path if db_path.exists() else None,
+                default_extractor=extractor,
+            )
+        )
     except KeyboardInterrupt:
         console.print("[yellow]worker stopped[/]")
 
@@ -374,14 +388,16 @@ def serve(
 @app.command()
 def index(
     circulars: Path = typer.Option(
-        Path("data/labels/hand_v1"), "--circulars",
+        Path("data/labels/hand_v1"),
+        "--circulars",
         help="subset.json or directory of *.label.json files to backfill from",
     ),
     extractor: str = typer.Option("regex", "--extractor"),
     store_path: Path = typer.Option(Path("data/extractions.sqlite"), "--store"),
     cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
     backfill: bool = typer.Option(
-        True, "--backfill/--no-backfill",
+        True,
+        "--backfill/--no-backfill",
         help="Run the extractor on every circular and persist to the extraction store.",
     ),
     max_cost: float = typer.Option(10.0, "--max-cost"),
@@ -440,7 +456,8 @@ def post(
         None, "--instrument-map", help="JSON {telescope_canonical: skyportal_instrument_id}"
     ),
     default_instrument_id: int | None = typer.Option(
-        None, "--default-instrument-id",
+        None,
+        "--default-instrument-id",
         help="generic GCN instrument id for unmapped telescopes (SkyPortal requires one)",
     ),
     group_ids: str = typer.Option("", "--group-ids", help="comma-separated SkyPortal group ids"),
@@ -581,8 +598,7 @@ def event(
     # ---- gather the event's circulars ----
     if circulars_dir is not None:
         records = [
-            json.loads(p.read_text(encoding="utf-8"))
-            for p in sorted(circulars_dir.glob("*.json"))
+            json.loads(p.read_text(encoding="utf-8")) for p in sorted(circulars_dir.glob("*.json"))
         ]
     elif seed:
         records = gather_by_xref(seed, _fetch, max_hops=max_hops)
@@ -780,7 +796,9 @@ def consume(
     if instrument_map is not None:
         imap = {k: int(v) for k, v in json.loads(instrument_map.read_text()).items()}
     poster = SkyPortalPoster(
-        base_url=url or "https://skyportal.example/api", token=token or None, live=live,
+        base_url=url or "https://skyportal.example/api",
+        token=token or None,
+        live=live,
         continue_on_error=True,  # unattended: a single bad POST must not kill the stream
     )
 
@@ -851,8 +869,13 @@ def annotate(
     circulars_dir: Path | None = typer.Option(
         None, "--circulars-dir", help="folder of raw circular JSONs (batch mode)"
     ),
+    circulars: Path | None = typer.Option(
+        None, "--circulars", help="a subset.json; pulls bodies from the local archive"
+    ),
     extractor: str = typer.Option(
-        "regex", "--extractor", help="regex | claude-haiku | claude-sonnet | ollama"
+        "regex",
+        "--extractor",
+        help="regex | claude-haiku | claude-sonnet | ollama | llama-server | hybrid",
     ),
     out: Path | None = typer.Option(
         None, "--out", help="output file (single) or directory (batch); stdout if omitted"
@@ -862,46 +885,69 @@ def annotate(
     """Emit a flat {field: {value, snippet, start, end}} map per circular.
 
     For snippet-level human validation: every extracted value is paired with the
-    source-text snippet it came from. Single circular to stdout, or batch a
-    folder into `<out>/<circular_id>.json` (the layout gcn-nlp-label expects).
+    source-text snippet it came from. Single circular to stdout, or batch a folder
+    / subset into `<out>/<circular_id>.json` (the layout gcn-nlp-label expects).
 
       circex annotate --from-file docs/fixtures/grb260604c_44877.json
       circex annotate --circulars-dir circulars/ --extractor ollama --out extracted_circulars/
+      circex annotate --circulars data/subsets/optical_v2.json --extractor hybrid --out ann/
     """
     from circex.extract.protocol import Circular
-    from circex.label import to_label_fields
+    from circex.label import backfill_spans, to_label_fields
 
-    def _annotate_record(record: dict[str, object]) -> tuple[int, str]:
-        circ = Circular(
+    # Build the extractor once — for LLM/hybrid backends, rebuilding per circular
+    # would open a fresh cache connection every time.
+    ext = _build_extractor(extractor, cache_db if extractor != "regex" else None)
+
+    def _annotate_circ(circ: Circular) -> str:
+        result = ext.extract(circ)
+        # LLM-sourced fields carry no provenance under the lean grammar; recover
+        # snippets by unique-match against the body so the validator isn't blind.
+        backfill_spans(result, circ.body)
+        fields = to_label_fields(result)
+        return json.dumps(fields, indent=2, ensure_ascii=False) + "\n"
+
+    def _circ_from_record(record: dict[str, object]) -> Circular:
+        return Circular(
             circular_id=int(str(record.get("circularId") or 0)),
             subject=str(record.get("subject") or ""),
             body=str(record.get("body") or ""),
             event_id=record.get("eventId") or None,  # type: ignore[arg-type]
         )
-        ext = _build_extractor(extractor, cache_db if extractor != "regex" else None)
-        fields = to_label_fields(ext.extract(circ))
-        return circ.circular_id, json.dumps(fields, indent=2, ensure_ascii=False) + "\n"
 
     if from_file is not None:
-        _, text = _annotate_record(json.loads(from_file.read_text(encoding="utf-8")))
+        circ = _circ_from_record(json.loads(from_file.read_text(encoding="utf-8")))
+        text = _annotate_circ(circ)
         if out is not None:
             out.write_text(text, encoding="utf-8")
             console.print(f"[green]wrote[/] {out}")
         else:
             console.print(text)
-    elif circulars_dir is not None:
-        if out is None:
-            console.print("[red]--out <dir> is required in batch mode[/]")
-            raise typer.Exit(code=2)
-        out.mkdir(parents=True, exist_ok=True)
-        n = 0
+        return
+
+    if circulars_dir is None and circulars is None:
+        raise typer.BadParameter("pass --from-file, --circulars-dir, or --circulars")
+    if out is None:
+        console.print("[red]--out <dir> is required in batch mode[/]")
+        raise typer.Exit(code=2)
+    out.mkdir(parents=True, exist_ok=True)
+
+    n = 0
+    if circulars_dir is not None:
         for src in sorted(circulars_dir.glob("*.json")):
-            cid, text = _annotate_record(json.loads(src.read_text(encoding="utf-8")))
-            (out / f"{cid}.json").write_text(text, encoding="utf-8")
+            circ = _circ_from_record(json.loads(src.read_text(encoding="utf-8")))
+            (out / f"{circ.circular_id}.json").write_text(_annotate_circ(circ), encoding="utf-8")
             n += 1
-        console.print(f"[green]wrote {n} annotated files to {out}[/]")
     else:
-        raise typer.BadParameter("pass --from-file or --circulars-dir")
+        from circex.data.archive import iter_circulars
+        from circex.data.subset import load_subset
+
+        ids = [s.circular_id for s in load_subset(circulars)]  # type: ignore[arg-type]
+        for rec in iter_circulars(circular_ids=ids):
+            circ = Circular.from_record(rec)
+            (out / f"{circ.circular_id}.json").write_text(_annotate_circ(circ), encoding="utf-8")
+            n += 1
+    console.print(f"[green]wrote {n} annotated files to {out}[/]")
 
 
 @app.command()
