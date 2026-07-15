@@ -1,0 +1,122 @@
+{
+  "circular_id": 2627,
+  "event": {
+    "event_name": "XRF 040701",
+    "id": "CXOU J204816.1-401108"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Hbeta",
+      "rest_wavelength": 4861.0
+    },
+    {
+      "line_id": "[O III] 4959",
+      "rest_wavelength": 4959.0
+    },
+    {
+      "line_id": "[O III] 5007",
+      "rest_wavelength": 5007.0
+    },
+    {
+      "line_id": "Halpha",
+      "rest_wavelength": 6563.0
+    },
+    {
+      "line_id": "[N II] 6548",
+      "rest_wavelength": 6548.0
+    },
+    {
+      "line_id": "[N II] 6583",
+      "rest_wavelength": 6583.0
+    },
+    {
+      "line_id": "[S II] 6717",
+      "rest_wavelength": 6717.0
+    },
+    {
+      "line_id": "[S II] 6731",
+      "rest_wavelength": 6731.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.2146,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.id": {
+      "start": 180,
+      "end": 248,
+      "snippet": "CXOU J204816.1-401108, Source #2 from the catalog of Fox (GCN 2626),"
+    },
+    "spectroscopy[0]": {
+      "start": 451,
+      "end": 522,
+      "snippet": "including Hbeta4861A, [OIII]4959A,5007A, Halpha6563A, [NII]6548A,6583A,"
+    },
+    "spectroscopy[1]": {
+      "start": 451,
+      "end": 522,
+      "snippet": "including Hbeta4861A, [OIII]4959A,5007A, Halpha6563A, [NII]6548A,6583A,"
+    },
+    "spectroscopy[2]": {
+      "start": 451,
+      "end": 522,
+      "snippet": "including Hbeta4861A, [OIII]4959A,5007A, Halpha6563A, [NII]6548A,6583A,"
+    },
+    "spectroscopy[3]": {
+      "start": 451,
+      "end": 522,
+      "snippet": "including Hbeta4861A, [OIII]4959A,5007A, Halpha6563A, [NII]6548A,6583A,"
+    },
+    "spectroscopy[4]": {
+      "start": 451,
+      "end": 522,
+      "snippet": "including Hbeta4861A, [OIII]4959A,5007A, Halpha6563A, [NII]6548A,6583A,"
+    },
+    "spectroscopy[5]": {
+      "start": 451,
+      "end": 522,
+      "snippet": "including Hbeta4861A, [OIII]4959A,5007A, Halpha6563A, [NII]6548A,6583A,"
+    },
+    "spectroscopy[6]": {
+      "start": 523,
+      "end": 569,
+      "snippet": "and [SII]6717,6731. The redshift is z=0.2146.\""
+    },
+    "spectroscopy[7]": {
+      "start": 523,
+      "end": 569,
+      "snippet": "and [SII]6717,6731. The redshift is z=0.2146.\""
+    },
+    "redshift.redshift": {
+      "start": 523,
+      "end": 569,
+      "snippet": "and [SII]6717,6731. The redshift is z=0.2146.\""
+    },
+    "redshift.redshift_type": {
+      "start": 386,
+      "end": 450,
+      "snippet": "We find the spectrum of this galaxy to be rich in emission lines"
+    },
+    "event": {
+      "start": 249,
+      "end": 316,
+      "snippet": "which is potentially associated with XRF040701 (Barraud et al., GCN"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "z of the galaxy associated with Chandra Source #2 (CXOU J204816.1-401108), potentially the XRF040701 host (Magellan/IMACS)"
+    ]
+  }
+}

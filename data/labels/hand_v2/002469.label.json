@@ -1,0 +1,30 @@
+{
+  "circular_id": 2469,
+  "event": {
+    "event_name": "GRB 031203"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 189,
+      "end": 261,
+      "snippet": "(Santos-Lleo & Calderon, GCN 2464) is indeed the afterglow of GRB 031203"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "discussion/theory circular: no measured redshift (argues z~10 vs fragmented-dust interpretation) and no classification",
+      "J-H>5, H-Ks~1 mag colours are derived from Bailyn/Zerbi (GCN 2466/2468), not photometry measured here"
+    ]
+  }
+}

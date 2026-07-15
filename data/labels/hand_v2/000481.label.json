@@ -1,0 +1,78 @@
+{
+  "circular_id": 481,
+  "event": {
+    "event_name": "GRB 991208"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "[O II] 3727",
+      "rest_wavelength": 3727.0,
+      "observed_wavelength": 6356.0
+    },
+    {
+      "line_id": "[O III] 4959",
+      "rest_wavelength": 4959.0,
+      "observed_wavelength": 8454.0
+    },
+    {
+      "line_id": "[O III] 5007",
+      "rest_wavelength": 5007.0,
+      "observed_wavelength": 8545.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.7055,
+    "redshift_error": 0.0005,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[0]": {
+      "start": 611,
+      "end": 684,
+      "snippet": "We agree with their proposed identifications as [O II] 3727, and [O III] "
+    },
+    "spectroscopy[1]": {
+      "start": 685,
+      "end": 757,
+      "snippet": "4959, 5007, giving the redshift z = 0.7055 +- 0.0005.  However, we note "
+    },
+    "spectroscopy[2]": {
+      "start": 685,
+      "end": 757,
+      "snippet": "4959, 5007, giving the redshift z = 0.7055 +- 0.0005.  However, we note "
+    },
+    "redshift.redshift_error": {
+      "start": 685,
+      "end": 757,
+      "snippet": "4959, 5007, giving the redshift z = 0.7055 +- 0.0005.  However, we note "
+    },
+    "redshift.redshift_measure": {
+      "start": 828,
+      "end": 900,
+      "snippet": "tentative 8454 Ang line), and additional spectroscopic observations are "
+    },
+    "redshift.redshift_type": {
+      "start": 461,
+      "end": 531,
+      "snippet": "expected.  We confirm the existence of emission lines at the observed "
+    },
+    "event": {
+      "start": 0,
+      "end": 28,
+      "snippet": "GRB 991208 Keck Spectroscopy"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

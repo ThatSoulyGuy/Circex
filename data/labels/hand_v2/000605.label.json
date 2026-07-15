@@ -1,0 +1,176 @@
+{
+  "circular_id": 605,
+  "event": {
+    "event_name": "GRB 000301C"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Fe II 2260",
+      "rest_wavelength": 2260.0
+    },
+    {
+      "line_id": "Fe II 2344",
+      "rest_wavelength": 2344.0
+    },
+    {
+      "line_id": "Fe II 2374",
+      "rest_wavelength": 2374.0
+    },
+    {
+      "line_id": "Fe II 2382",
+      "rest_wavelength": 2382.0
+    },
+    {
+      "line_id": "Fe II 2586",
+      "rest_wavelength": 2586.0
+    },
+    {
+      "line_id": "Fe II 2600",
+      "rest_wavelength": 2600.0
+    },
+    {
+      "line_id": "Mg II 2796",
+      "rest_wavelength": 2796.0
+    },
+    {
+      "line_id": "Mg II 2803",
+      "rest_wavelength": 2803.0
+    },
+    {
+      "line_id": "O I 1302",
+      "rest_wavelength": 1302.0
+    },
+    {
+      "line_id": "C II 1334",
+      "rest_wavelength": 1334.0
+    },
+    {
+      "line_id": "Si IV 1393",
+      "rest_wavelength": 1393.0
+    },
+    {
+      "line_id": "Si II 1526",
+      "rest_wavelength": 1526.0
+    },
+    {
+      "line_id": "C IV 1550",
+      "rest_wavelength": 1550.0
+    },
+    {
+      "line_id": "Fe II 1608",
+      "rest_wavelength": 1608.0
+    },
+    {
+      "line_id": "Al II 1670",
+      "rest_wavelength": 1670.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 2.0335,
+    "redshift_error": 0.0003,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[0]": {
+      "start": 853,
+      "end": 931,
+      "snippet": "following lines: Fe II 2260, 2344, 2374, 2382, 2586, and 2600, and Mg II 2796 "
+    },
+    "spectroscopy[1]": {
+      "start": 853,
+      "end": 931,
+      "snippet": "following lines: Fe II 2260, 2344, 2374, 2382, 2586, and 2600, and Mg II 2796 "
+    },
+    "spectroscopy[2]": {
+      "start": 853,
+      "end": 931,
+      "snippet": "following lines: Fe II 2260, 2344, 2374, 2382, 2586, and 2600, and Mg II 2796 "
+    },
+    "spectroscopy[3]": {
+      "start": 853,
+      "end": 931,
+      "snippet": "following lines: Fe II 2260, 2344, 2374, 2382, 2586, and 2600, and Mg II 2796 "
+    },
+    "spectroscopy[4]": {
+      "start": 853,
+      "end": 931,
+      "snippet": "following lines: Fe II 2260, 2344, 2374, 2382, 2586, and 2600, and Mg II 2796 "
+    },
+    "spectroscopy[5]": {
+      "start": 853,
+      "end": 931,
+      "snippet": "following lines: Fe II 2260, 2344, 2374, 2382, 2586, and 2600, and Mg II 2796 "
+    },
+    "spectroscopy[6]": {
+      "start": 853,
+      "end": 931,
+      "snippet": "following lines: Fe II 2260, 2344, 2374, 2382, 2586, and 2600, and Mg II 2796 "
+    },
+    "spectroscopy[7]": {
+      "start": 932,
+      "end": 1002,
+      "snippet": "and 2803; and a less reliable set of O I 1302, C II 1334, Si IV 1393, "
+    },
+    "spectroscopy[8]": {
+      "start": 932,
+      "end": 1002,
+      "snippet": "and 2803; and a less reliable set of O I 1302, C II 1334, Si IV 1393, "
+    },
+    "spectroscopy[9]": {
+      "start": 932,
+      "end": 1002,
+      "snippet": "and 2803; and a less reliable set of O I 1302, C II 1334, Si IV 1393, "
+    },
+    "spectroscopy[10]": {
+      "start": 932,
+      "end": 1002,
+      "snippet": "and 2803; and a less reliable set of O I 1302, C II 1334, Si IV 1393, "
+    },
+    "spectroscopy[11]": {
+      "start": 1003,
+      "end": 1080,
+      "snippet": "Si II 1526, C IV 1550, Fe II 1608, Al II 1670.  The weighted mean absorption "
+    },
+    "spectroscopy[12]": {
+      "start": 1003,
+      "end": 1080,
+      "snippet": "Si II 1526, C IV 1550, Fe II 1608, Al II 1670.  The weighted mean absorption "
+    },
+    "spectroscopy[13]": {
+      "start": 1003,
+      "end": 1080,
+      "snippet": "Si II 1526, C IV 1550, Fe II 1608, Al II 1670.  The weighted mean absorption "
+    },
+    "spectroscopy[14]": {
+      "start": 1003,
+      "end": 1080,
+      "snippet": "Si II 1526, C IV 1550, Fe II 1608, Al II 1670.  The weighted mean absorption "
+    },
+    "redshift.redshift_error": {
+      "start": 1081,
+      "end": 1137,
+      "snippet": "redshift of this 16-line system is z = 2.0335 +- 0.0003."
+    },
+    "event": {
+      "start": 0,
+      "end": 46,
+      "snippet": "GRB 000301C:  A Precise Redshift Determination"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "16-line absorption system (z=2.0335), interpreted as the GRB host; the O I 1302..Al II 1670 subset is 'less reliable' per authors",
+      "consistent with HST z=1.95+-0.1 (Smette GCN 603, cited)"
+    ]
+  }
+}

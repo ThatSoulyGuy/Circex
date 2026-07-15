@@ -1,0 +1,49 @@
+{
+  "circular_id": 1620,
+  "event": {
+    "event_name": "GRB 021004"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Lyalpha",
+      "rest_wavelength": 1215.67
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 2.3,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "redshift.redshift": {
+      "start": 372,
+      "end": 447,
+      "snippet": "WMKO Keck-1 telescope, confirms the exitence of the multi-component z ~ 2.3"
+    },
+    "redshift.redshift_type": {
+      "start": 571,
+      "end": 641,
+      "snippet": "For the emission component of the Ly-alpha line we measure the flux of"
+    },
+    "event": {
+      "start": 228,
+      "end": 299,
+      "snippet": "Analysis of spectra of the OT + host galaxy associated with GRB 021004,"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "z~2.3 approximate, multi-component system confirmed from Chornock GCN 1605 / Salamanca GCN 1611 / Mirabal GCN 1618",
+      "Ly-alpha emission flux 1.7e-16 (2.2e-16 extinction-corrected) cgs; EW not reported"
+    ]
+  }
+}

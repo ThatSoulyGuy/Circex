@@ -1,0 +1,38 @@
+{
+  "circular_id": 1200,
+  "event": {
+    "event_name": "GRB 011211"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Lyalpha",
+      "rest_wavelength": 1215.67
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 2.14,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "redshift.redshift": {
+      "start": 348,
+      "end": 421,
+      "snippet": "redshift of z=2.14 superposed on the continuum emission.  Hydrogen Lyman "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "also absorption lines of C, Fe, Si detected (specific transitions not itemised); GRB (XRF) 011211"
+    ]
+  }
+}

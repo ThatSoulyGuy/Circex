@@ -1,0 +1,76 @@
+{
+  "circular_id": 1108,
+  "event": {
+    "event_name": "GRB 010921"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "[O II] 3727",
+      "rest_wavelength": 3727.0
+    },
+    {
+      "line_id": "Hbeta",
+      "rest_wavelength": 4861.0
+    },
+    {
+      "line_id": "[O III] 5007",
+      "rest_wavelength": 5007.0
+    },
+    {
+      "line_id": "Halpha",
+      "rest_wavelength": 6563.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.45,
+    "redshift_error": 0.005,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[0]": {
+      "start": 566,
+      "end": 637,
+      "snippet": "4 emission lines, [O II] 3727, H-beta, [O III] 5007, and H-alpha.  The "
+    },
+    "spectroscopy[2]": {
+      "start": 566,
+      "end": 637,
+      "snippet": "4 emission lines, [O II] 3727, H-beta, [O III] 5007, and H-alpha.  The "
+    },
+    "redshift.redshift": {
+      "start": 490,
+      "end": 565,
+      "snippet": "of the spectrum indicate a redshift of z = 0.450 +- 0.005, on the basis of "
+    },
+    "redshift.redshift_error": {
+      "start": 490,
+      "end": 565,
+      "snippet": "of the spectrum indicate a redshift of z = 0.450 +- 0.005, on the basis of "
+    },
+    "redshift.redshift_type": {
+      "start": 566,
+      "end": 637,
+      "snippet": "4 emission lines, [O II] 3727, H-beta, [O III] 5007, and H-alpha.  The "
+    },
+    "event": {
+      "start": 0,
+      "end": 42,
+      "snippet": "GRB010921: Spectroscopy of the Host Galaxy"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "host is an actively star-forming galaxy, no AGN signature"
+    ]
+  }
+}

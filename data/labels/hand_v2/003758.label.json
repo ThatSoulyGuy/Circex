@@ -1,0 +1,56 @@
+{
+  "circular_id": 3758,
+  "event": {
+    "event_name": "GRB 050803"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "[O II] 3727",
+      "rest_wavelength": 3727.0
+    },
+    {
+      "line_id": "[O III] 5007",
+      "rest_wavelength": 5007.0
+    },
+    {
+      "line_id": "Hbeta",
+      "rest_wavelength": 4861.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.422,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "redshift.redshift": {
+      "start": 421,
+      "end": 488,
+      "snippet": "z=0.422, based upon redshifted [OII], [OIII], and H-beta emission  "
+    },
+    "redshift.redshift_type": {
+      "start": 421,
+      "end": 488,
+      "snippet": "z=0.422, based upon redshifted [OII], [OIII], and H-beta emission  "
+    },
+    "event": {
+      "start": 0,
+      "end": 29,
+      "snippet": "GRB 050803: Keck Observations"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "star-forming host galaxy at z=0.422 ([OII],[OIII],H-beta); R-band imaging gave no source magnitude (dropped)"
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "circular_id": 216,
+  "event": {
+    "event_name": "GRB 990123"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 0,
+      "end": 50,
+      "snippet": "GRB 990123: Possible Gravitationally Lensed Burst?"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "redshift_bound: z =< 1.61 (upper limit; absorption redshift by Kelson et al. IAUC 7096) - stored as null per spec bound rule",
+      "host probable z~0.2-0.3 is speculative (no spectroscopy); lensing hypothesis proposed but source not classified",
+      "host Gunn r=21.9 / R~21.5 excluded (cited from Gal et al. GCN 213; host galaxy, not the transient)"
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "circular_id": 4353,
+  "event": {
+    "event_name": "GRB 051215"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 163.139,
+    "dec": 38.626
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "localization.ra": {
+      "start": 691,
+      "end": 757,
+      "snippet": "centered on the GRB position (ra=163.139 (10:52:33.4), dec=38.6260"
+    },
+    "localization.dec": {
+      "start": 691,
+      "end": 757,
+      "snippet": "centered on the GRB position (ra=163.139 (10:52:33.4), dec=38.6260"
+    },
+    "event": {
+      "start": 243,
+      "end": 304,
+      "snippet": "GRB051215 prior to the burst.  As these data should be useful"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "SDSS pre-burst data-release circular. z=0.145 is a foreground cluster of 4 SDSS galaxies near the GRB position (Ofek & Gal-Yam GCN 4351), NOT the GRB redshift - left out of redshift",
+      "SDSS field photometry (179 calib stars, 1240 objects) are calibration/field data, not the transient - excluded"
+    ]
+  }
+}
