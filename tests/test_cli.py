@@ -29,6 +29,14 @@ def test_subcommands_are_registered() -> None:
         assert cmd in result.stdout
 
 
+def test_label_scaffold_is_registered_and_documented() -> None:
+    result = runner.invoke(app, ["label-scaffold", "--help"])
+    assert result.exit_code == 0
+    # the two inputs a labeler drives it with
+    assert "--circulars" in result.stdout
+    assert "--extractor" in result.stdout
+
+
 def test_post_dry_run_from_file_regex() -> None:
     """`circex post` on the discovery circular emits a source with a parsed position."""
     result = runner.invoke(
@@ -62,8 +70,17 @@ def test_event_aggregates_fixtures_dry_run() -> None:
     """`circex event --circulars-dir` fuses the fixtures into one source (dry-run)."""
     result = runner.invoke(
         app,
-        ["event", "--circulars-dir", "docs/fixtures", "--extractor", "regex",
-         "--default-instrument-id", "4", "--group-ids", "1988"],
+        [
+            "event",
+            "--circulars-dir",
+            "docs/fixtures",
+            "--extractor",
+            "regex",
+            "--default-instrument-id",
+            "4",
+            "--group-ids",
+            "1988",
+        ],
     )
     assert result.exit_code == 0, result.output
     assert "DRY-RUN" in result.output

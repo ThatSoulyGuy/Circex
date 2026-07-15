@@ -184,6 +184,110 @@ def label_validate(
     console.print(f"[green]All {len(paths)} files valid.[/]")
 
 
+# Top-level label fields in the order the hand-label template lays them out; the
+# two list fields default to [] rather than null when the extractor found nothing.
+_LABEL_TOP_ORDER = [
+    "circular_id",
+    "event",
+    "follow_up",
+    "localization",
+    "datetime",
+    "time_offsets",
+    "photometry",
+    "spectroscopy",
+    "classification",
+    "redshift",
+    "reporter",
+    "provenance",
+    "extraction_meta",
+]
+_LABEL_LIST_FIELDS = {"time_offsets", "photometry"}
+
+
+@app.command(name="label-scaffold")
+def label_scaffold(
+    circulars: Path = typer.Option(..., "--circulars", help="subset.json selecting circulars"),
+    out: Path = typer.Option(
+        ..., "--out", help="labels dir; writes <id>.source.md + <id>.label.json per circular"
+    ),
+    extractor: str = typer.Option(
+        "hybrid", "--extractor", help="pre-fill the draft label with this extractor's output"
+    ),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
+    limit: int = typer.Option(0, "--limit", help="scaffold only the first N (0 = all)"),
+) -> None:
+    """Scaffold review-ready labeling pairs from a subset.
+
+    Per circular, writes a human-readable `<id>.source.md` and a `<id>.label.json`
+    pre-filled with the chosen extractor's output — a machine DRAFT (its
+    `extraction_meta.extractor` marks it as such, e.g. `hybrid:...`). A labeler
+    corrects the draft against the source per docs/labeling_spec.md, sets the
+    extractor to `hand-vN`, and runs `circex label-validate`. Correcting a draft
+    is far faster than authoring a blank template.
+
+      circex label-scaffold --circulars data/subsets/optical_v2.json \\
+        --extractor hybrid --out data/labels/hand_v2 --limit 120
+    """
+    from circex.data.archive import iter_circulars
+    from circex.data.subset import load_subset
+    from circex.extract.protocol import Circular
+    from circex.label import backfill_spans
+
+    entries = load_subset(circulars)
+    if limit > 0:
+        entries = entries[:limit]
+    strata = {e.circular_id: e.stratum for e in entries}
+    ids = list(strata)
+    records = {int(r["circularId"]): r for r in iter_circulars(circular_ids=ids)}
+
+    out.mkdir(parents=True, exist_ok=True)
+    ext = _build_extractor(extractor, cache_db if extractor != "regex" else None)
+
+    written = 0
+    missing = 0
+    for cid in ids:
+        rec = records.get(cid)
+        if rec is None:
+            missing += 1
+            continue
+        circ = Circular.from_record(rec)
+        result = ext.extract(circ)
+        # Carry snippets into the draft so the reviewer sees each value's source line.
+        backfill_spans(result, circ.body)
+
+        source_md = (
+            f"# Circular {cid}\n\n"
+            f"**Stratum:** {strata[cid]}\n"
+            f"**Subject:** {rec.get('subject', '')}\n"
+            f"**eventId:** {rec.get('eventId', '')}\n"
+            f"**createdOn:** {rec.get('createdOn', '')}\n"
+            f"**submitter:** {rec.get('submitter', '')}\n\n"
+            f"---\n\n{rec.get('body', '')}\n"
+        )
+        (out / f"{cid:06d}.source.md").write_text(source_md, encoding="utf-8")
+
+        # Compact populated content, but keep the full top-level skeleton visible
+        # (null / [] for fields the extractor left empty) so the labeler sees every slot.
+        populated = json.loads(result.model_dump_json(by_alias=True, exclude_none=True))
+        skeleton = {
+            key: populated.get(key, [] if key in _LABEL_LIST_FIELDS else None)
+            for key in _LABEL_TOP_ORDER
+        }
+        (out / f"{cid:06d}.label.json").write_text(
+            json.dumps(skeleton, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        )
+        written += 1
+
+    console.print(
+        f"[green]scaffolded {written} label pairs into {out}[/]"
+        + (f" ([yellow]{missing} missing from archive[/])" if missing else "")
+    )
+    console.print(
+        f"Next: edit each .label.json against its .source.md, then "
+        f"[cyan]circex label-validate {out}[/]"
+    )
+
+
 @app.command(name="subset-build")
 def subset_build(
     per_stratum: int = typer.Option(100, "--per-stratum"),
