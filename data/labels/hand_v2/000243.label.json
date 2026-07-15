@@ -1,0 +1,46 @@
+{
+  "circular_id": 243,
+  "event": {
+    "event_name": "GRB 990123"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "observation_start": "1999-01-24T00:00:00.000Z",
+    "observation_stop": "1999-01-27T00:00:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "K",
+      "mag_system": "Vega",
+      "limiting_mag": 23.0,
+      "telescope": "Keck-I",
+      "telescope_canonical": "Keck",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1025,
+      "end": 1099,
+      "snippet": "in the stack of deep K-band images obtained at the Keck-I telescope on 24 "
+    },
+    "event": {
+      "start": 0,
+      "end": 60,
+      "snippet": "GRB 990123:  New Constraints on Possible Foreground Galaxies"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "cited (not measured here): absorption systems z=0.286, z=0.210 (Hjorth GCN 219) and z=1.60 (Kelson IAUC 7096); left out of redshift"
+    ]
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "circular_id": 242,
+  "event": {
+    "event_name": "GRB 990123"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 231.376417,
+    "dec": 44.766444,
+    "ra_dec_error": 8.333e-05
+  },
+  "datetime": {
+    "observation_start": "1999-01-30T12:28:48.000Z",
+    "observation_livetime": 2400.0
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 23.01,
+      "mag_error": 0.24,
+      "mag_system": "Vega",
+      "obs_mjd": 51208.52,
+      "obs_time": "1999-01-30T12:28:48.000Z",
+      "telescope": "MDM Observatory 2.4m telescope",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 348,
+      "end": 420,
+      "snippet": " detected at magnitude R = 23.01 +/- 0.24 (referenced to the comparison "
+    },
+    "event.event_name": {
+      "start": 133,
+      "end": 205,
+      "snippet": "\"We imaged the field of GRB 990123 in the R band on Jan. 30.52 using the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "photometry[0].calibration_reference: Landolt standard + GCN 207 comparison star (r-R=0.4), mapped to Other"
+    ]
+  }
+}

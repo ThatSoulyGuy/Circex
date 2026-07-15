@@ -1,0 +1,31 @@
+{
+  "circular_id": 6,
+  "event": {
+    "event_name": "GRB 971214"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "observation_start": "1997-12-15T10:44:00.000Z",
+    "observation_stop": "1997-12-15T13:42:00.000Z",
+    "observation_livetime": 6660.0
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 0,
+      "end": 74,
+      "snippet": "GRB971214 - USNOFS Observations Summary                               #006"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

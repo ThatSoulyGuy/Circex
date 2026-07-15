@@ -1,0 +1,45 @@
+{
+  "circular_id": 16,
+  "event": {
+    "event_name": "GRB 971214"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "observation_start": "1997-12-15T10:53:02.400Z",
+    "observation_stop": "1997-12-15T13:25:23.520Z",
+    "observation_livetime": 4800.0
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 21.67,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "telescope": "U.S. Naval Observatory Flagstaff Station",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 359,
+      "end": 425,
+      "snippet": "R=21.67 +/- 0.10.  This is in effect a differential magnitude with"
+    },
+    "event": {
+      "start": 0,
+      "end": 72,
+      "snippet": "GRB971214 Optical Observations and Calibrations                     #016"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

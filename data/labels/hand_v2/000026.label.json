@@ -1,0 +1,42 @@
+{
+  "circular_id": 26,
+  "event": {
+    "event_name": "GRB 971227"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "observation_start": "1997-12-29T12:43:12.000Z",
+    "observation_stop": "1998-01-03T02:24:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 21.5,
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 885,
+      "end": 938,
+      "snippet": "object at a level of more than 0.3mag down to R=21.5."
+    },
+    "event": {
+      "start": 358,
+      "end": 427,
+      "snippet": "optical counterpart to GRB971227 proposed by Castro-Tirado et al (GCN"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

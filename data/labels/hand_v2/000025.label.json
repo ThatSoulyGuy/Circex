@@ -1,0 +1,43 @@
+{
+  "circular_id": 25,
+  "event": {
+    "event_name": "GRB 971227"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "observation_start": "1997-12-30T19:12:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 25.5,
+      "telescope": "Keck",
+      "telescope_canonical": "Keck",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 426,
+      "end": 483,
+      "snippet": "magnitude R ~ 25.5) can be obtained at the following URL:"
+    },
+    "event.event_name": {
+      "start": 286,
+      "end": 353,
+      "snippet": "of 1SAX J1257.3+5924, the proposed x-ray counterpart of GRB 971227."
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

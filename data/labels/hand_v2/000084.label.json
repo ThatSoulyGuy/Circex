@@ -1,0 +1,92 @@
+{
+  "circular_id": 84,
+  "event": {
+    "event_name": "GRB 980519"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "I",
+      "mag": 18.48,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 50952.88,
+      "obs_time": "1998-05-19T21:07:12.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "is_detection": true
+    },
+    {
+      "filter": "I",
+      "mag": 19.05,
+      "mag_error": 0.03,
+      "mag_system": "Vega",
+      "obs_mjd": 50953.0,
+      "obs_time": "1998-05-20T00:00:00.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "is_detection": true
+    },
+    {
+      "filter": "I",
+      "mag": 21.64,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 50953.98,
+      "obs_time": "1998-05-20T23:31:12.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "is_detection": true
+    },
+    {
+      "filter": "I",
+      "mag": 21.64,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 50954.17,
+      "obs_time": "1998-05-21T04:04:48.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 585,
+      "end": 659,
+      "snippet": "OT yields I=18.48+-0.1 on May 19.88 UT and I=19.05+-0.03 on May 20.00 UT. "
+    },
+    "photometry[1]": {
+      "start": 585,
+      "end": 659,
+      "snippet": "OT yields I=18.48+-0.1 on May 19.88 UT and I=19.05+-0.03 on May 20.00 UT. "
+    },
+    "photometry[2]": {
+      "start": 731,
+      "end": 760,
+      "snippet": "May 20.98 UT     I=21.64+-0.2"
+    },
+    "photometry[3]": {
+      "start": 761,
+      "end": 791,
+      "snippet": "May 21.17 UT     I=21.64+-0.1 "
+    },
+    "event": {
+      "start": 0,
+      "end": 31,
+      "snippet": "GRB 980519 Optical Observations"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

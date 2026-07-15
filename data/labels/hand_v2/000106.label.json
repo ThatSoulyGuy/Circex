@@ -1,0 +1,44 @@
+{
+  "circular_id": 106,
+  "event": {
+    "event_name": "GRB 980613"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "observation_start": "1998-06-14T04:04:48.000Z",
+    "observation_stop": "1998-06-15T04:04:48.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "I",
+      "mag_system": "Vega",
+      "limiting_mag": 22.3,
+      "telescope": "MDM Observatory 2.4m telescope",
+      "seeing": 0.9,
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 438,
+      "end": 516,
+      "snippet": "magnitude of I=22.3.  Conditions were photometric and seeing of 0.9 arcsec was"
+    },
+    "event": {
+      "start": 124,
+      "end": 196,
+      "snippet": "We obtained I-band images of the BeppoSAX WFC error circle of GRB 980613"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

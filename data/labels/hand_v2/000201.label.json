@@ -1,0 +1,48 @@
+{
+  "circular_id": 201,
+  "event": {
+    "event_name": "GRB 990123"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 231.377208,
+    "dec": 44.766806
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 18.2,
+      "mag_system": "Vega",
+      "obs_mjd": 51201.565,
+      "obs_time": "1999-01-23T13:33:36.000Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1167,
+      "end": 1238,
+      "snippet": "transient at R = 18.2 (Jan 23.565 UT) and the host galaxy at R ~= 21.3."
+    },
+    "event": {
+      "start": 0,
+      "end": 57,
+      "snippet": "GRB 990123: Bright New Source, Possible Optical Transient"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "photometry[0].calibration_reference: APM catalogue (mapped to Other)"
+    ]
+  }
+}

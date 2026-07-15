@@ -1,0 +1,43 @@
+{
+  "circular_id": 114,
+  "event": {
+    "event_name": "GRB 980613"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 23.3,
+      "mag_system": "Vega",
+      "obs_mjd": 50980.3,
+      "obs_time": "1998-06-16T07:12:00.000Z",
+      "telescope": "Keck-II",
+      "telescope_canonical": "Keck",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 739,
+      "end": 810,
+      "snippet": "GCN circ. 108), is  R ~ 23.3, which is consistent with the conservative"
+    },
+    "event": {
+      "start": 0,
+      "end": 50,
+      "snippet": "GRB 980613:  Detection of the probable host galaxy"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}
