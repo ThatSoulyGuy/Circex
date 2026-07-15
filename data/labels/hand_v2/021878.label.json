@@ -1,0 +1,55 @@
+{
+  "circular_id": 21878,
+  "event": {
+    "event_name": [
+      "GW170814",
+      "LIGO/Virgo G297595"
+    ],
+    "id": "G297595"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G297595",
+    "reference": {
+      "gcn_circular": 21474.0
+    }
+  },
+  "localization": null,
+  "datetime": {
+    "observation_start": "2017-08-14T18:43:12.000Z",
+    "observation_stop": "2017-08-16T18:00:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "open",
+      "limiting_mag": 19.0,
+      "telescope": "PROMPT5",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 240,
+      "end": 436,
+      "snippet": "We report the observation of 24 galaxies within the LVC error region for the GW trigger GW170814 using the LIGO bayestar HLV localization map. We selected galaxies from the GWGC catalogue within 9"
+    },
+    "photometry[0]": {
+      "start": 640,
+      "end": 771,
+      "snippet": "are part of the ongoing DLT40 search. The DLT40 search limit magnitude, for those galaxies is 19.0 (open filter scaled to r band). "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "DLT40 galaxy-targeted search of 24 GWGC galaxies; single search limit 19.0 (open filter scaled to r band). No detections. The BMAG/KMAG columns are catalog absolute magnitudes of the galaxies (not observations) - excluded"
+    ]
+  }
+}

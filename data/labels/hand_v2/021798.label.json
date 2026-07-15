@@ -1,0 +1,48 @@
+{
+  "circular_id": 21798,
+  "event": {
+    "event_name": [
+      "GW170817",
+      "LIGO/Virgo G298048",
+      "SSS17a"
+    ],
+    "id": "G298048"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G298048"
+  },
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 121,
+      "end": 329,
+      "snippet": "a new ~47 ks Chandra X-ray observation (ObsID 18988, PI Haggard) of the LVC trigger G298048, a.k.a. GW170817, beginning 2017 September 02, approximately 16 days after the trigger. These observations include t"
+    },
+    "event.id": {
+      "start": 111,
+      "end": 312,
+      "snippet": "We report a new ~47 ks Chandra X-ray observation (ObsID 18988, PI Haggard) of the LVC trigger G298048, a.k.a. GW170817, beginning 2017 September 02, approximately 16 days after the trigger. These obser"
+    },
+    "follow_up.ref_ID": {
+      "start": 111,
+      "end": 312,
+      "snippet": "We report a new ~47 ks Chandra X-ray observation (ObsID 18988, PI Haggard) of the LVC trigger G298048, a.k.a. GW170817, beginning 2017 September 02, approximately 16 days after the trigger. These obser"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "Chandra X-ray update on the GW170817 counterpart SSS17a (in NGC 4993); no optical photometry. Reported quantities are X-ray fluxes (0.3-8 keV, erg/s/cm2) - out of optical scope"
+    ]
+  }
+}

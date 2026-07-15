@@ -1,0 +1,49 @@
+{
+  "circular_id": 20507,
+  "event": {
+    "event_name": [
+      "GW170104",
+      "LIGO/Virgo G268556"
+    ],
+    "id": "G268556"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G268556"
+  },
+  "localization": null,
+  "datetime": {
+    "trigger_time": "2017-01-04T10:11:58.599Z"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 830,
+      "end": 890,
+      "snippet": "G268556/GW170104 at 2017-01-04 10:11:58.599 UTC (GCN 20364)."
+    },
+    "event.id": {
+      "start": 830,
+      "end": 890,
+      "snippet": "G268556/GW170104 at 2017-01-04 10:11:58.599 UTC (GCN 20364)."
+    },
+    "follow_up.ref_ID": {
+      "start": 830,
+      "end": 890,
+      "snippet": "G268556/GW170104 at 2017-01-04 10:11:58.599 UTC (GCN 20364)."
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "MAXI/GSC all-sky X-ray (2-20 keV) search; no optical photometry. Upper limits are X-ray flux in mCrab (out of optical scope). No new source found"
+    ]
+  }
+}

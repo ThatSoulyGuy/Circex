@@ -1,0 +1,102 @@
+{
+  "circular_id": 21875,
+  "event": {
+    "event_name": [
+      "GW170825",
+      "LIGO/Virgo G299232"
+    ],
+    "id": "G299232"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G299232",
+    "reference": {
+      "gcn_circular": 21693.0
+    }
+  },
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [
+    {
+      "value": 0.11289,
+      "unit": "d",
+      "reference": "G299232 mid"
+    },
+    {
+      "value": 0.16054,
+      "unit": "d",
+      "reference": "G299232 mid"
+    }
+  ],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 19.3,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 57990.64182,
+      "obs_time": "2017-08-25T15:24:13.000Z",
+      "telescope": "VT-78a (Khureltogot observatory)",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 19.4,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 57990.68949,
+      "obs_time": "2017-08-25T16:32:52.000Z",
+      "telescope": "VT-78a (Khureltogot observatory)",
+      "calibration_reference": "Other",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 882,
+      "end": 945,
+      "snippet": "2017-08-25 15:24:13  0.11289   60*60  19.3     27.1, 45.1  85.1"
+    },
+    "photometry[1]": {
+      "start": 946,
+      "end": 1009,
+      "snippet": "2017-08-25 16:32:52  0.16054   60*60  19.4     28.2, 44.8  78.3"
+    },
+    "event.event_name": {
+      "start": 1173,
+      "end": 1234,
+      "snippet": "http://grb.rssi.ru/GW170825_G299232/LVC_IC_Khureltogot_v3.png"
+    },
+    "follow_up.ref_instrument": {
+      "start": 211,
+      "end": 281,
+      "snippet": "We observed  the field of  LIGO/Virgo trigger G299232 (LVC GCN 21693) "
+    },
+    "follow_up.reference.gcn_circular": {
+      "start": 211,
+      "end": 281,
+      "snippet": "We observed  the field of  LIGO/Virgo trigger G299232 (LVC GCN 21693) "
+    },
+    "time_offsets[0]": {
+      "start": 882,
+      "end": 945,
+      "snippet": "2017-08-25 15:24:13  0.11289   60*60  19.3     27.1, 45.1  85.1"
+    },
+    "time_offsets[1]": {
+      "start": 946,
+      "end": 1009,
+      "snippet": "2017-08-25 16:32:52  0.16054   60*60  19.4     28.2, 44.8  78.3"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "also covers IceCube candidate ICX1 (GCN 21694/21698). Unfiltered 5-sigma upper limits calibrated on USNO-B1.0 R2 (mapped to Other). No new/variable object found. FOV centres (pointing) not stored as localization"
+    ]
+  }
+}

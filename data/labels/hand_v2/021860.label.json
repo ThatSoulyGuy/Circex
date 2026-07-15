@@ -1,0 +1,775 @@
+{
+  "circular_id": 21860,
+  "event": {
+    "event_name": [
+      "GW170814",
+      "LIGO/Virgo G297595"
+    ],
+    "id": "G297595"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G297595"
+  },
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 21.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.69905,
+      "obs_time": "2017-08-14T16:46:38.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 21.2,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.70289,
+      "obs_time": "2017-08-14T16:52:10.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.70672,
+      "obs_time": "2017-08-14T16:57:41.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 21.3,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.66727,
+      "obs_time": "2017-08-14T16:00:52.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 21.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.67267,
+      "obs_time": "2017-08-14T16:08:39.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 21.7,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.67653,
+      "obs_time": "2017-08-14T16:14:12.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.71309,
+      "obs_time": "2017-08-14T17:06:51.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 18.9,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.71692,
+      "obs_time": "2017-08-14T17:12:22.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 21.6,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.72075,
+      "obs_time": "2017-08-14T17:17:53.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.2,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.76413,
+      "obs_time": "2017-08-14T18:20:21.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 19.0,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.76845,
+      "obs_time": "2017-08-14T18:26:34.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 17.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.77229,
+      "obs_time": "2017-08-14T18:32:06.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 21.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.60289,
+      "obs_time": "2017-08-15T14:28:10.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (HO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 21.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.63086,
+      "obs_time": "2017-08-15T15:08:26.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (HO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 22.0,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.60718,
+      "obs_time": "2017-08-15T14:34:20.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (HO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 21.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.61102,
+      "obs_time": "2017-08-15T14:39:52.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (HO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.56278,
+      "obs_time": "2017-08-15T13:30:24.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.56663,
+      "obs_time": "2017-08-15T13:35:57.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.2,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.57046,
+      "obs_time": "2017-08-15T13:41:28.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 21.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.7277,
+      "obs_time": "2017-08-14T17:27:53.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 21.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.73153,
+      "obs_time": "2017-08-14T17:33:24.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 21.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.73537,
+      "obs_time": "2017-08-14T17:38:56.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.59095,
+      "obs_time": "2017-08-15T14:10:58.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 20.6,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.59479,
+      "obs_time": "2017-08-15T14:16:30.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.3,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.59863,
+      "obs_time": "2017-08-15T14:22:02.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.9,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.62014,
+      "obs_time": "2017-08-15T14:53:00.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 20.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.62397,
+      "obs_time": "2017-08-15T14:58:31.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.6,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.62781,
+      "obs_time": "2017-08-15T15:04:03.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.80045,
+      "obs_time": "2017-08-14T19:12:39.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 20.2,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.80428,
+      "obs_time": "2017-08-14T19:18:10.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 19.9,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.80811,
+      "obs_time": "2017-08-14T19:23:41.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.57637,
+      "obs_time": "2017-08-15T13:49:58.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 20.6,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.58022,
+      "obs_time": "2017-08-15T13:55:31.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.3,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.58405,
+      "obs_time": "2017-08-15T14:01:02.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.60556,
+      "obs_time": "2017-08-15T14:32:00.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 20.7,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.60939,
+      "obs_time": "2017-08-15T14:37:31.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.6,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.61323,
+      "obs_time": "2017-08-15T14:43:03.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.68431,
+      "obs_time": "2017-08-14T16:25:24.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 18.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.68814,
+      "obs_time": "2017-08-14T16:30:55.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.7,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.69198,
+      "obs_time": "2017-08-14T16:36:27.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 21.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.78669,
+      "obs_time": "2017-08-14T18:52:50.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 21.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.791,
+      "obs_time": "2017-08-14T18:59:02.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57979.79483,
+      "obs_time": "2017-08-14T19:04:33.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "g",
+      "mag_system": "AB",
+      "limiting_mag": 20.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.63476,
+      "obs_time": "2017-08-15T15:14:03.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "r",
+      "mag_system": "AB",
+      "limiting_mag": 20.9,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.63859,
+      "obs_time": "2017-08-15T15:19:34.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 57980.64243,
+      "obs_time": "2017-08-15T15:25:06.000Z",
+      "telescope": "Las Cumbres Observatory 2-m (SSO)",
+      "calibration_reference": "APASS",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1083,
+      "end": 1155,
+      "snippet": "  723415 40.523499 -45.337452   433 2017-08-14 16:46:38 SSO  g      21.5"
+    },
+    "photometry[1]": {
+      "start": 1156,
+      "end": 1228,
+      "snippet": "  723415 40.523499 -45.337452   433 2017-08-14 16:52:10 SSO  r      21.2"
+    },
+    "photometry[2]": {
+      "start": 1229,
+      "end": 1301,
+      "snippet": "  723415 40.523499 -45.337452   433 2017-08-14 16:57:41 SSO  i      20.4"
+    },
+    "photometry[3]": {
+      "start": 1302,
+      "end": 1374,
+      "snippet": "  721389 42.015915 -44.111561   476 2017-08-14 16:00:52 SSO  g      21.3"
+    },
+    "photometry[4]": {
+      "start": 1375,
+      "end": 1447,
+      "snippet": "  721389 42.015915 -44.111561   476 2017-08-14 16:08:39 SSO  r      21.4"
+    },
+    "photometry[5]": {
+      "start": 1448,
+      "end": 1520,
+      "snippet": "  721389 42.015915 -44.111561   476 2017-08-14 16:14:12 SSO  i      21.7"
+    },
+    "photometry[6]": {
+      "start": 1521,
+      "end": 1593,
+      "snippet": "  787654 40.731670 -44.360573   443 2017-08-14 17:06:51 SSO  g      20.8"
+    },
+    "photometry[7]": {
+      "start": 1594,
+      "end": 1666,
+      "snippet": "  787654 40.731670 -44.360573   443 2017-08-14 17:12:22 SSO  r      18.9"
+    },
+    "photometry[8]": {
+      "start": 1667,
+      "end": 1739,
+      "snippet": "  787654 40.731670 -44.360573   443 2017-08-14 17:17:53 SSO  i      21.6"
+    },
+    "photometry[9]": {
+      "start": 1740,
+      "end": 1812,
+      "snippet": "  556821 41.190659 -45.095711   441 2017-08-14 18:20:21 SSO  g      20.2"
+    },
+    "photometry[11]": {
+      "start": 1886,
+      "end": 1958,
+      "snippet": "  556821 41.190659 -45.095711   441 2017-08-14 18:32:06 SSO  i      17.4"
+    },
+    "photometry[12]": {
+      "start": 1959,
+      "end": 2031,
+      "snippet": "  625999 41.654194 -42.367088   308 2017-08-15 14:28:10 HO   g      21.8"
+    },
+    "photometry[13]": {
+      "start": 2032,
+      "end": 2104,
+      "snippet": "  625999 41.654194 -42.367088   308 2017-08-15 15:08:26 HO   g      21.4"
+    },
+    "photometry[15]": {
+      "start": 2178,
+      "end": 2250,
+      "snippet": "  625999 41.654194 -42.367088   308 2017-08-15 14:39:52 HO   i      21.8"
+    },
+    "photometry[16]": {
+      "start": 2251,
+      "end": 2323,
+      "snippet": "  706152 40.122471 -45.386868   494 2017-08-15 13:30:24 SSO  g      20.4"
+    },
+    "photometry[17]": {
+      "start": 2324,
+      "end": 2396,
+      "snippet": "  706152 40.122471 -45.386868   494 2017-08-15 13:35:57 SSO  r      20.5"
+    },
+    "photometry[18]": {
+      "start": 2397,
+      "end": 2469,
+      "snippet": "  706152 40.122471 -45.386868   494 2017-08-15 13:41:28 SSO  i      20.2"
+    },
+    "photometry[19]": {
+      "start": 2680,
+      "end": 2752,
+      "snippet": " 1066576 41.292435 -46.597050   399 2017-08-14 17:27:53 SSO  g      21.4"
+    },
+    "photometry[20]": {
+      "start": 2753,
+      "end": 2825,
+      "snippet": " 1066576 41.292435 -46.597050   399 2017-08-14 17:33:24 SSO  r      21.5"
+    },
+    "photometry[21]": {
+      "start": 2826,
+      "end": 2898,
+      "snippet": " 1066576 41.292435 -46.597050   399 2017-08-14 17:38:56 SSO  i      21.5"
+    },
+    "photometry[22]": {
+      "start": 2899,
+      "end": 2971,
+      "snippet": " 1005823 42.079330 -44.054893   451 2017-08-15 14:10:58 SSO  g      20.5"
+    },
+    "photometry[23]": {
+      "start": 2972,
+      "end": 3044,
+      "snippet": " 1005823 42.079330 -44.054893   451 2017-08-15 14:16:30 SSO  r      20.6"
+    },
+    "photometry[24]": {
+      "start": 3045,
+      "end": 3117,
+      "snippet": " 1005823 42.079330 -44.054893   451 2017-08-15 14:22:02 SSO  i      20.3"
+    },
+    "photometry[25]": {
+      "start": 3118,
+      "end": 3190,
+      "snippet": " 1031304 41.217548 -46.500435   402 2017-08-15 14:53:00 SSO  g      20.9"
+    },
+    "photometry[26]": {
+      "start": 3191,
+      "end": 3263,
+      "snippet": " 1031304 41.217548 -46.500435   402 2017-08-15 14:58:31 SSO  r      20.8"
+    },
+    "photometry[27]": {
+      "start": 3264,
+      "end": 3336,
+      "snippet": " 1031304 41.217548 -46.500435   402 2017-08-15 15:04:03 SSO  i      20.6"
+    },
+    "photometry[28]": {
+      "start": 3337,
+      "end": 3409,
+      "snippet": "  622864 41.392635 -44.539589   316 2017-08-14 19:12:39 SSO  g      20.4"
+    },
+    "photometry[29]": {
+      "start": 3410,
+      "end": 3482,
+      "snippet": "  622864 41.392635 -44.539589   316 2017-08-14 19:18:10 SSO  r      20.2"
+    },
+    "photometry[30]": {
+      "start": 3483,
+      "end": 3555,
+      "snippet": "  622864 41.392635 -44.539589   316 2017-08-14 19:23:41 SSO  i      19.9"
+    },
+    "photometry[31]": {
+      "start": 3556,
+      "end": 3628,
+      "snippet": " 1415752 42.418404 -44.226032   422 2017-08-15 13:49:58 SSO  g      20.4"
+    },
+    "photometry[32]": {
+      "start": 3629,
+      "end": 3701,
+      "snippet": " 1415752 42.418404 -44.226032   422 2017-08-15 13:55:31 SSO  r      20.6"
+    },
+    "photometry[33]": {
+      "start": 3702,
+      "end": 3774,
+      "snippet": " 1415752 42.418404 -44.226032   422 2017-08-15 14:01:02 SSO  i      20.3"
+    },
+    "photometry[34]": {
+      "start": 3775,
+      "end": 3847,
+      "snippet": " 1181112 41.086727 -43.939903   452 2017-08-15 14:32:00 SSO  g      20.8"
+    },
+    "photometry[35]": {
+      "start": 3848,
+      "end": 3920,
+      "snippet": " 1181112 41.086727 -43.939903   452 2017-08-15 14:37:31 SSO  r      20.7"
+    },
+    "photometry[36]": {
+      "start": 3921,
+      "end": 3993,
+      "snippet": " 1181112 41.086727 -43.939903   452 2017-08-15 14:43:03 SSO  i      20.6"
+    },
+    "photometry[37]": {
+      "start": 3994,
+      "end": 4066,
+      "snippet": "  806902 42.062664 -45.159618   447 2017-08-14 16:25:24 SSO  g      20.8"
+    },
+    "photometry[38]": {
+      "start": 4067,
+      "end": 4139,
+      "snippet": "  806902 42.062664 -45.159618   447 2017-08-14 16:30:55 SSO  r      18.4"
+    },
+    "photometry[39]": {
+      "start": 4140,
+      "end": 4212,
+      "snippet": "  806902 42.062664 -45.159618   447 2017-08-14 16:36:27 SSO  i      20.7"
+    },
+    "photometry[40]": {
+      "start": 4213,
+      "end": 4285,
+      "snippet": " 1647694 42.000800 -46.319860   382 2017-08-14 18:52:50 SSO  g      21.5"
+    },
+    "photometry[41]": {
+      "start": 4286,
+      "end": 4358,
+      "snippet": " 1647694 42.000800 -46.319860   382 2017-08-14 18:59:02 SSO  r      21.5"
+    },
+    "photometry[42]": {
+      "start": 4359,
+      "end": 4431,
+      "snippet": " 1647694 42.000800 -46.319860   382 2017-08-14 19:04:33 SSO  i      20.5"
+    },
+    "photometry[43]": {
+      "start": 4432,
+      "end": 4504,
+      "snippet": "   62667 41.574863 -44.984894   488 2017-08-15 15:14:03 SSO  g      20.8"
+    },
+    "photometry[44]": {
+      "start": 4505,
+      "end": 4577,
+      "snippet": "   62667 41.574863 -44.984894   488 2017-08-15 15:19:34 SSO  r      20.9"
+    },
+    "photometry[45]": {
+      "start": 4578,
+      "end": 4650,
+      "snippet": "   62667 41.574863 -44.984894   488 2017-08-15 15:25:06 SSO  i      20.5"
+    },
+    "event.event_name": {
+      "start": 289,
+      "end": 363,
+      "snippet": "of GW170814 (GCN 21474) using Las Cumbres Observatory's 2-meter telescopes"
+    },
+    "photometry[10]": {
+      "start": 1813,
+      "end": 1885,
+      "snippet": "  556821 41.190659 -45.095711   441 2017-08-14 18:26:34 SSO  r      19.0"
+    },
+    "photometry[14]": {
+      "start": 2105,
+      "end": 2177,
+      "snippet": "  625999 41.654194 -42.367088   308 2017-08-15 14:34:20 HO   r      22.0"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "galaxy-targeted search of 16 GLADE galaxies; g/r/i 3-sigma limiting magnitudes (Sloan/AB), APASS-calibrated, LCO 2-m at HO and SSO. No source detected (limits only).",
+      "3 rows for GLADE 752527 omitted (limit '*' = not calculated, too few APASS stars). Per-galaxy target positions in source table (not stored; localization is singular)."
+    ]
+  }
+}

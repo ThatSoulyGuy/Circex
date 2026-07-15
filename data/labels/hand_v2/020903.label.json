@@ -1,0 +1,94 @@
+{
+  "circular_id": 20903,
+  "event": {
+    "event_name": "IceCube-170312A"
+  },
+  "follow_up": {
+    "ref_type": "neutrino",
+    "ref_instrument": "IceCube",
+    "ref_ID": "IceCube-170312A",
+    "reference": {
+      "gcn_circular": 20857.0
+    }
+  },
+  "localization": {
+    "ra": 305.15,
+    "dec": -26.61
+  },
+  "datetime": {
+    "trigger_time": "2017-03-12T13:49:39.830Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 19.2,
+      "obs_mjd": 57825.08789,
+      "obs_time": "2017-03-13T02:06:34.000Z",
+      "telescope": "MASTER-SAAO",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 19.1,
+      "obs_mjd": 57826.36031,
+      "obs_time": "2017-03-14T08:38:51.000Z",
+      "telescope": "MASTER-OAFA",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1724,
+      "end": 1762,
+      "snippet": "inspect on13 Mar, mlim=19.2, 20 images"
+    },
+    "photometry[1]": {
+      "start": 1905,
+      "end": 1952,
+      "snippet": "inspect on 13,19 Mar, mlim=18.5-19.1, 16 images"
+    },
+    "event.event_name": {
+      "start": 905,
+      "end": 975,
+      "snippet": "alert  IceCube-170312A  (Blaufuss et al. GCN #20857: RA(2000)= 305.15 "
+    },
+    "follow_up.ref_type": {
+      "start": 829,
+      "end": 904,
+      "snippet": "MASTER Global Robotic Net was starting inspection of IceCube HESE neutrino "
+    },
+    "follow_up.ref_ID": {
+      "start": 905,
+      "end": 975,
+      "snippet": "alert  IceCube-170312A  (Blaufuss et al. GCN #20857: RA(2000)= 305.15 "
+    },
+    "follow_up.reference.gcn_circular": {
+      "start": 905,
+      "end": 975,
+      "snippet": "alert  IceCube-170312A  (Blaufuss et al. GCN #20857: RA(2000)= 305.15 "
+    },
+    "localization.ra": {
+      "start": 905,
+      "end": 975,
+      "snippet": "alert  IceCube-170312A  (Blaufuss et al. GCN #20857: RA(2000)= 305.15 "
+    },
+    "localization.dec": {
+      "start": 976,
+      "end": 1023,
+      "snippet": "-26.61, Triggertime= 2017-03-12 13:49:39.83 UT)"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no OT connected to the IceCube alert. Rows are the MASTER survey depths (SAAO mlim=19.2 20 images; OAFA mlim=18.5-19.1 16 images).",
+      "excluded: cross-checks of 5 Swift XRT sources (Keivani GCN 20890) - some are known variable/AGN optical sources, not the neutrino counterpart"
+    ]
+  }
+}

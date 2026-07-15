@@ -1,0 +1,304 @@
+{
+  "circular_id": 21687,
+  "event": {
+    "event_name": [
+      "GW170817",
+      "LIGO/Virgo G298048",
+      "SSS17a"
+    ],
+    "id": "G298048"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G298048"
+  },
+  "localization": null,
+  "datetime": {
+    "trigger_time": "2017-08-17T12:41:04.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "V",
+      "mag": 15.3,
+      "mag_error": 0.5,
+      "mag_system": "Vega",
+      "obs_mjd": 57982.95438,
+      "obs_time": "2017-08-17T22:54:18.000Z",
+      "telescope": "MASTER-OAFA",
+      "instrument": "MASTER VWFC",
+      "is_detection": true
+    },
+    {
+      "filter": "W",
+      "mag": 17.7,
+      "mag_error": 0.2,
+      "obs_mjd": 57982.99993,
+      "obs_time": "2017-08-17T23:59:54.000Z",
+      "telescope": "MASTER-OAFA",
+      "instrument": "MASTER I",
+      "is_detection": true
+    },
+    {
+      "filter": "W",
+      "mag": 17.3,
+      "mag_error": 0.2,
+      "obs_mjd": 57983.01325,
+      "obs_time": "2017-08-18T00:19:05.000Z",
+      "telescope": "MASTER-OAFA",
+      "instrument": "MASTER I",
+      "is_detection": true
+    },
+    {
+      "filter": "W",
+      "mag": 17.5,
+      "mag_error": 0.2,
+      "obs_mjd": 57983.71314,
+      "obs_time": "2017-08-18T17:06:55.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 17.2,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 57983.72052,
+      "obs_time": "2017-08-18T17:17:33.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag": 18.5,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 57983.73197,
+      "obs_time": "2017-08-18T17:34:02.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": true
+    },
+    {
+      "filter": "W",
+      "mag": 18.6,
+      "mag_error": 0.2,
+      "obs_mjd": 57984.71316,
+      "obs_time": "2017-08-19T17:06:57.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 18.2,
+      "mag_error": 0.3,
+      "mag_system": "Vega",
+      "obs_mjd": 57984.74553,
+      "obs_time": "2017-08-19T17:53:34.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 19.5,
+      "obs_mjd": 57984.75315,
+      "obs_time": "2017-08-19T18:04:32.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": false
+    },
+    {
+      "filter": "W",
+      "mag": 19.0,
+      "mag_error": 0.2,
+      "obs_mjd": 57984.96759,
+      "obs_time": "2017-08-19T23:13:20.000Z",
+      "telescope": "MASTER-OAFA",
+      "instrument": "MASTER I",
+      "is_detection": true
+    },
+    {
+      "filter": "W",
+      "limiting_mag": 19.3,
+      "obs_mjd": 57985.71153,
+      "obs_time": "2017-08-20T17:04:36.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 18.8,
+      "obs_mjd": 57985.72634,
+      "obs_time": "2017-08-20T17:25:56.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": false
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 19.7,
+      "obs_mjd": 57985.7337,
+      "obs_time": "2017-08-20T17:36:32.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": false
+    },
+    {
+      "filter": "W",
+      "limiting_mag": 20.0,
+      "obs_mjd": 57986.01841,
+      "obs_time": "2017-08-21T00:26:31.000Z",
+      "telescope": "MASTER-OAFA",
+      "instrument": "MASTER I",
+      "is_detection": false
+    },
+    {
+      "filter": "W",
+      "limiting_mag": 19.3,
+      "obs_mjd": 57986.71405,
+      "obs_time": "2017-08-21T17:08:14.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 18.8,
+      "obs_mjd": 57986.75431,
+      "obs_time": "2017-08-21T18:06:12.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": false
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 18.7,
+      "obs_mjd": 57986.80582,
+      "obs_time": "2017-08-21T19:20:23.000Z",
+      "telescope": "MASTER-SAAO",
+      "instrument": "MASTER II",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": {
+    "classification": "kilonova",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "compact merger",
+      "DNS",
+      "kilonova"
+    ]
+  },
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 4405,
+      "end": 4484,
+      "snippet": "some excess (see Table 1) at NGC 4993 position with flux corresponded to ~15.3 "
+    },
+    "photometry[1]": {
+      "start": 2665,
+      "end": 2740,
+      "snippet": "immediatelly after sunset  at 2017-08-17 17:06:47 = 2017-08-17.71304 (JD = "
+    },
+    "photometry[2]": {
+      "start": 6008,
+      "end": 6080,
+      "snippet": "2017-08-18 00:19:05  41.881   180   W   17.3  0.2  19.3 MASTER I    OAFA"
+    },
+    "photometry[3]": {
+      "start": 6082,
+      "end": 6154,
+      "snippet": "2017-08-18 17:06:55 102.352  6x180  W   17.5  0.2  20.0 MASTER II   SAAO"
+    },
+    "photometry[4]": {
+      "start": 6155,
+      "end": 6227,
+      "snippet": "2017-08-18 17:17:33 102.989  3x180  R   17.2  0.2  19.8 MASTER II   SAAO"
+    },
+    "photometry[5]": {
+      "start": 6228,
+      "end": 6300,
+      "snippet": "2017-08-18 17:34:02 103.979  3x180  B   18.5  0.1  19.5 MASTER II   SAAO"
+    },
+    "photometry[6]": {
+      "start": 6302,
+      "end": 6374,
+      "snippet": "2017-08-19 17:06:57 188.753  3x180  W   18.6  0.2  20.0 MASTER II   SAAO"
+    },
+    "photometry[7]": {
+      "start": 6375,
+      "end": 6447,
+      "snippet": "2017-08-19 17:53:34 191.550  3x180  R   18.2  0.3  19.8 MASTER II   SAAO"
+    },
+    "photometry[8]": {
+      "start": 5935,
+      "end": 6007,
+      "snippet": "2017-08-17 23:59:54  40.730   180   W   17.7  0.2  19.5 MASTER I    OAFA"
+    },
+    "photometry[9]": {
+      "start": 3198,
+      "end": 3282,
+      "snippet": "http://master.sai.msu.ru/static//ligo/db/G298048/151A//img/MASTER.G298048.180.24.gif"
+    },
+    "photometry[10]": {
+      "start": 6008,
+      "end": 6080,
+      "snippet": "2017-08-18 00:19:05  41.881   180   W   17.3  0.2  19.3 MASTER I    OAFA"
+    },
+    "photometry[11]": {
+      "start": 6668,
+      "end": 6740,
+      "snippet": "2017-08-20 17:25:56 276.292  3x180  R  >18.8  ---  19.5 MASTER II   SAAO"
+    },
+    "photometry[12]": {
+      "start": 6741,
+      "end": 6813,
+      "snippet": "2017-08-20 17:36:32 276.928  3x180  B  >19.7  ---  20.0 MASTER II   SAAO"
+    },
+    "photometry[14]": {
+      "start": 6595,
+      "end": 6667,
+      "snippet": "2017-08-20 17:04:36 275.012  3x180  W  >19.3  ---  20.0 MASTER II   SAAO"
+    },
+    "photometry[15]": {
+      "start": 6961,
+      "end": 7033,
+      "snippet": "2017-08-21 18:06:12 365.108  3x180  R  >18.8  ---  19.5 MASTER II   SAAO"
+    },
+    "photometry[16]": {
+      "start": 7034,
+      "end": 7106,
+      "snippet": "2017-08-21 19:20:23 369.559  3x180  B  >18.7  ---  19.0 MASTER II   SAAO"
+    },
+    "event": {
+      "start": 2279,
+      "end": 2350,
+      "snippet": "Global MASTER-Net started to observe LIGO/Virgo G298048 error field at "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "MASTER Global-Net photometry of SSS17a/AT2017gfo (possible kilonova) in NGC 4993, from image subtraction. B/V/R Vega, W=unfiltered. Detections carry mag+err; non-detection rows ('----' or '>X') stored as limiting_mag.",
+      "photometry[0] V=15.3 flagged by authors as possibly image-subtraction noise (faint excess).",
+      "classification=kilonova (author's 'Possible KiloNova'). Source position (NGC 4993) not given numerically here (see GCN 21529)."
+    ]
+  }
+}
