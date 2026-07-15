@@ -1,0 +1,133 @@
+{
+  "circular_id": 886,
+  "event": {
+    "event_name": "GRB 001109"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "J",
+      "mag_system": "Vega",
+      "limiting_mag": 21.3,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51857.81,
+      "obs_time": "2000-11-09T19:26:24.000Z",
+      "telescope": "WHT 4.2m",
+      "instrument": "INGRID",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "H",
+      "mag_system": "Vega",
+      "limiting_mag": 21.0,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51857.8,
+      "obs_time": "2000-11-09T19:12:00.000Z",
+      "telescope": "WHT 4.2m",
+      "instrument": "INGRID",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "Ks",
+      "mag_system": "Vega",
+      "limiting_mag": 19.9,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51857.79,
+      "obs_time": "2000-11-09T18:57:36.000Z",
+      "telescope": "WHT 4.2m",
+      "instrument": "INGRID",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "J",
+      "mag_system": "Vega",
+      "limiting_mag": 21.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51859.86,
+      "obs_time": "2000-11-11T20:38:24.000Z",
+      "telescope": "WHT 4.2m",
+      "instrument": "INGRID",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "H",
+      "mag_system": "Vega",
+      "limiting_mag": 20.7,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51859.82,
+      "obs_time": "2000-11-11T19:40:48.000Z",
+      "telescope": "WHT 4.2m",
+      "instrument": "INGRID",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "Ks",
+      "mag_system": "Vega",
+      "limiting_mag": 19.4,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51859.83,
+      "obs_time": "2000-11-11T19:55:12.000Z",
+      "telescope": "WHT 4.2m",
+      "instrument": "INGRID",
+      "calibration_reference": "Other",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1592,
+      "end": 1648,
+      "snippet": " 2000 Nov.  9.81     J       300s      21.3\t18.64 (0.05)"
+    },
+    "photometry[2]": {
+      "start": 1699,
+      "end": 1748,
+      "snippet": "\t    9.79     Ks      750s      19.9\t16.96 (0.04)"
+    },
+    "photometry[3]": {
+      "start": 1750,
+      "end": 1799,
+      "snippet": "\t   11.86     J       600s      21.4\t18.70 (0.05)"
+    },
+    "photometry[4]": {
+      "start": 1800,
+      "end": 1849,
+      "snippet": "\t   11.82     H       600s      20.7\t17.93 (0.08)"
+    },
+    "photometry[5]": {
+      "start": 1850,
+      "end": 1899,
+      "snippet": "\t   11.83     Ks      600s      19.4\t17.07 (0.07)"
+    },
+    "photometry[1]": {
+      "start": 1649,
+      "end": 1698,
+      "snippet": "\t    9.80     H       750s      21.0\t17.96 (0.03)"
+    },
+    "event": {
+      "start": 232,
+      "end": 301,
+      "snippet": "We observed the field of GRB 001109 [1] in J, H and Ks with INGRID on"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "deep JHKs upper limits (3-sigma, WHT/INGRID), no afterglow candidate. UKIRT faint standard #30 calibration (->Other).",
+      "excluded: the extended radio-source J/H/Ks detections (deemed probably not GRB-related) and the historical comparison table of other GRBs' NIR mags. Extrapolated optical limit R>23.1 noted only"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "circular_id": 227,
+  "event": {
+    "event_name": "GRB 990123"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 21.25,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 51202.9,
+      "obs_time": "1999-01-24T21:36:00.000Z",
+      "telescope": "UPSO 104-cm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag": 22.05,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 51202.99,
+      "obs_time": "1999-01-24T23:45:36.000Z",
+      "telescope": "UPSO 104-cm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 696,
+      "end": 735,
+      "snippet": "     Jan 24.90      R       21.25   0.1"
+    },
+    "photometry[1]": {
+      "start": 736,
+      "end": 775,
+      "snippet": "     Jan 24.99      B       22.05   0.2"
+    },
+    "event": {
+      "start": 125,
+      "end": 257,
+      "snippet": "\"We have observed the optical transient (GCN #201) of GRB\n990123 (GCN #199) with the 104-cm telescope of the U.P. State Observatory,"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "OT R=21.25 (Jan24.90) and B=22.05 (Jan24.99) 1999; Johnson B / Cousins R, calibrated on M67 standards (->Other)"
+    ]
+  }
+}

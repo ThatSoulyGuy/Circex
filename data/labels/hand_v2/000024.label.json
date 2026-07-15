@@ -1,0 +1,59 @@
+{
+  "circular_id": 24,
+  "event": {
+    "event_name": "GRB 971227"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 23.0,
+      "obs_mjd": 50812.8,
+      "obs_time": "1997-12-30T19:12:00.000Z",
+      "telescope": "Keck-II",
+      "telescope_canonical": "Keck",
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 21.0,
+      "obs_mjd": 50810.4,
+      "obs_time": "1997-12-28T09:36:00.000Z",
+      "telescope": "Palomar 60-inch",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 316,
+      "end": 380,
+      "snippet": "proposed as the x-ray counterpart of GRB 971227, obtained at the"
+    },
+    "photometry[0]": {
+      "start": 381,
+      "end": 447,
+      "snippet": "Keck-II telescope, on UT 1997 Dec 30.8  and UT 1998 Jan 01.8.  Our"
+    },
+    "photometry[1]": {
+      "start": 863,
+      "end": 925,
+      "snippet": "In addition, we have obtained r-band images at Palomar 60-inch"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "variability upper limits: no object varied >0.2 mag; R>23 over Keck-II Dec30.8 1997-Jan01.8 1998, r>21 at P60 Dec28.4 1997"
+    ]
+  }
+}

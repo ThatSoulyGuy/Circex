@@ -1,0 +1,92 @@
+{
+  "circular_id": 398,
+  "event": {
+    "event_name": "GRB 990806"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 22.0,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 51396.76,
+      "obs_time": "1999-08-06T18:14:24.000Z",
+      "telescope": "40-inch (Siding Spring)",
+      "is_detection": false
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 21.5,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 51396.8,
+      "obs_time": "1999-08-06T19:12:00.000Z",
+      "telescope": "40-inch (Siding Spring)",
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 22.8,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 51397.24,
+      "obs_time": "1999-08-07T05:45:36.000Z",
+      "telescope": "ESO Danish 1.54m",
+      "instrument": "DFOSC",
+      "is_detection": false
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 22.4,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 51397.4,
+      "obs_time": "1999-08-07T09:36:00.000Z",
+      "telescope": "ESO Danish 1.54m",
+      "instrument": "DFOSC",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[1]": {
+      "start": 832,
+      "end": 886,
+      "snippet": "      August 6.80  40inch       60        B      21.5 "
+    },
+    "photometry[2]": {
+      "start": 887,
+      "end": 940,
+      "snippet": "      August 7.24  1.54m+DFOSC  50        R      22.8"
+    },
+    "photometry[3]": {
+      "start": 941,
+      "end": 994,
+      "snippet": "      August 7.40  1.54m+DFOSC  10        B      22.4"
+    },
+    "photometry[0]": {
+      "start": 778,
+      "end": 831,
+      "snippet": " 1999 August 6.76  40inch       40        R      22.0"
+    },
+    "event": {
+      "start": 389,
+      "end": 462,
+      "snippet": "\"We have observed the error box of GRB990806 (Piro 1999, GCN 392)  at the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no source varied by >0.3 mag; 5-sigma limiting magnitudes"
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "circular_id": 850,
+  "event": {
+    "event_name": "GRB 000926"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 195,
+      "end": 263,
+      "snippet": "GRB 000926 (GCN #801), using the Wide Field Camera on the 2.5m Isaac"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "OT photometry reported only as RELATIVE magnitudes (OT minus the GCN 824 reference star, i/R/V, Sept 27-30 2000) - not stored as absolute mag/system (would be false apparent magnitudes).",
+      "host R=24.2+-0.3 is a light-curve-fit parameter, not a direct measurement - excluded"
+    ]
+  }
+}

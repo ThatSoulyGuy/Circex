@@ -1,0 +1,127 @@
+{
+  "circular_id": 887,
+  "event": {
+    "event_name": "GRB 001109"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 20.9,
+      "obs_mjd": 51857.7712,
+      "obs_time": "2000-11-09T18:30:31.680Z",
+      "telescope": "Calar Alto 1.23m",
+      "calibration_reference": "Other",
+      "seeing": 1.0,
+      "is_detection": false
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 19.8,
+      "obs_mjd": 51857.7846,
+      "obs_time": "2000-11-09T18:49:49.440Z",
+      "telescope": "Calar Alto 1.23m",
+      "calibration_reference": "Other",
+      "seeing": 1.0,
+      "is_detection": false
+    },
+    {
+      "filter": "I",
+      "mag_system": "Vega",
+      "limiting_mag": 21.0,
+      "obs_mjd": 51858.098,
+      "obs_time": "2000-11-10T02:21:07.200Z",
+      "telescope": "NOFS 1.0m",
+      "calibration_reference": "Other",
+      "seeing": 1.9,
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 20.9,
+      "obs_mjd": 51858.7623,
+      "obs_time": "2000-11-10T18:17:42.720Z",
+      "telescope": "Calar Alto 1.23m",
+      "calibration_reference": "Other",
+      "seeing": 1.0,
+      "is_detection": false
+    },
+    {
+      "filter": "H",
+      "mag_system": "Vega",
+      "limiting_mag": 20.5,
+      "obs_mjd": 51858.8379,
+      "obs_time": "2000-11-10T20:06:34.560Z",
+      "telescope": "Calar Alto 3.5m",
+      "calibration_reference": "Other",
+      "seeing": 1.5,
+      "is_detection": false
+    },
+    {
+      "filter": "I",
+      "mag_system": "Vega",
+      "limiting_mag": 21.0,
+      "obs_mjd": 51861.0664,
+      "obs_time": "2000-11-13T01:35:36.960Z",
+      "telescope": "NOFS 1.0m",
+      "calibration_reference": "Other",
+      "seeing": 2.6,
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 888,
+      "end": 953,
+      "snippet": "  Nov. 09.7712    CAHA 1.23      R      7 * 500      1.0     20.9"
+    },
+    "photometry[1]": {
+      "start": 954,
+      "end": 1019,
+      "snippet": "  Nov. 09.7846    CAHA 1.23      B      3 * 600      1.0     19.8"
+    },
+    "photometry[3]": {
+      "start": 1086,
+      "end": 1151,
+      "snippet": "  Nov. 10.7623    CAHA 1.23      R      9 * 500      1.0     20.9"
+    },
+    "photometry[4]": {
+      "start": 1152,
+      "end": 1217,
+      "snippet": "  Nov. 10.8379    CAHA 3.5       H     10 * 300      1.5     20.5"
+    },
+    "photometry[2]": {
+      "start": 1020,
+      "end": 1085,
+      "snippet": "  Nov. 10.0980    NOFS 1.0       I       1800        1.9     21.0"
+    },
+    "photometry[5]": {
+      "start": 1218,
+      "end": 1283,
+      "snippet": "  Nov. 13.0664    NOFS 1.0       I       1800        2.6     21.0"
+    },
+    "event": {
+      "start": 346,
+      "end": 425,
+      "snippet": "Starting at about 9 hrs after the  occurence of GRB 001109 we have observed its"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no fading object; limiting magnitudes (USNO B/R, SA113 for I; ->Other).",
+      "the constant optical source coincident with the radio source (R~20.7, I~20.1) is a possible host galaxy, not the afterglow - excluded. Host-corrected afterglow limits R>21.5 (9h), I>22 (17h) noted only"
+    ]
+  }
+}

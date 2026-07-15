@@ -1,0 +1,64 @@
+{
+  "circular_id": 907,
+  "event": {
+    "event_name": "GRB 001212"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "H",
+      "mag_system": "Vega",
+      "limiting_mag": 18.3,
+      "obs_mjd": 51893.1744,
+      "obs_time": "2000-12-15T04:11:08.160Z",
+      "telescope": "Calar Alto 3.5m",
+      "instrument": "Omega-Prime",
+      "calibration_reference": "2MASS",
+      "seeing": 3.0,
+      "is_detection": false
+    },
+    {
+      "filter": "H",
+      "mag_system": "Vega",
+      "limiting_mag": 18.4,
+      "obs_mjd": 51895.8188,
+      "obs_time": "2000-12-17T19:39:04.320Z",
+      "telescope": "Calar Alto 3.5m",
+      "instrument": "Omega-Prime",
+      "calibration_reference": "2MASS",
+      "seeing": 1.3,
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1038,
+      "end": 1077,
+      "snippet": "more than 0.2 mag down to H = 18.3 mag."
+    },
+    "photometry[1]": {
+      "start": 1346,
+      "end": 1399,
+      "snippet": "  Dec. 17.8188       6      7       1.3      H = 18.4"
+    },
+    "event": {
+      "start": 251,
+      "end": 325,
+      "snippet": "We have observed the error box of GRB 001212 (GCN #899) on Dec. 15, 2000  "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no object faded by >0.2 mag down to H=18.3 (variability limits, CAHA 3.5m/Omega-Prime, 2MASS calibration). First night non-photometric. Constant field object (Mohan/Gizis H~14.5) excluded"
+    ]
+  }
+}

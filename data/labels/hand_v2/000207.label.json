@@ -1,0 +1,84 @@
+{
+  "circular_id": 207,
+  "event": {
+    "event_name": "GRB 990123"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "r",
+      "mag": 18.7,
+      "mag_error": 0.04,
+      "mag_system": "AB",
+      "obs_mjd": 51201.5676,
+      "obs_time": "1999-01-23T13:37:20.300Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "Other",
+      "galactic_extinction_corrected": false,
+      "seeing": 1.7,
+      "is_detection": true
+    },
+    {
+      "filter": "r",
+      "mag": 18.78,
+      "mag_error": 0.04,
+      "mag_system": "AB",
+      "obs_mjd": 51201.57712,
+      "obs_time": "1999-01-23T13:51:03.600Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "Other",
+      "galactic_extinction_corrected": false,
+      "seeing": 1.7,
+      "is_detection": true
+    },
+    {
+      "filter": "r",
+      "mag": 18.75,
+      "mag_error": 0.06,
+      "mag_system": "AB",
+      "obs_mjd": 51201.58538,
+      "obs_time": "1999-01-23T14:02:56.500Z",
+      "telescope": "Palomar 60-inch",
+      "calibration_reference": "Other",
+      "galactic_extinction_corrected": false,
+      "seeing": 1.7,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 978,
+      "end": 1033,
+      "snippet": "13:37:20.3           18.70 +/- 0.04      19.10 +/- 0.04"
+    },
+    "photometry[1]": {
+      "start": 1034,
+      "end": 1089,
+      "snippet": "13:51:03.6           18.78 +/- 0.04      19.11 +/- 0.04"
+    },
+    "photometry[2]": {
+      "start": 1090,
+      "end": 1145,
+      "snippet": "14:02:56.5           18.75 +/- 0.06      19.07 +/- 0.06"
+    },
+    "event": {
+      "start": 0,
+      "end": 28,
+      "snippet": "GRB 990123 r-band Photometry"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "OT Gunn-r light curve (3x400s, P60), calibrated to Gunn standards Feige 34/67 (->Other). Raw (not extinction-corrected) mags; A_gunnr=0.041. Reference-star column excluded"
+    ]
+  }
+}

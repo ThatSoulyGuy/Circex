@@ -1,0 +1,176 @@
+{
+  "circular_id": 413,
+  "event": {
+    "event_name": "GRB 990907"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 23.2,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51429.7698,
+      "obs_time": "1999-09-08T18:28:30.720Z",
+      "telescope": "AAT",
+      "instrument": "Taurus",
+      "calibration_reference": "Other",
+      "seeing": 1.4,
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 23.0,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51430.3736,
+      "obs_time": "1999-09-09T08:57:59.040Z",
+      "telescope": "ESO Danish 1.54m",
+      "instrument": "DFOSC",
+      "calibration_reference": "Other",
+      "seeing": 2.6,
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 23.0,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51430.3755,
+      "obs_time": "1999-09-09T09:00:43.200Z",
+      "telescope": "ESO Danish 1.54m",
+      "instrument": "DFOSC",
+      "calibration_reference": "Other",
+      "seeing": 2.6,
+      "is_detection": false
+    },
+    {
+      "filter": "I",
+      "mag_system": "Vega",
+      "limiting_mag": 22.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51430.3854,
+      "obs_time": "1999-09-09T09:14:58.560Z",
+      "telescope": "ESO Danish 1.54m",
+      "instrument": "DFOSC",
+      "calibration_reference": "Other",
+      "seeing": 3.5,
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 22.7,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51431.7806,
+      "obs_time": "1999-09-10T18:44:03.840Z",
+      "telescope": "AAT",
+      "instrument": "Taurus",
+      "calibration_reference": "Other",
+      "seeing": 2.8,
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 23.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51431.4111,
+      "obs_time": "1999-09-10T09:51:59.040Z",
+      "telescope": "ESO VLT",
+      "telescope_canonical": "VLT",
+      "instrument": "FORS1",
+      "calibration_reference": "Other",
+      "seeing": 1.1,
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 23.6,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51431.4153,
+      "obs_time": "1999-09-10T09:58:01.920Z",
+      "telescope": "ESO VLT",
+      "telescope_canonical": "VLT",
+      "instrument": "FORS1",
+      "calibration_reference": "Other",
+      "seeing": 1.1,
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 23.2,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 51439.3736,
+      "obs_time": "1999-09-18T08:57:59.040Z",
+      "telescope": "AAT",
+      "instrument": "Taurus",
+      "calibration_reference": "Other",
+      "seeing": 2.2,
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1040,
+      "end": 1106,
+      "snippet": "    AAT      Sep  8.7698      V      480 sec      23.2        1\".4"
+    },
+    "photometry[3]": {
+      "start": 1241,
+      "end": 1307,
+      "snippet": "   Danish    Sep  9.3854      I     1600 sec      22.5        3\".5"
+    },
+    "photometry[4]": {
+      "start": 1308,
+      "end": 1374,
+      "snippet": "    AAT      Sep 10.7806      V      800 sec      22.7        2\".8"
+    },
+    "photometry[5]": {
+      "start": 1375,
+      "end": 1441,
+      "snippet": "    VLT      Sep 10.4111      V      180 sec      23.5        1\".1"
+    },
+    "photometry[6]": {
+      "start": 1442,
+      "end": 1508,
+      "snippet": "    VLT      Sep 10.4153      R      180 sec      23.6        1\".1"
+    },
+    "photometry[7]": {
+      "start": 1509,
+      "end": 1575,
+      "snippet": "    AAT      Sep 18.3736      V      960 sec      23.2        2\".2"
+    },
+    "event.event_name": {
+      "start": 599,
+      "end": 664,
+      "snippet": "\"We obtained V band images of the GRB 990907 field (GCN #405 and "
+    },
+    "photometry[1]": {
+      "start": 732,
+      "end": 806,
+      "snippet": "at the ESO 1.54m Danish telescope with DFOSC, and at the ESO VLT telescope"
+    },
+    "photometry[2]": {
+      "start": 732,
+      "end": 806,
+      "snippet": "at the ESO 1.54m Danish telescope with DFOSC, and at the ESO VLT telescope"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no object varied by >0.3 mag; 3-sigma limits (AAT/ESO-Danish/VLT), Landolt PG0231+051 calibration (->Other)"
+    ]
+  }
+}

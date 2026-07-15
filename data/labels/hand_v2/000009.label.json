@@ -1,0 +1,29 @@
+{
+  "circular_id": 9,
+  "event": {
+    "event_name": "GRB 971214"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 0,
+      "end": 76,
+      "snippet": "Optical Observations of GRB 971214 at Keck                              #009"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "Keck-II/LRIS R & I imaging (Dec 16-17 1997); OT faded ~0.5 mag over 24h but no calibrated magnitudes are quoted (authors ask them not be cited). Seeing ~0.65\""
+    ]
+  }
+}
