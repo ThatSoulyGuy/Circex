@@ -1,0 +1,38 @@
+{
+  "circular_id": 7210,
+  "event": {
+    "event_name": "GRB 080121"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 0.046,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "host"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 134,
+      "end": 210,
+      "snippet": "within the Swift-BAT error circle of GRB 080121 (Cummings et al., GCN 7209):"
+    },
+    "redshift.redshift_measure": {
+      "start": 66,
+      "end": 133,
+      "snippet": "Two SDSS spectroscopically-catalogued galaxies are present in NED* "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "two SDSS-catalogued galaxies in the BAT error circle: z=0.045322 (SDSS J090858.15+414926.5) and z=0.046041 (SDSS J090904.12+415033.2); possible group/cluster. z=0.046 adopted for the energy estimate. Values are SDSS-catalogued (via NED), not measured in this circular"
+    ]
+  }
+}

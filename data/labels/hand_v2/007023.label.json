@@ -1,0 +1,43 @@
+{
+  "circular_id": 7023,
+  "event": {
+    "event_name": "GRB 071031"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Lyalpha (DLA)",
+      "rest_wavelength": 1215.67
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 2.692,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 200,
+      "end": 273,
+      "snippet": "We observed the optical afterglow of GRB 071031 (Stroh et al., GCN 7020; "
+    },
+    "redshift.redshift": {
+      "start": 632,
+      "end": 701,
+      "snippet": "fine-structure transitions, we determine the redshift to be z=2.692, "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "z=2.692 from a DLA plus several metallic lines including fine-structure transitions (UVES+FORS2); individual metal transitions not itemised"
+    ]
+  }
+}

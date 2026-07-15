@@ -1,0 +1,80 @@
+{
+  "circular_id": 8089,
+  "event": {
+    "event_name": "GRB 080810"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 356.793792,
+    "dec": 0.319806,
+    "ra_dec_error": 0.000139
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 19.1,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 54688.9899,
+      "obs_time": "2008-08-10T23:45:27.360Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "instrument": "ALFOSC",
+      "instrument_canonical": "ALFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": [
+    {
+      "line_id": "Lyalpha",
+      "rest_wavelength": 1215.67
+    },
+    {
+      "line_id": "C IV 1548",
+      "rest_wavelength": 1548.0
+    },
+    {
+      "line_id": "C IV 1550",
+      "rest_wavelength": 1550.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 3.35,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 464,
+      "end": 523,
+      "snippet": "when we measure an R-band magnitude of 19.1+/-0.2 (based on"
+    },
+    "event.event_name": {
+      "start": 218,
+      "end": 275,
+      "snippet": "We have observed the afterglow of GRB 080810 (Page et al."
+    },
+    "redshift.redshift": {
+      "start": 1233,
+      "end": 1302,
+      "snippet": "doublet at a redshift of z~3.35, in agreement to what was reported by"
+    },
+    "redshift.redshift_measure": {
+      "start": 1028,
+      "end": 1095,
+      "snippet": "We also obtained spectroscopic observations of the afterglow, where"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "afterglow R=19.1+-0.2 at 10.59 hr post-burst (NOT/ALFOSC, USNO-1B calib->Other). z~3.35 from Ly-alpha absorption/Lyman break + CIV doublet (agrees with GCN 8083/8088)"
+    ]
+  }
+}

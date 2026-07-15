@@ -1,0 +1,90 @@
+{
+  "circular_id": 8191,
+  "event": {
+    "event_name": "GRB 080905B"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 301.74125,
+    "dec": -62.563
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 20.2,
+      "mag_system": "Vega",
+      "obs_mjd": 54715.053,
+      "obs_time": "2008-09-06T01:16:19.200Z",
+      "telescope": "ESO VLT",
+      "telescope_canonical": "VLT",
+      "instrument": "FORS2",
+      "instrument_canonical": "FORS2",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": [
+    {
+      "line_id": "O I"
+    },
+    {
+      "line_id": "Si II"
+    },
+    {
+      "line_id": "C IV"
+    },
+    {
+      "line_id": "Fe II"
+    },
+    {
+      "line_id": "Al II"
+    },
+    {
+      "line_id": "Al III"
+    },
+    {
+      "line_id": "Mg II"
+    },
+    {
+      "line_id": "Mg I"
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 2.374,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 796,
+      "end": 869,
+      "snippet": "fainter (R ~ 20.2). We note that this position is 3.8\" off the center of "
+    },
+    "event.event_name": {
+      "start": 160,
+      "end": 231,
+      "snippet": "We observed the field of GRB 080905B (Stroh et al., GCN 8182) with the "
+    },
+    "redshift.redshift": {
+      "start": 1116,
+      "end": 1187,
+      "snippet": "a redshift z = 2.374. The detection of transitions from fine-structure "
+    },
+    "redshift.redshift_type": {
+      "start": 969,
+      "end": 1042,
+      "snippet": "Spectroscopy of the afterglow reveals resonance absorption features from "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "z=2.374 from resonance absorption (OI,SiII,CIV,FeII,AlII,AlIII,MgII,MgI); FeII fine-structure -> GRB redshift. Intervening absorber at z=1.438 also seen (not stored).",
+      "afterglow R~20.2 at 8.34 hr post-burst; 3.8\" off 2MASX J20065732-6233465. Line wavelengths not itemised in circular"
+    ]
+  }
+}

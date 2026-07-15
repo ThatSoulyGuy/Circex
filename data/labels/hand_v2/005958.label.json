@@ -1,0 +1,44 @@
+{
+  "circular_id": 5958,
+  "event": {
+    "event_name": "GRB 061222B"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Lyalpha (break)",
+      "rest_wavelength": 1215.67,
+      "observed_wavelength": 5340.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 3.4,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "absorption"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[0]": {
+      "start": 179,
+      "end": 221,
+      "snippet": "5340A corresponding to Ly-alpha at z~3.4.\""
+    },
+    "redshift.redshift": {
+      "start": 179,
+      "end": 221,
+      "snippet": "5340A corresponding to Ly-alpha at z~3.4.\""
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "z~3.4 approximate, from a strong continuum (Lyman) break at ~5340A"
+    ]
+  }
+}

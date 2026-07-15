@@ -1,0 +1,54 @@
+{
+  "circular_id": 5283,
+  "event": {
+    "event_name": "GRB 050223"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "[O II] 3727",
+      "rest_wavelength": 3727.0,
+      "observed_wavelength": 5933.8
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.5915,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "spectroscopy[0]": {
+      "start": 269,
+      "end": 342,
+      "snippet": "(vacuum-corrected) wavelength of 5933.8A, corresponding to [OII]3727 at a"
+    },
+    "redshift.redshift": {
+      "start": 343,
+      "end": 417,
+      "snippet": "redshift z=0.5915.  At this redshift, the observed brightness of the host,"
+    },
+    "redshift.redshift_measure": {
+      "start": 58,
+      "end": 130,
+      "snippet": "\"We obtained spectroscopic observations of the host galaxy of GRB 050223"
+    },
+    "event": {
+      "start": 58,
+      "end": 130,
+      "snippet": "\"We obtained spectroscopic observations of the host galaxy of GRB 050223"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "single [OII]3727 emission line (vacuum-corrected 5933.8A). Host R=21.6 (GCN 5268, cited) and the companion galaxy 10\" E excluded (not the transient)"
+    ]
+  }
+}

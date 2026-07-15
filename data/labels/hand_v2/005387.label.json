@@ -1,0 +1,45 @@
+{
+  "circular_id": 5387,
+  "event": {
+    "event_name": "GRB 051109B"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 345.459208,
+    "dec": 38.679444,
+    "ra_dec_error": 0.000611,
+    "systematic_included": true
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 0.08,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "host"
+  },
+  "reporter": null,
+  "provenance": {
+    "redshift.redshift": {
+      "start": 1178,
+      "end": 1246,
+      "snippet": "0.080, and lacks any strong emission features.  Spectroscopy of the "
+    },
+    "event": {
+      "start": 71,
+      "end": 140,
+      "snippet": "On the night of 2006 July 25 (UT), we imaged the field of GRB051109B "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "host is a barred spiral (SBa) at z=0.080, lacks strong emission features (galaxy morphology, not a taxonomy class).",
+      "R~14.5 host-galaxy brightness excluded (host, not transient; no optical afterglow detected). XRT/host position kept (2.2\" 90%, systematics incl.)",
+      "spectrum of the offset point source shows star-formation emission but no nebular-phase SN"
+    ]
+  }
+}

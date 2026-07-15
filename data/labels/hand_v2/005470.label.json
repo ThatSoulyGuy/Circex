@@ -1,0 +1,54 @@
+{
+  "circular_id": 5470,
+  "event": {
+    "event_name": "GRB 060801"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "[O II] 3727",
+      "rest_wavelength": 3727.0,
+      "observed_wavelength": 7942.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 1.131,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 167,
+      "end": 239,
+      "snippet": "candidate host galaxy of GRB 060801 (extended source B in GCN5389) using"
+    },
+    "spectroscopy[0]": {
+      "start": 393,
+      "end": 464,
+      "snippet": "features.  Identifying this line as [OII] at 3727A yields a redshift of"
+    },
+    "redshift.redshift": {
+      "start": 465,
+      "end": 534,
+      "snippet": "z = 1.131 for this galaxy. At this redshift, the observed fluence of "
+    },
+    "redshift.redshift_type": {
+      "start": 327,
+      "end": 392,
+      "snippet": "We detect a bright emission line at 7942A, with no other apparent"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "single bright [OII]3727 emission line at 7942A (Gemini-N/GMOS)"
+    ]
+  }
+}

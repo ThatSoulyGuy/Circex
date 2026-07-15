@@ -1,0 +1,70 @@
+{
+  "circular_id": 4792,
+  "event": {
+    "event_name": "GRB 060218"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Hbeta",
+      "rest_wavelength": 4861.0
+    },
+    {
+      "line_id": "[O III] 4959",
+      "rest_wavelength": 4959.0
+    },
+    {
+      "line_id": "[O III] 5007",
+      "rest_wavelength": 5007.0
+    },
+    {
+      "line_id": "Halpha",
+      "rest_wavelength": 6563.0
+    }
+  ],
+  "classification": null,
+  "redshift": {
+    "redshift": 0.0331,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 186,
+      "end": 253,
+      "snippet": "host galaxy of GRB 060218 using the MDM 2.4m telescope and Boller &"
+    },
+    "spectroscopy[1]": {
+      "start": 328,
+      "end": 397,
+      "snippet": "lines of H-beta, [O III] 4959,5007, and H-alpha at z=0.0331 are seen,"
+    },
+    "spectroscopy[2]": {
+      "start": 328,
+      "end": 397,
+      "snippet": "lines of H-beta, [O III] 4959,5007, and H-alpha at z=0.0331 are seen,"
+    },
+    "redshift.redshift": {
+      "start": 328,
+      "end": 397,
+      "snippet": "lines of H-beta, [O III] 4959,5007, and H-alpha at z=0.0331 are seen,"
+    },
+    "redshift.redshift_type": {
+      "start": 254,
+      "end": 327,
+      "snippet": "Chivens (CCDS) Spectrograph on Feb. 20 02:20 UT.  Strong, narrow emission"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "high-excitation starburst host; confirms low-redshift extragalactic nature"
+    ]
+  }
+}

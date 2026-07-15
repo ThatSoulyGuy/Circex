@@ -1,0 +1,52 @@
+{
+  "circular_id": 4809,
+  "event": {
+    "event_name": "GRB 060218"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": {
+    "classification": "Ic",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova",
+      "Type I",
+      "Ic"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.033,
+    "redshift_measure": "spectroscopic"
+  },
+  "reporter": null,
+  "provenance": {
+    "redshift.redshift": {
+      "start": 447,
+      "end": 513,
+      "snippet": "confirming z = 0.033 (Mirabal and Halpern GCNC 4792). Second epoch"
+    },
+    "redshift.redshift_measure": {
+      "start": 1065,
+      "end": 1134,
+      "snippet": "et al. 2003,  PASP 115, 1220). Further spectroscopic observations are"
+    },
+    "event": {
+      "start": 186,
+      "end": 250,
+      "snippet": "\"We have obtained optical spectroscopy of the GRB 060218 optical"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "continuum variations interpreted as emergence of an underlying type-Ic SN (SN2006aj); z=0.033 confirmed from Mirabal & Halpern GCN 4792"
+    ]
+  }
+}
