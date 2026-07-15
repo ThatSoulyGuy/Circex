@@ -1,0 +1,94 @@
+{
+  "circular_id": 20121,
+  "event": {
+    "event_name": "IceCube-161103"
+  },
+  "follow_up": {
+    "ref_type": "neutrino",
+    "ref_instrument": "IceCube",
+    "ref_ID": "IceCube-161103",
+    "reference": {
+      "gcn_circular": 20119.0
+    }
+  },
+  "localization": null,
+  "datetime": {
+    "trigger_time": "2016-11-03T09:07:31.120Z"
+  },
+  "time_offsets": [
+    {
+      "value": 32344.0,
+      "unit": "s",
+      "reference": "trigger"
+    },
+    {
+      "value": 32819.0,
+      "unit": "s",
+      "reference": "trigger"
+    }
+  ],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.2,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 57695.75457,
+      "obs_time": "2016-11-03T18:06:35.000Z",
+      "telescope": "MASTER-SAAO",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 57695.76007,
+      "obs_time": "2016-11-03T18:14:30.000Z",
+      "telescope": "MASTER-Kislovodsk",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1180,
+      "end": 1248,
+      "snippet": "error-box brighter then unfiltered mlim=20.2 mag (the 5-sigma upper "
+    },
+    "photometry[1]": {
+      "start": 1835,
+      "end": 1899,
+      "snippet": "error-box  brighter then 20.5m (unfiltered  5-sigma upper limit)"
+    },
+    "follow_up.reference.gcn_circular": {
+      "start": 991,
+      "end": 1058,
+      "snippet": "et al.  GCN 20119, GCN 20120) at 2016-11-03 18:06:35 UT (32344 sec "
+    },
+    "time_offsets[0]": {
+      "start": 991,
+      "end": 1058,
+      "snippet": "et al.  GCN 20119, GCN 20120) at 2016-11-03 18:06:35 UT (32344 sec "
+    },
+    "time_offsets[1]": {
+      "start": 1701,
+      "end": 1765,
+      "snippet": "alert  32819 sec after  trigger time on  2016-11-03 18:14:30 UT."
+    },
+    "event": {
+      "start": 916,
+      "end": 990,
+      "snippet": "located in South Africa was pointed to the  IceCube-161103 alert (Taboada "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no OT within error box. MASTER-SAAO limit is unfiltered W=0.2B+0.8R calibrated by USNO-B1 (mapped to Other)"
+    ]
+  }
+}

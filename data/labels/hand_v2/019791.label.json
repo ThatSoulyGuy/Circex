@@ -1,0 +1,41 @@
+{
+  "circular_id": 19791,
+  "event": {
+    "event_name": "IceCube-160806A"
+  },
+  "follow_up": {
+    "ref_type": "neutrino",
+    "ref_instrument": "IceCube",
+    "ref_ID": "IceCube-160806A",
+    "reference": {
+      "gcn_circular": 19787.0
+    }
+  },
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "follow_up.ref_instrument": {
+      "start": 680,
+      "end": 752,
+      "snippet": "  IceCube-160806 (Cowen, GCN 19787)  was in BDRG FOV of 47 deg from the "
+    },
+    "follow_up.reference.gcn_circular": {
+      "start": 680,
+      "end": 752,
+      "snippet": "  IceCube-160806 (Cowen, GCN 19787)  was in BDRG FOV of 47 deg from the "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "gamma-ray (Lomonosov/BDRG) prompt search of the IceCube neutrino direction; no optical photometry. 3-sigma keV flux upper limits (<0.23 cm-2 s-1 for 20-60 keV, <0.13 for 60-300 keV) are out of optical scope. BDRG axis RA/Dec values are instrument pointing directions, not a source localization"
+    ]
+  }
+}

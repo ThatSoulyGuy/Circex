@@ -1,0 +1,60 @@
+{
+  "circular_id": 19048,
+  "event": {
+    "event_name": "GW150914",
+    "id": "G184098"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "GW150914",
+    "reference": {
+      "gcn_circular": 18348.0
+    }
+  },
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [
+    {
+      "value": 2.8,
+      "unit": "d",
+      "reference": "GW event"
+    }
+  ],
+  "photometry": [
+    {
+      "filter": "R",
+      "limiting_mag": 18.5,
+      "telescope": "TAROT-Chile",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 317,
+      "end": 389,
+      "snippet": " >18.5 and 19.8. If we take a conservative limit of R> 18.5 at 2.8 days "
+    },
+    "follow_up.reference.gcn_circular": {
+      "start": 177,
+      "end": 244,
+      "snippet": "TAROT-Chile (see LV GCN 18348, 18332 for the field coordinates and "
+    },
+    "time_offsets[0]": {
+      "start": 317,
+      "end": 389,
+      "snippet": " >18.5 and 19.8. If we take a conservative limit of R> 18.5 at 2.8 days "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "final analysis of TAROT-Chile images (see GCN 18332/18348). Per-field limits R>18.5 to 19.8; conservative R>18.5 at 2.8 days adopted. Removed draft redshift 0.0904 (a misread of the absolute magnitude 19.6 statement)"
+    ]
+  }
+}

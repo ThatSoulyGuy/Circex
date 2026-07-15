@@ -1,0 +1,41 @@
+{
+  "circular_id": 18348,
+  "event": {
+    "event_name": [
+      "GW150914",
+      "LIGO/Virgo G184098"
+    ],
+    "id": "G184098"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G184098"
+  },
+  "localization": null,
+  "datetime": {
+    "observation_start": "2015-09-17T04:59:59.000Z",
+    "observation_stop": "2015-09-19T04:14:23.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "C",
+      "limiting_mag": 18.0,
+      "telescope": "TAROT",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {},
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "wide-field tiling search (148 images, TAROT La Silla + Calern) of the GW error box; no candidate found. Single row captures the survey depth (C/clear, R<18-equivalent for 120s). Tile-pointing log not modelled as source photometry"
+    ]
+  }
+}

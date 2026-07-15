@@ -1,0 +1,45 @@
+{
+  "circular_id": 4774,
+  "event": {
+    "event_name": "GRB 060213"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "observation_start": "2006-02-17T22:48:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 23.0,
+      "obs_mjd": 53783.95,
+      "obs_time": "2006-02-17T22:48:00.000Z",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 917,
+      "end": 981,
+      "snippet": "GRB 060213, spectroscopic observations will be needed to discern"
+    },
+    "photometry[0]": {
+      "start": 587,
+      "end": 649,
+      "snippet": "Swift/XRT error box (Morris et al. GCNC 4770) down to R = 23.0"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "mis-stratified as gw_neutrino; actually a GRB circular. Afterglow candidate (R=21.6) concluded to be a normal star; the R=20.0 GSC2 galaxy is a field object - both excluded. Only the R>23.0 afterglow non-detection limit retained"
+    ]
+  }
+}

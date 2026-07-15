@@ -1,0 +1,74 @@
+{
+  "circular_id": 18390,
+  "event": {
+    "event_name": [
+      "GW150914",
+      "LIGO/Virgo G184098"
+    ],
+    "id": "G184098"
+  },
+  "follow_up": {
+    "ref_type": "GW",
+    "ref_instrument": "LIGO/Virgo",
+    "ref_ID": "G184098"
+  },
+  "localization": {
+    "ra": 62.411167,
+    "dec": -54.221361
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "mag": 17.3,
+      "limiting_mag": 17.8,
+      "obs_mjd": 57281.87912,
+      "obs_time": "2015-09-16T21:05:55.968Z",
+      "telescope": "MASTER-SAAO",
+      "is_detection": true
+    },
+    {
+      "filter": "unfiltered",
+      "mag": 16.9,
+      "limiting_mag": 19.2,
+      "obs_mjd": 57286.99535,
+      "obs_time": "2015-09-21T23:53:18.240Z",
+      "telescope": "MASTER-SAAO",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1710,
+      "end": 1768,
+      "snippet": "The OT unfiltered magnitude is 17.3m (the limit is 17.8m)."
+    },
+    "photometry[1]": {
+      "start": 1656,
+      "end": 1709,
+      "snippet": "04h 09m 38.68s -54d 13m 16.9s on 2015-09-16.87912 UT."
+    },
+    "event.event_name": {
+      "start": 3043,
+      "end": 3116,
+      "snippet": "The possible BH nature of the LIGO/Virgo G184098 alert (GCN 18388)  is in"
+    },
+    "follow_up.ref_instrument": {
+      "start": 3043,
+      "end": 3116,
+      "snippet": "The possible BH nature of the LIGO/Virgo G184098 alert (GCN 18388)  is in"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "two MASTER OTs found during GW error-box survey. photometry[0]=MASTER OT J040938.68-541316.9 (localization; PSN 0.9\"W 3.6\"N of galaxy PGC421615). photometry[1]=MASTER OT J070747.72-672205.6 at RA=106.948833 Dec=-67.368222 - AAVSO identifies it as a U Gem-type dwarf nova (known variable, not GW-related)"
+    ]
+  }
+}

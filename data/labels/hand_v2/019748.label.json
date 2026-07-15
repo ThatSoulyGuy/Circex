@@ -1,0 +1,117 @@
+{
+  "circular_id": 19748,
+  "event": {
+    "event_name": "IceCube-160731A",
+    "id": "128290 6888376"
+  },
+  "follow_up": {
+    "ref_type": "neutrino",
+    "ref_instrument": "IceCube",
+    "ref_ID": "IceCube-160731A",
+    "reference": {
+      "gcn_circular": 19743.0
+    }
+  },
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [
+    {
+      "value": 61241.0,
+      "unit": "s",
+      "reference": "trigger"
+    },
+    {
+      "value": 68442.0,
+      "unit": "s",
+      "reference": "trigger"
+    },
+    {
+      "value": 75655.0,
+      "unit": "s",
+      "reference": "trigger"
+    }
+  ],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 19.8,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 57600.80784,
+      "obs_time": "2016-07-31T19:23:17.000Z",
+      "telescope": "MASTER-Kislovodsk",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.7,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 57600.89255,
+      "obs_time": "2016-07-31T21:25:16.000Z",
+      "telescope": "MASTER-IAC",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 57600.9552,
+      "obs_time": "2016-07-31T22:55:29.000Z",
+      "telescope": "MASTER-OAFA",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1568,
+      "end": 1634,
+      "snippet": "been about 19.0 on single (180 sec) and 19.8 on coadd (1260 sec ) "
+    },
+    "photometry[1]": {
+      "start": 1872,
+      "end": 1933,
+      "snippet": "about 20.0 on single (180 sec) and 20.7 on coadd (2160 sec ) "
+    },
+    "photometry[2]": {
+      "start": 2175,
+      "end": 2249,
+      "snippet": "19.8 on single (180 sec) and 20.5 on coadd (3600 sec ) unfiletered images."
+    },
+    "event.event_name": {
+      "start": 923,
+      "end": 997,
+      "snippet": "IceCube HESE event IceCube-160731A  (AMON ICECUBE HESE 128290 6888376) at "
+    },
+    "follow_up.ref_ID": {
+      "start": 923,
+      "end": 997,
+      "snippet": "IceCube HESE event IceCube-160731A  (AMON ICECUBE HESE 128290 6888376) at "
+    },
+    "follow_up.reference.gcn_circular": {
+      "start": 1419,
+      "end": 1492,
+      "snippet": "the  IceCube neutrino 160731 event (Taboada et al GCN 19743)  61241  sec "
+    },
+    "time_offsets[0]": {
+      "start": 1419,
+      "end": 1492,
+      "snippet": "the  IceCube neutrino 160731 event (Taboada et al GCN 19743)  61241  sec "
+    },
+    "time_offsets[2]": {
+      "start": 2030,
+      "end": 2102,
+      "snippet": "pointed to the  IceCube neutrino 160731 event  75655  sec after trigger "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "No astrophysical OT detected; coadd 5-sigma limits kept per telescope (single-image limits 19.0/20.0/19.8 omitted as same-epoch shallower).",
+      "excluded: MASTER OT J142038.73-002500.1 (a particle CCD event), NGC5584 and 19 field galaxies, and Swift XRT source cross-checks (HD 125981 etc.) - none are the neutrino counterpart"
+    ]
+  }
+}
