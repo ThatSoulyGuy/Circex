@@ -1,0 +1,118 @@
+{
+  "circular_id": 3357,
+  "event": {
+    "event_name": "GRB 050502B"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 142.541767,
+    "dec": 17.001542
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 20.7,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53492.39931,
+      "obs_time": "2005-05-02T09:35:00.000Z",
+      "telescope": "ANU 1-m",
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 20.2,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53492.40347,
+      "obs_time": "2005-05-02T09:41:00.000Z",
+      "telescope": "ANU 1-m",
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 20.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53492.40486,
+      "obs_time": "2005-05-02T09:43:00.000Z",
+      "telescope": "ANU 1-m",
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 21.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53492.40694,
+      "obs_time": "2005-05-02T09:46:00.000Z",
+      "telescope": "ANU 1-m",
+      "is_detection": false
+    },
+    {
+      "filter": "I",
+      "mag": 19.84,
+      "mag_error": 0.09,
+      "mag_system": "Vega",
+      "obs_mjd": 53492.41528,
+      "obs_time": "2005-05-02T09:58:00.000Z",
+      "telescope": "ANU 1-m",
+      "is_detection": true
+    },
+    {
+      "filter": "i",
+      "mag_system": "AB",
+      "limiting_mag": 21.7,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53494.23611,
+      "obs_time": "2005-05-04T05:40:00.000Z",
+      "telescope": "Palomar 60-inch",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 926,
+      "end": 978,
+      "snippet": "V        ANU1m       9:35 May 2    9.5 min    V>20.7"
+    },
+    "photometry[1]": {
+      "start": 979,
+      "end": 1031,
+      "snippet": "V        ANU1m       9:41 May 2    15 min     V>20.2"
+    },
+    "photometry[2]": {
+      "start": 1032,
+      "end": 1084,
+      "snippet": "V        ANU1m       9:43 May 2    18 min     V>20.8"
+    },
+    "photometry[3]": {
+      "start": 1085,
+      "end": 1138,
+      "snippet": "V        ANU1m       9:46 May 2    20 min     V>21.8 "
+    },
+    "photometry[4]": {
+      "start": 1139,
+      "end": 1200,
+      "snippet": "I        ANU1m       9:58 May 2    23 min     I=19.84+/-0.09 "
+    },
+    "photometry[5]": {
+      "start": 1201,
+      "end": 1247,
+      "snippet": "i\t P60         5:40 May 4    43.8 hr    i>21.7"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "afterglow position from the reiterated coordinates (RA 09:30:10.024); the RA 09:30:12.616 star is the calibration comparison (V=16.7,I=15.8,R=16.1), excluded"
+    ]
+  }
+}

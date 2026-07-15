@@ -1,0 +1,46 @@
+{
+  "circular_id": 2987,
+  "event": {
+    "event_name": "GRB 050126"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 278.111,
+    "dec": 42.384,
+    "ra_dec_error": 0.066667,
+    "systematic_included": true
+  },
+  "datetime": {
+    "trigger_time": "2005-01-26T12:00:53.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "localization.ra": {
+      "start": 1233,
+      "end": 1300,
+      "snippet": "The BAT ground-derived position is RA,Dec = 278.111, 42.384 (J2000)"
+    },
+    "localization.dec": {
+      "start": 1233,
+      "end": 1300,
+      "snippet": "The BAT ground-derived position is RA,Dec = 278.111, 42.384 (J2000)"
+    },
+    "event": {
+      "start": 456,
+      "end": 526,
+      "snippet": "located on-board GRB050126.  The spacecraft autonomously slewed to the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "gamma-ray (Swift-BAT) burst-parameters circular; no optical photometry. Localization is the BAT ground position (4 arcmin, 3-sigma, systematics included)"
+    ]
+  }
+}

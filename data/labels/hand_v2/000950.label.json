@@ -1,0 +1,47 @@
+{
+  "circular_id": 950,
+  "event": {
+    "event_name": "GRB 010214"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 265.241667,
+    "dec": 48.576944,
+    "ra_dec_error": 0.016667
+  },
+  "datetime": {
+    "observation_start": "2001-02-14T14:52:48.000Z",
+    "observation_stop": "2001-02-16T12:28:48.000Z"
+  },
+  "time_offsets": [
+    {
+      "value": 6.0,
+      "unit": "h",
+      "reference": "trigger"
+    }
+  ],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "time_offsets[0]": {
+      "start": 533,
+      "end": 601,
+      "snippet": "to Feb. 16.52 UT (starting about 6 hrs after the burst trigger time;"
+    },
+    "event": {
+      "start": 396,
+      "end": 462,
+      "snippet": "\"GRB 010214 (another ``Valentine's Day Burst'') was observed with "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "X-ray-only circular (BeppoSAX NFI/MECS, 2-10 keV); no optical photometry. Localization is the X-ray afterglow 1SAX J174058+4834.6 (1 arcmin error radius)"
+    ]
+  }
+}

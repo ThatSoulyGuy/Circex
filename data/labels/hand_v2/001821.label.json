@@ -1,0 +1,99 @@
+{
+  "circular_id": 1821,
+  "event": {
+    "event_name": "GRB 021211"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 25.0,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 52635.09,
+      "obs_time": "2002-12-27T02:09:36.000Z",
+      "telescope": "3.6m TNG",
+      "instrument": "OIG",
+      "seeing": 1.0,
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag": 24.1,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 52648.3,
+      "obs_time": "2003-01-09T07:12:00.000Z",
+      "telescope": "8.2m ESO-VLT-UT4",
+      "instrument": "FORS2",
+      "instrument_canonical": "FORS2",
+      "seeing": 0.6,
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 24.5,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 52649.23,
+      "obs_time": "2003-01-10T05:31:12.000Z",
+      "telescope": "8.2m ESO-VLT-UT4",
+      "instrument": "FORS2",
+      "instrument_canonical": "FORS2",
+      "seeing": 1.2,
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 24.6,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 52653.33,
+      "obs_time": "2003-01-14T07:55:12.000Z",
+      "telescope": "8.2m ESO-VLT-UT4",
+      "instrument": "FORS2",
+      "instrument_canonical": "FORS2",
+      "seeing": 0.8,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[1]": {
+      "start": 962,
+      "end": 1018,
+      "snippet": "2003 Jan  9.30  33 min    8.2m VLT   0.6\"    24.1 +- 0.2"
+    },
+    "photometry[2]": {
+      "start": 1019,
+      "end": 1075,
+      "snippet": "2003 Jan 10.23  30 min    8.2m VLT   1.2\"    24.5 +- 0.2"
+    },
+    "photometry[3]": {
+      "start": 1076,
+      "end": 1132,
+      "snippet": "2003 Jan 14.33  15 min    8.2m VLT   0.8\"    24.6 +- 0.1"
+    },
+    "event.event_name": {
+      "start": 400,
+      "end": 472,
+      "snippet": "We have imaged the optical afterglow of the GRB 021211 (Fox & Price, GCN"
+    },
+    "photometry[0]": {
+      "start": 910,
+      "end": 961,
+      "snippet": "2002 Dec 27.09  70 min    3.6m TNG   1.0\"    > 25.0"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": []
+  }
+}

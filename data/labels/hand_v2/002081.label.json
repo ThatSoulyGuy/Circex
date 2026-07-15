@@ -1,0 +1,30 @@
+{
+  "circular_id": 2081,
+  "event": {
+    "event_name": "GRB 030329"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 237,
+      "end": 305,
+      "snippet": "be seen in the optical transient following GRB 030329 if a supernova"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "SN-prediction toy-model circular: no source photometry (B-V/V-R/R-I are model afterglow colors, not magnitudes)",
+      "z=0.1685 (host) cited from Greiner et al. GCN 2020, not measured here; left out of redshift"
+    ]
+  }
+}

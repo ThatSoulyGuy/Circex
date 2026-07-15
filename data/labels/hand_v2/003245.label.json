@@ -1,0 +1,71 @@
+{
+  "circular_id": 3245,
+  "event": {
+    "event_name": "GRB 050412"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [
+    {
+      "value": 250.0,
+      "unit": "s",
+      "reference": "trigger"
+    }
+  ],
+  "photometry": [
+    {
+      "filter": "clear",
+      "limiting_mag": 18.9,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53472.24251,
+      "obs_time": "2005-04-12T05:49:13.000Z",
+      "telescope": "0.3-m telescope (New Mexico Skies observatory)",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "clear",
+      "limiting_mag": 20.5,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53472.25036,
+      "obs_time": "2005-04-12T06:00:31.000Z",
+      "telescope": "0.3-m telescope (New Mexico Skies observatory)",
+      "calibration_reference": "Other",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 484,
+      "end": 503,
+      "snippet": "05:49:13 >18.9 120s"
+    },
+    "photometry[1]": {
+      "start": 504,
+      "end": 526,
+      "snippet": "06:00:31 >20.5 10x120s"
+    },
+    "event.event_name": {
+      "start": 29,
+      "end": 93,
+      "snippet": " \"The error region of GRB 050412 (Cummings, et al. GCN 3237) was"
+    },
+    "time_offsets[0]": {
+      "start": 165,
+      "end": 239,
+      "snippet": "Imaging through clear filter started at 05:48:13 UT (250-s after trigger) "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "clear filter, calibrated relative to USNO-A2.0 (R) (mapped to Other); row 2 is 10x120s coadd"
+    ]
+  }
+}

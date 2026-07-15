@@ -1,0 +1,56 @@
+{
+  "circular_id": 3107,
+  "event": {
+    "event_name": "GRB 050306"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [
+    {
+      "value": 64.8,
+      "unit": "s",
+      "reference": "trigger"
+    }
+  ],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 15.8,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53435.1488,
+      "obs_time": "2005-03-06T03:34:16.700Z",
+      "telescope": "ROTSE-IIIc",
+      "calibration_reference": "Other",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 754,
+      "end": 822,
+      "snippet": "a 3-sigma upper limit on the magnitude of 15.8 (unfiltered, relative"
+    },
+    "event.event_name": {
+      "start": 184,
+      "end": 250,
+      "snippet": "responded automatically to Swift GRB 050306 (Markwardt et al., GCN"
+    },
+    "time_offsets[0]": {
+      "start": 322,
+      "end": 388,
+      "snippet": "64.8 seconds after the burst. Comparison to the DSS (second epoch)"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "unfiltered, calibrated relative to USNO A2.0 (mapped to Other); limit from image-subtracted frame (Mar 8 subtracted from first Mar 6 image)"
+    ]
+  }
+}
