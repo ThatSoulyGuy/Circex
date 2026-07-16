@@ -1,0 +1,119 @@
+{
+  "circular_id": 1276,
+  "event": {
+    "event_name": "GRB 011121"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "trigger_time": "2001-11-21T18:47:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "F555W",
+      "mag": 25.08,
+      "mag_error": 0.07,
+      "mag_system": "STMag",
+      "obs_mjd": 52262.02264,
+      "obs_time": "2001-12-19T00:32:36.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F702W",
+      "mag": 23.65,
+      "mag_error": 0.04,
+      "mag_system": "STMag",
+      "obs_mjd": 52262.08264,
+      "obs_time": "2001-12-19T01:59:00.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F814W",
+      "mag": 23.16,
+      "mag_error": 0.06,
+      "mag_system": "STMag",
+      "obs_mjd": 52262.88264,
+      "obs_time": "2001-12-19T21:11:00.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F850LP",
+      "mag": 22.72,
+      "mag_error": 0.06,
+      "mag_system": "STMag",
+      "obs_mjd": 52262.94264,
+      "obs_time": "2001-12-19T22:37:24.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": {
+    "classification": "Supernova",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.36,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "host"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 663,
+      "end": 706,
+      "snippet": "3       27.24       F555W    25.08 +/- 0.07"
+    },
+    "photometry[1]": {
+      "start": 707,
+      "end": 750,
+      "snippet": "3       27.30       F702W    23.65 +/- 0.04"
+    },
+    "photometry[2]": {
+      "start": 751,
+      "end": 794,
+      "snippet": "3       28.10       F814W    23.16 +/- 0.06"
+    },
+    "photometry[3]": {
+      "start": 795,
+      "end": 838,
+      "snippet": "3       28.16       F850LP   22.72 +/- 0.06"
+    },
+    "redshift.redshift": {
+      "start": 1394,
+      "end": 1461,
+      "snippet": "the host galaxy of GRB 011121 (z=0.36, GCN 1152) and subject to the"
+    },
+    "redshift.redshift_type": {
+      "start": 1394,
+      "end": 1461,
+      "snippet": "the host galaxy of GRB 011121 (z=0.36, GCN 1152) and subject to the"
+    },
+    "event": {
+      "start": 228,
+      "end": 301,
+      "snippet": "GRB 011121 (see GCN 1274). The third epoch was requested for observations"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "HST/WFPC2 3rd epoch (Dec 19 2001, ST magnitudes, same system as GCN 1274), not extinction-corrected.",
+      "authors conclude an underlying SN in GRB 011121 is well established (SN 1998bw template dimmed 0.75 mag) -> classification Supernova (untyped). z=0.36 host (GCN 1152)"
+    ]
+  }
+}

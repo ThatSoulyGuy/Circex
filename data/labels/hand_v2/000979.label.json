@@ -1,0 +1,86 @@
+{
+  "circular_id": 979,
+  "event": {
+    "event_name": "GRB 010220"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "J",
+      "mag_system": "Vega",
+      "limiting_mag": 18.4,
+      "obs_mjd": 51961.8841,
+      "obs_time": "2001-02-21T21:13:06.240Z",
+      "telescope": "AZT-24 1.1m",
+      "is_detection": false
+    },
+    {
+      "filter": "K",
+      "mag_system": "Vega",
+      "limiting_mag": 17.5,
+      "obs_mjd": 51961.9258,
+      "obs_time": "2001-02-21T22:13:09.120Z",
+      "telescope": "AZT-24 1.1m",
+      "is_detection": false
+    },
+    {
+      "filter": "K",
+      "mag_system": "Vega",
+      "limiting_mag": 17.1,
+      "obs_mjd": 51962.7627,
+      "obs_time": "2001-02-22T18:18:17.280Z",
+      "telescope": "AZT-24 1.1m",
+      "is_detection": false
+    },
+    {
+      "filter": "J",
+      "mag_system": "Vega",
+      "limiting_mag": 18.6,
+      "obs_mjd": 51962.799,
+      "obs_time": "2001-02-22T19:10:33.600Z",
+      "telescope": "AZT-24 1.1m",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 779,
+      "end": 824,
+      "snippet": "    J     21.8841    18.4+/-0.2   2700     3 "
+    },
+    "photometry[1]": {
+      "start": 825,
+      "end": 870,
+      "snippet": "    K     21.9258    17.5+/-0.2   3000     3 "
+    },
+    "photometry[2]": {
+      "start": 871,
+      "end": 922,
+      "snippet": "    K     22.7627    17.1+/-0.2   2200     3       "
+    },
+    "photometry[3]": {
+      "start": 923,
+      "end": 967,
+      "snippet": "    J     22.7990    18.6+/-0.2   2700     3"
+    },
+    "event": {
+      "start": 200,
+      "end": 270,
+      "snippet": "\"On Feb. 21 and Feb. 22 we observed the WFC error circle of GRB 010220"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "J/K limiting magnitudes (+-0.2), no afterglow candidate (contamination from a nearby bright star)"
+    ]
+  }
+}

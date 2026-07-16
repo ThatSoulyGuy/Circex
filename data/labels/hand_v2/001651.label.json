@@ -1,0 +1,67 @@
+{
+  "circular_id": 1651,
+  "event": {
+    "event_name": "GRB 020813"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 23.9,
+      "mag_error": 0.14,
+      "mag_system": "Vega",
+      "obs_mjd": 52557.07,
+      "obs_time": "2002-10-10T01:40:48.000Z",
+      "telescope": "ESO Danish 1.54m",
+      "instrument": "DFOSC",
+      "calibration_reference": "Other",
+      "seeing": 1.0,
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag": 24.46,
+      "mag_error": 0.19,
+      "mag_system": "Vega",
+      "obs_mjd": 52556.1,
+      "obs_time": "2002-10-09T02:24:00.000Z",
+      "telescope": "ESO Danish 1.54m",
+      "instrument": "DFOSC",
+      "calibration_reference": "Other",
+      "seeing": 1.7,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 660,
+      "end": 728,
+      "snippet": " 10.01-10.13/10/2002  R     1.0   2x1200+8x900  58.0    23.90+/-0.14"
+    },
+    "photometry[1]": {
+      "start": 729,
+      "end": 798,
+      "snippet": " 09.02-09.17/10/2002  B     1.7     10x1200     57.0    24.46+/-0.19 "
+    },
+    "event.event_name": {
+      "start": 277,
+      "end": 346,
+      "snippet": "We have imaged the GRB 020813 (GCN 1471) optical afterglow (GCN 1470)"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "late-time R=23.90 (Oct10) / B=24.46 (Oct9) 2002, ~60d post-burst (Danish 1.54m/DFOSC, GCN 1503 standards->Other). Blue B-R=0.56 suggests an underlying blue host galaxy rather than afterglow.",
+      "removed hallucinated redshift (no z stated in this circular)"
+    ]
+  }
+}

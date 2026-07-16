@@ -1,0 +1,111 @@
+{
+  "circular_id": 1554,
+  "event": {
+    "event_name": "XRF 020903"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 342.176417,
+    "dec": -20.76925
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": [
+    {
+      "line_id": "Halpha",
+      "rest_wavelength": 6563.0
+    },
+    {
+      "line_id": "Hbeta",
+      "rest_wavelength": 4861.0
+    },
+    {
+      "line_id": "Hgamma",
+      "rest_wavelength": 4340.0
+    },
+    {
+      "line_id": "[O III]",
+      "rest_wavelength": 5007.0
+    },
+    {
+      "line_id": "[Ne III]",
+      "rest_wavelength": 3869.0
+    },
+    {
+      "line_id": "[O II]",
+      "rest_wavelength": 3727.0
+    }
+  ],
+  "classification": {
+    "classification": "Supernova",
+    "taxonomy_path": [
+      "Time-domain Source",
+      "Stellar variable",
+      "Cataclysmic",
+      "Supernova"
+    ]
+  },
+  "redshift": {
+    "redshift": 0.25,
+    "redshift_error": 0.01,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "emission"
+  },
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 273,
+      "end": 343,
+      "snippet": "We imaged the entire error-box of XRF 020903 with the Palomar 200-inch"
+    },
+    "spectroscopy[0]": {
+      "start": 1620,
+      "end": 1688,
+      "snippet": "galaxy (hereafter G1) are (Halpha, Hbeta, Hgamma, [O III], [Ne III],"
+    },
+    "spectroscopy[1]": {
+      "start": 1620,
+      "end": 1688,
+      "snippet": "galaxy (hereafter G1) are (Halpha, Hbeta, Hgamma, [O III], [Ne III],"
+    },
+    "spectroscopy[2]": {
+      "start": 1620,
+      "end": 1688,
+      "snippet": "galaxy (hereafter G1) are (Halpha, Hbeta, Hgamma, [O III], [Ne III],"
+    },
+    "spectroscopy[3]": {
+      "start": 1620,
+      "end": 1688,
+      "snippet": "galaxy (hereafter G1) are (Halpha, Hbeta, Hgamma, [O III], [Ne III],"
+    },
+    "spectroscopy[4]": {
+      "start": 1620,
+      "end": 1688,
+      "snippet": "galaxy (hereafter G1) are (Halpha, Hbeta, Hgamma, [O III], [Ne III],"
+    },
+    "spectroscopy[5]": {
+      "start": 1689,
+      "end": 1757,
+      "snippet": "[O II]) at a mean redshift of z = 0.25 +/- 0.01.  Subtraction of the"
+    },
+    "redshift.redshift": {
+      "start": 1689,
+      "end": 1757,
+      "snippet": "[O II]) at a mean redshift of z = 0.25 +/- 0.01.  Subtraction of the"
+    },
+    "redshift.redshift_error": {
+      "start": 1689,
+      "end": 1757,
+      "snippet": "[O II]) at a mean redshift of z = 0.25 +/- 0.01.  Subtraction of the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "OT of XRF 020903 (image-subtraction discovery, P200/LFC + MDM), re-brightened ~0.3-0.4 mag (epochs 2->3) -> associated supernova (SN-like continuum near maximum) => classification Supernova. No absolute OT magnitudes are quoted (only a differential), so photometry is empty.",
+      "host G1 emission lines at z=0.25+-0.01. G2 (elliptical, R~17, z=0.23) is unrelated - excluded"
+    ]
+  }
+}

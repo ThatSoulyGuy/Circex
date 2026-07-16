@@ -1,0 +1,63 @@
+{
+  "circular_id": 1271,
+  "event": {
+    "event_name": "GRB 020305"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 22.6,
+      "mag_system": "Vega",
+      "obs_mjd": 52345.6,
+      "obs_time": "2002-03-12T14:24:00.000Z",
+      "telescope": "Subaru 8.2m",
+      "instrument": "FOCAS",
+      "instrument_canonical": "FOCAS",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "I",
+      "mag": 22.1,
+      "mag_system": "Vega",
+      "obs_mjd": 52345.6,
+      "obs_time": "2002-03-12T14:24:00.000Z",
+      "telescope": "Subaru 8.2m",
+      "instrument": "FOCAS",
+      "instrument_canonical": "FOCAS",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 700,
+      "end": 763,
+      "snippet": "We detected a point source of R=22.6 and I=22.1 within 1 arcsec"
+    },
+    "photometry[1]": {
+      "start": 700,
+      "end": 763,
+      "snippet": "We detected a point source of R=22.6 and I=22.1 within 1 arcsec"
+    },
+    "event.event_name": {
+      "start": 387,
+      "end": 453,
+      "snippet": "We have observed the afterglow candidate of GRB 020305 (GCN #1267)"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "point source R=22.6 (7-USNO-star relative photometry->Other), I=22.1 (rough intensity-conversion estimate), Subaru/FOCAS, Mar 12.6 2002 (7d post-burst). Image limits R~26, I~25. Elongated diffuse nebulosity to the NE"
+    ]
+  }
+}

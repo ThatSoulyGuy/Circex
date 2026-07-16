@@ -1,0 +1,129 @@
+{
+  "circular_id": 1195,
+  "event": {
+    "event_name": "GRB 011211"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 20.07,
+      "mag_error": 0.15,
+      "mag_system": "Vega",
+      "obs_mjd": 52255.22,
+      "obs_time": "2001-12-12T05:16:48.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag": 21.41,
+      "mag_error": 0.15,
+      "mag_system": "Vega",
+      "obs_mjd": 52255.28,
+      "obs_time": "2001-12-12T06:43:12.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "g-i",
+      "mag": 20.09,
+      "mag_error": 0.15,
+      "obs_mjd": 52255.28,
+      "obs_time": "2001-12-12T06:43:12.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "V",
+      "mag": 21.14,
+      "mag_error": 0.15,
+      "mag_system": "Vega",
+      "obs_mjd": 52255.29,
+      "obs_time": "2001-12-12T06:57:36.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.12,
+      "mag_error": 0.15,
+      "mag_system": "Vega",
+      "obs_mjd": 52255.28,
+      "obs_time": "2001-12-12T06:43:12.000Z",
+      "telescope": "ESO Danish 1.54m",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "V",
+      "mag": 21.21,
+      "mag_error": 0.15,
+      "mag_system": "Vega",
+      "obs_mjd": 52255.36,
+      "obs_time": "2001-12-12T08:38:24.000Z",
+      "telescope": "ESO Danish 1.54m",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 673,
+      "end": 714,
+      "snippet": "NOT-2.5m  Dec.12.22   900s     R    20.07"
+    },
+    "photometry[1]": {
+      "start": 715,
+      "end": 756,
+      "snippet": "NOT-2.5m  Dec.12.28   300s     B    21.41"
+    },
+    "photometry[2]": {
+      "start": 757,
+      "end": 798,
+      "snippet": "NOT-2.5m  Dec.12.28   300s    g-i   20.09"
+    },
+    "photometry[3]": {
+      "start": 799,
+      "end": 840,
+      "snippet": "NOT-2.5m  Dec.12.29   300s     V    21.14"
+    },
+    "photometry[4]": {
+      "start": 842,
+      "end": 883,
+      "snippet": "DK-1.5m   Dec.12.28  4200s     R    20.12"
+    },
+    "photometry[5]": {
+      "start": 884,
+      "end": 925,
+      "snippet": "DK-1.5m   Dec.12.36   300s     V    21.21"
+    },
+    "event.event_name": {
+      "start": 287,
+      "end": 348,
+      "snippet": "GRB 011211 reported in GCN#1191 (Grav et al.), and obtain the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "afterglow B/R/V (and a 'g-i' band as written) on Dec 12 2001, ~0.15 mag absolute error (USNO-star calib->Other). Reference-star magnitudes excluded"
+    ]
+  }
+}

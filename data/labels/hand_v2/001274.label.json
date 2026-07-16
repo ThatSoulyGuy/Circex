@@ -1,0 +1,191 @@
+{
+  "circular_id": 1274,
+  "event": {
+    "event_name": "GRB 011121"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": {
+    "trigger_time": "2001-11-21T18:47:00.000Z"
+  },
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "F450W",
+      "mag": 24.64,
+      "mag_error": 0.07,
+      "mag_system": "STMag",
+      "obs_mjd": 52247.87264,
+      "obs_time": "2001-12-04T20:56:36.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F555W",
+      "mag": 23.88,
+      "mag_error": 0.05,
+      "mag_system": "STMag",
+      "obs_mjd": 52247.94264,
+      "obs_time": "2001-12-04T22:37:24.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F702W",
+      "mag": 23.16,
+      "mag_error": 0.05,
+      "mag_system": "STMag",
+      "obs_mjd": 52248.01264,
+      "obs_time": "2001-12-05T00:18:12.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F814W",
+      "mag": 22.79,
+      "mag_error": 0.03,
+      "mag_system": "STMag",
+      "obs_mjd": 52248.80264,
+      "obs_time": "2001-12-05T19:15:48.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F850LP",
+      "mag": 22.51,
+      "mag_error": 0.06,
+      "mag_system": "STMag",
+      "obs_mjd": 52248.93264,
+      "obs_time": "2001-12-05T22:23:00.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F555W",
+      "mag": 24.43,
+      "mag_error": 0.04,
+      "mag_system": "STMag",
+      "obs_mjd": 52257.81264,
+      "obs_time": "2001-12-14T19:30:12.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F702W",
+      "mag": 23.33,
+      "mag_error": 0.03,
+      "mag_system": "STMag",
+      "obs_mjd": 52257.87264,
+      "obs_time": "2001-12-14T20:56:36.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F814W",
+      "mag": 22.98,
+      "mag_error": 0.03,
+      "mag_system": "STMag",
+      "obs_mjd": 52259.61264,
+      "obs_time": "2001-12-16T14:42:12.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    },
+    {
+      "filter": "F850LP",
+      "mag": 22.59,
+      "mag_error": 0.09,
+      "mag_system": "STMag",
+      "obs_mjd": 52259.74264,
+      "obs_time": "2001-12-16T17:49:24.000Z",
+      "telescope": "HST",
+      "instrument": "WFPC2",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": {
+    "redshift": 0.36,
+    "redshift_measure": "spectroscopic",
+    "redshift_type": "host"
+  },
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 1809,
+      "end": 1852,
+      "snippet": "1     13.09         F450W    24.64 +/- 0.07"
+    },
+    "photometry[1]": {
+      "start": 1853,
+      "end": 1896,
+      "snippet": "1     13.16         F555W    23.88 +/- 0.05"
+    },
+    "photometry[2]": {
+      "start": 1897,
+      "end": 1940,
+      "snippet": "1     13.23         F702W    23.16 +/- 0.05"
+    },
+    "photometry[3]": {
+      "start": 1941,
+      "end": 1984,
+      "snippet": "1     14.02         F814W    22.79 +/- 0.03"
+    },
+    "photometry[4]": {
+      "start": 1985,
+      "end": 2028,
+      "snippet": "1     14.15         F850LP   22.51 +/- 0.06"
+    },
+    "photometry[5]": {
+      "start": 2029,
+      "end": 2072,
+      "snippet": "2     23.03         F555W    24.43 +/- 0.04"
+    },
+    "photometry[6]": {
+      "start": 2073,
+      "end": 2116,
+      "snippet": "2     23.09         F702W    23.33 +/- 0.03"
+    },
+    "photometry[7]": {
+      "start": 2117,
+      "end": 2160,
+      "snippet": "2     24.83         F814W    22.98 +/- 0.03"
+    },
+    "photometry[8]": {
+      "start": 2161,
+      "end": 2204,
+      "snippet": "2     24.96         F850LP   22.59 +/- 0.09"
+    },
+    "redshift.redshift": {
+      "start": 2758,
+      "end": 2830,
+      "snippet": "0.36, GCN #1152).  In the SN 1998bw interpretation, one would expect the"
+    },
+    "redshift.redshift_type": {
+      "start": 1517,
+      "end": 1583,
+      "snippet": "uncertain contribution from the host galaxy at the position of the"
+    },
+    "event": {
+      "start": 0,
+      "end": 72,
+      "snippet": "GRB 011121: HST Observations reveal an intermediate-time multicolor bump"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "HST/WFPC2 PSF-fit photometry (ST magnitudes), 2 epochs (delta T days after burst; obs = trigger + delta T). CTE-corrected, not extinction-corrected; includes an uncertain host contribution.",
+      "z=0.36 host (GCN 1152). The day-13 multi-filter bump is inconsistent with an SN like SN 1998bw -> no SN classification asserted"
+    ]
+  }
+}

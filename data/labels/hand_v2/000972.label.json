@@ -1,0 +1,42 @@
+{
+  "circular_id": 972,
+  "event": {
+    "event_name": "GRB 010214"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 22.88,
+      "mag_error": 0.22,
+      "mag_system": "Vega",
+      "obs_mjd": 51956.24,
+      "obs_time": "2001-02-16T05:45:36.000Z",
+      "telescope": "Nordic Optical Telescope",
+      "telescope_canonical": "NOT",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 634,
+      "end": 678,
+      "snippet": "   Object 1  Feb 16.24   R      22.88 +-0.22"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "Object 1 R=22.88 (Feb16.24 2001, NOT) = the OT candidate of Rol et al. GCN 955 (USNO-A2.0 calib->Other). Object 2 (R=23.01, the other variable source) excluded"
+    ]
+  }
+}

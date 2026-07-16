@@ -1,0 +1,71 @@
+{
+  "circular_id": 955,
+  "event": {
+    "event_name": "GRB 010214"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 265.262083,
+    "dec": 48.575,
+    "ra_dec_error": 0.000278
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 22.9,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 51955.26,
+      "obs_time": "2001-02-15T06:14:24.000Z",
+      "telescope": "WHT 4.2m",
+      "instrument": "Prime Focus",
+      "calibration_reference": "Other",
+      "seeing": 0.84,
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 24.1,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 51957.25,
+      "obs_time": "2001-02-17T06:00:00.000Z",
+      "telescope": "INT 2.5m",
+      "instrument": "WFC",
+      "calibration_reference": "Other",
+      "seeing": 1.2,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 954,
+      "end": 1024,
+      "snippet": "detect one object which faded from R = 22.9 to R = 24.1 (1 sigma error"
+    },
+    "photometry[1]": {
+      "start": 954,
+      "end": 1024,
+      "snippet": "detect one object which faded from R = 22.9 to R = 24.1 (1 sigma error"
+    },
+    "event": {
+      "start": 244,
+      "end": 312,
+      "snippet": "\"We have observed the BeppoSAX error box of GRB010214 (Gandolfi, GCN"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "OT candidate for GRB 010214, faded R=22.9->24.1 between WHT (Feb15.26) and INT (Feb17.25) 2001; extended (underlying galaxy).",
+      "excluded: a second variable source outside the refined NFI box (R=23.1->24.0) and the variable-star IR object (R~22.6)"
+    ]
+  }
+}
