@@ -1,0 +1,84 @@
+{
+  "circular_id": 2726,
+  "event": {
+    "event_name": "XRF 040916"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 345.229583,
+    "dec": -5.645278
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "Rc",
+      "mag": 22.3,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 53264.23333,
+      "obs_time": "2004-09-16T05:36:00.000Z",
+      "telescope": "Subaru 8.2m",
+      "instrument": "Suprime-Cam",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 22.7,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 53264.36667,
+      "obs_time": "2004-09-16T08:48:00.000Z",
+      "telescope": "Subaru 8.2m",
+      "instrument": "Suprime-Cam",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 24.8,
+      "mag_error": 0.2,
+      "mag_system": "Vega",
+      "obs_mjd": 53266.49167,
+      "obs_time": "2004-09-18T11:48:00.000Z",
+      "telescope": "Subaru 8.2m",
+      "instrument": "Suprime-Cam",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 708,
+      "end": 727,
+      "snippet": "Sep.16, 5.6UT \t22.3"
+    },
+    "photometry[1]": {
+      "start": 728,
+      "end": 746,
+      "snippet": "Sep.16, 8.8UT\t22.7"
+    },
+    "photometry[2]": {
+      "start": 747,
+      "end": 766,
+      "snippet": "Sep.18, 11.8UT\t24.8"
+    },
+    "event": {
+      "start": 155,
+      "end": 214,
+      "snippet": "error box for XRF040916 (=H4588, Yamazaki et al., GCN 2712;"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "fading OT of XRF 040916 seen in Rc/Ic/B (Subaru/Suprime-Cam); tentative Rc magnitudes (+-0.2). Ic and B magnitudes not tabulated"
+    ]
+  }
+}

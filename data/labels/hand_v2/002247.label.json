@@ -1,0 +1,218 @@
+{
+  "circular_id": 2247,
+  "event": {
+    "event_name": "GRB 030329"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 19.3,
+      "mag_error": 0.18,
+      "mag_system": "Vega",
+      "obs_mjd": 52741.84803,
+      "obs_time": "2003-04-12T20:21:10.000Z",
+      "telescope": "Lantelme 600mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.25,
+      "mag_error": 0.75,
+      "mag_system": "Vega",
+      "obs_mjd": 52750.01432,
+      "obs_time": "2003-04-21T00:20:37.000Z",
+      "telescope": "Pic du Midi",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 19.9,
+      "mag_error": 0.4,
+      "mag_system": "Vega",
+      "obs_mjd": 52750.93889,
+      "obs_time": "2003-04-21T22:32:00.000Z",
+      "telescope": "Belesta 820mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 22.74,
+      "mag_error": 0.37,
+      "mag_system": "Vega",
+      "obs_mjd": 52763.8977,
+      "obs_time": "2003-05-04T21:32:41.000Z",
+      "telescope": "Lantelme 600mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "K",
+      "mag_system": "Vega",
+      "limiting_mag": 18.2,
+      "obs_mjd": 52746.97917,
+      "obs_time": "2003-04-17T23:30:00.000Z",
+      "telescope": "Pic du Midi 2m",
+      "is_detection": false
+    },
+    {
+      "filter": "J",
+      "mag_system": "Vega",
+      "limiting_mag": 18.6,
+      "obs_mjd": 52747.05972,
+      "obs_time": "2003-04-18T01:26:00.000Z",
+      "telescope": "Pic du Midi 2m",
+      "is_detection": false
+    },
+    {
+      "filter": "C",
+      "mag": 16.72,
+      "mag_error": 0.45,
+      "mag_system": "Vega",
+      "obs_mjd": 52730.01736,
+      "obs_time": "2003-04-01T00:25:00.000Z",
+      "telescope": "Guitalens 200mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "C",
+      "mag": 18.55,
+      "mag_error": 0.36,
+      "mag_system": "Vega",
+      "obs_mjd": 52733.85417,
+      "obs_time": "2003-04-04T20:30:00.000Z",
+      "telescope": "TAROT-Calern 250mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "C",
+      "mag": 18.58,
+      "mag_error": 0.33,
+      "mag_system": "Vega",
+      "obs_mjd": 52735.90858,
+      "obs_time": "2003-04-06T21:48:21.000Z",
+      "telescope": "Dax 318mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "C",
+      "mag": 18.68,
+      "mag_error": 0.23,
+      "mag_system": "Vega",
+      "obs_mjd": 52736.92014,
+      "obs_time": "2003-04-07T22:05:00.000Z",
+      "telescope": "Pic du Midi 600mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "C",
+      "mag": 18.81,
+      "mag_error": 0.44,
+      "mag_system": "Vega",
+      "obs_mjd": 52737.85417,
+      "obs_time": "2003-04-08T20:30:00.000Z",
+      "telescope": "TAROT-Calern 250mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "C",
+      "mag": 19.93,
+      "mag_error": 0.15,
+      "mag_system": "Vega",
+      "obs_mjd": 52750.92014,
+      "obs_time": "2003-04-21T22:05:00.000Z",
+      "telescope": "Belesta 820mm",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 463,
+      "end": 548,
+      "snippet": "2003-04-12T20:21:10 SD           600  R     5400   19.30  0.18   Lantelme     14.3628"
+    },
+    "photometry[1]": {
+      "start": 549,
+      "end": 634,
+      "snippet": "2003-04-21T00:20:37 EB&al.       600  R     3000   20.25  0.75   Pic Du Midi  22.5291"
+    },
+    "photometry[2]": {
+      "start": 635,
+      "end": 720,
+      "snippet": "2003-04-21T22:32:00 OM&YM&PM     820  R      600   19.9   0.4    Belesta      23.4537"
+    },
+    "photometry[3]": {
+      "start": 721,
+      "end": 806,
+      "snippet": "2003-05-04T21:32:41 CC&SD        600  R     2760   22.74  0.37   Lantelme     36.4124"
+    },
+    "photometry[4]": {
+      "start": 950,
+      "end": 1034,
+      "snippet": "2003-04-17T23:30:00 AK&CB       2000  K     3060  >18.2          Pic du Midi 19.4939"
+    },
+    "photometry[5]": {
+      "start": 1035,
+      "end": 1119,
+      "snippet": "2003-04-18T01:26:00 AK&CB       2000  J     3960  >18.6          Pic du Midi 19.5745"
+    },
+    "photometry[6]": {
+      "start": 1256,
+      "end": 1339,
+      "snippet": "2003-04-01T00:25:00 AK           200  C      360   16.72  0.45   Guitalens   2.5321"
+    },
+    "photometry[7]": {
+      "start": 1340,
+      "end": 1423,
+      "snippet": "2003-04-04T20:30:00 TAROT        250  C      600   18.55  0.36   Calern      6.3689"
+    },
+    "photometry[8]": {
+      "start": 1424,
+      "end": 1507,
+      "snippet": "2003-04-06T21:48:21 ML           318  C     2550   18.58  0.33   Dax         8.4234"
+    },
+    "photometry[9]": {
+      "start": 1508,
+      "end": 1591,
+      "snippet": "2003-04-07T22:05:00 TM&BC        600  C      400   18.68  0.23   Pic du Midi 9.4349"
+    },
+    "photometry[10]": {
+      "start": 1592,
+      "end": 1675,
+      "snippet": "2003-04-08T20:30:00 TAROT        250  C      600   18.81  0.44   Calern     10.3690"
+    },
+    "photometry[11]": {
+      "start": 1676,
+      "end": 1759,
+      "snippet": "2003-04-21T22:05:00 OM&YM&PM     820  C      900   19.93  0.15   Belesta    23.4315"
+    },
+    "event.event_name": {
+      "start": 0,
+      "end": 75,
+      "snippet": "A. Klotz and M. Boer (CESR France) report magnitudes of GRB 030329 obtained"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "GRB 030329 OT: R-filter detections, J/K non-detections (Pic du Midi 2m), and unfiltered (C) measurements converted to the R band. Henden GCN2023 calibration->Other. C-band mags are on the R scale"
+    ]
+  }
+}

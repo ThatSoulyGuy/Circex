@@ -1,0 +1,49 @@
+{
+  "circular_id": 2555,
+  "event": {
+    "event_name": "GRB 040323"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 208.471667,
+    "dec": -52.342028,
+    "ra_dec_error": 8.33e-05
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "J",
+      "mag": 18.0,
+      "mag_system": "Vega",
+      "obs_mjd": 53089.37,
+      "obs_time": "2004-03-25T08:52:48.000Z",
+      "telescope": "Baade 6.5m",
+      "instrument": "PANIC",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 890,
+      "end": 956,
+      "snippet": "J=18.0 at the second (later) epoch.  Referenced to the time of the"
+    },
+    "event": {
+      "start": 111,
+      "end": 181,
+      "snippet": "We have observed the INTEGRAL localization of GRB040323 (Mereghetti et"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "point-like J-band source that decayed ~0.3 mag (Mar24.35->Mar25.37), J=18.0 at the later epoch (Baade/PANIC). A faint source is present on the DSS, so it is UNCERTAIN whether related to GRB 040323 or an unrelated variable star/AGN. First-epoch J and the single K epoch have no quoted magnitude"
+    ]
+  }
+}

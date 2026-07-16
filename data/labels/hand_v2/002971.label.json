@@ -1,0 +1,41 @@
+{
+  "circular_id": 2971,
+  "event": {
+    "event_name": "GRB 050123"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "I",
+      "mag_system": "Vega",
+      "limiting_mag": 19.0,
+      "limiting_mag_sigma": 3.0,
+      "obs_mjd": 53393.67847,
+      "obs_time": "2005-01-23T16:17:00.000Z",
+      "telescope": "Lulin 1m",
+      "calibration_reference": "Other",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 0,
+      "end": 41,
+      "snippet": "GRB 050123 : I-band follow-up observation"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no candidate in 70% of the error region; average I limiting magnitude ~19 (S/N=3), USNO-B1 I calibration->Other, ~5.5-5.8 hr post-burst"
+    ]
+  }
+}

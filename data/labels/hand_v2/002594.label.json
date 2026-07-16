@@ -1,0 +1,46 @@
+{
+  "circular_id": 2594,
+  "event": {
+    "event_name": "GRB 040511"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 23.6,
+      "limiting_mag_sigma": 5.0,
+      "obs_mjd": 53138.0625,
+      "obs_time": "2004-05-13T01:30:00.000Z",
+      "telescope": "Swope 40-inch",
+      "instrument": "SITe#3",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 676,
+      "end": 718,
+      "snippet": "is R~23.6 mag over a 2\"-diameter aperture."
+    },
+    "event.event_name": {
+      "start": 0,
+      "end": 45,
+      "snippet": "GRB 040511: Second Epoch Optical Observations"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "second-epoch stack (~36h post-burst); no source varied by >0.25 mag. 5-sigma depth R~23.6 (2\" aperture)"
+    ]
+  }
+}

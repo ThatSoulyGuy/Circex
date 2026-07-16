@@ -1,0 +1,69 @@
+{
+  "circular_id": 2515,
+  "event": {
+    "event_name": "GRB 040106"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 178.051125,
+    "dec": -46.787722,
+    "ra_dec_error": 0.000139
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 22.4,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 53011.35625,
+      "obs_time": "2004-01-07T08:33:00.000Z",
+      "telescope": "ESO NTT",
+      "instrument": "EMMI",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 23.7,
+      "mag_error": 0.3,
+      "mag_system": "Vega",
+      "obs_mjd": 53012.35069,
+      "obs_time": "2004-01-08T08:25:00.000Z",
+      "telescope": "ESO NTT",
+      "instrument": "EMMI",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 536,
+      "end": 583,
+      "snippet": "  07/01/04, 08:33\tR\t10 min\t    22.4         0.1"
+    },
+    "photometry[1]": {
+      "start": 584,
+      "end": 628,
+      "snippet": "  08/01/04, 08:25\tR\t20 min\t    23.7 (*)\t 0.3"
+    },
+    "event.event_name": {
+      "start": 149,
+      "end": 217,
+      "snippet": "We have observed the Integral error circle of GRB 040106 (Mereghetti"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "fading source (likely GRB 040106 afterglow): R=22.4 (Jan7) -> R=23.7 (Jan8, 2-sigma). USNO-A2.0 calibration->Other.",
+      "removed hallucinated redshift; fixed localization to the afterglow (RA 11:52:12.27) not the USNO calibration star (11:52:18.18)"
+    ]
+  }
+}

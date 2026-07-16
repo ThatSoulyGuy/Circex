@@ -1,0 +1,98 @@
+{
+  "circular_id": 2323,
+  "event": {
+    "event_name": "XRF 030723"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 327.351667,
+    "dec": -27.713167,
+    "ra_dec_error": 0.000139
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 21.3,
+      "mag_system": "Vega",
+      "obs_mjd": 52844.5,
+      "obs_time": "2003-07-24T12:00:00.000Z",
+      "telescope": "Palomar 60-inch",
+      "instrument": "CCD13",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 22.4,
+      "mag_system": "Vega",
+      "obs_mjd": 52845.5,
+      "obs_time": "2003-07-25T12:00:00.000Z",
+      "telescope": "Palomar 60-inch",
+      "instrument": "CCD13",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "Ks",
+      "mag": 18.65,
+      "mag_system": "Vega",
+      "obs_mjd": 52844.5,
+      "obs_time": "2003-07-24T12:00:00.000Z",
+      "telescope": "Palomar 200-inch (Hale)",
+      "instrument": "WIRC",
+      "calibration_reference": "2MASS",
+      "is_detection": true
+    },
+    {
+      "filter": "Ks",
+      "mag_system": "Vega",
+      "limiting_mag": 19.0,
+      "obs_mjd": 52845.5,
+      "obs_time": "2003-07-25T12:00:00.000Z",
+      "telescope": "Palomar 200-inch (Hale)",
+      "instrument": "WIRC",
+      "calibration_reference": "2MASS",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 799,
+      "end": 864,
+      "snippet": "point-like, fading source with magnitudes R~21.3 on July 24.5 and"
+    },
+    "photometry[1]": {
+      "start": 865,
+      "end": 931,
+      "snippet": "R~22.4 (near the limit of detection) on July 25.5.  This source is"
+    },
+    "photometry[2]": {
+      "start": 932,
+      "end": 1001,
+      "snippet": "also detected in our July 24.5 Ks-band image with Ks~18.65; it is not"
+    },
+    "photometry[3]": {
+      "start": 480,
+      "end": 548,
+      "snippet": "Ks-band with WIRC.  We have photometered these data against the USNO"
+    },
+    "event": {
+      "start": 146,
+      "end": 212,
+      "snippet": "\"We have observed the HETE-2 SXC localization region for XRF030723"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "stationary point-like fading source, likely the XRF 030723 counterpart: R~21.3->22.4 (P60), Ks~18.65 then <19.0 (P200/WIRC). Image depths R~22.8/22.5, Ks~19.4/19.0"
+    ]
+  }
+}

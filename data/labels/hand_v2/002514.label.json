@@ -1,0 +1,39 @@
+{
+  "circular_id": 2514,
+  "event": {
+    "event_name": "GRB 040106"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "I",
+      "mag_system": "Vega",
+      "limiting_mag": 21.0,
+      "obs_mjd": 53012.28,
+      "obs_time": "2004-01-08T06:43:12.000Z",
+      "telescope": "Swope 40-inch",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event.event_name": {
+      "start": 66,
+      "end": 127,
+      "snippet": "\"We have observed the error circle of the Integral GRB 040106"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "no candidate counterpart varied; limit R>~21 (2x600s I-band; depth quoted as R~21). Four sources in the XMM localization all constant to +-0.1 mag"
+    ]
+  }
+}

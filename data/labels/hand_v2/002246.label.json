@@ -1,0 +1,89 @@
+{
+  "circular_id": 2246,
+  "event": {
+    "event_name": "GRB 030329"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 20.11,
+      "mag_error": 0.07,
+      "mag_system": "Vega",
+      "obs_mjd": 52752.93611,
+      "obs_time": "2003-04-23T22:28:00.000Z",
+      "telescope": "ADAGIO 82cm (Belesta)",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.35,
+      "mag_error": 0.29,
+      "mag_system": "Vega",
+      "obs_mjd": 52755.90972,
+      "obs_time": "2003-04-26T21:50:00.000Z",
+      "telescope": "ADAGIO 82cm (Belesta)",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.3,
+      "mag_error": 0.17,
+      "mag_system": "Vega",
+      "obs_mjd": 52759.88542,
+      "obs_time": "2003-04-30T21:15:00.000Z",
+      "telescope": "ADAGIO 82cm (Belesta)",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.87,
+      "mag_error": 0.12,
+      "mag_system": "Vega",
+      "obs_mjd": 52762.89167,
+      "obs_time": "2003-05-03T21:24:00.000Z",
+      "telescope": "ADAGIO 82cm (Belesta)",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 476,
+      "end": 556,
+      "snippet": "2003-04-23T22:28:00 OM&YM&PM     820  R     1440   20.11  0.07   Belesta 25.4475"
+    },
+    "photometry[1]": {
+      "start": 557,
+      "end": 637,
+      "snippet": "2003-04-26T21:50:00 PMB&OM&PM    820  R      600   20.35  0.29   Belesta 28.4245"
+    },
+    "photometry[2]": {
+      "start": 557,
+      "end": 637,
+      "snippet": "2003-04-26T21:50:00 PMB&OM&PM    820  R      600   20.35  0.29   Belesta 28.4245"
+    },
+    "photometry[3]": {
+      "start": 719,
+      "end": 799,
+      "snippet": "2003-05-03T21:24:00 PMB&OM&PM    820  R     2460   20.87  0.12   Belesta 35.4065"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "GRB 030329 OT R-band (ADAGIO 82cm, red filter), Henden GCN2023 calibration->Other"
+    ]
+  }
+}
