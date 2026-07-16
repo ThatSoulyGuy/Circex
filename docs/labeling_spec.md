@@ -212,9 +212,10 @@ Standing rulings for this pass (confirmed with project owner):
 - **extraction_meta** → `hand-v2`; provenance offsets regenerated from the
   corrected values (backfill + per-row photometry anchoring).
 
-Progress: single_row_mag (10), photometric_upper_limit (10),
-gw_neutrino_counterpart (20) validated + committed. Remaining:
-spec_z_classification (40), multi_row_mag_table (40).
+Progress: ALL 120 validated + committed to gold across all five strata
+(single_row_mag 10, photometric_upper_limit 10, gw_neutrino_counterpart 20,
+spec_z_classification 40, multi_row_mag_table 40). Every file
+`extraction_meta.extractor == "hand-v2"` and passes `circex label-validate`.
 
 Keep this section short. If a pattern recurs, lift it into the field rules
 above and bump to `hand_v2/`.
