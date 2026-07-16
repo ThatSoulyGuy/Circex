@@ -85,6 +85,17 @@ that's `{value: 234, unit: "s", reference: "T+"}`.
 **One row per (filter, epoch).** A multi-epoch table with N epochs and M filters
 produces N×M rows (one for each non-empty cell).
 
+**Wide-field / galaxy-targeted counterpart searches (GW / neutrino follow-up).**
+`photometry[]` holds observations of *the transient*. A tiling / galaxy-targeted
+search that reports limiting magnitudes at many surveyed galaxy positions, or
+magnitudes of many *unrelated* candidate objects (asteroids, known variables,
+field transients), is NOT event photometry — do NOT expand such a table into one
+row per surveyed galaxy or per unrelated candidate. Populate `photometry[]` only
+for a claimed optical counterpart (e.g. the kilonova SSS17a/AT2017gfo). If the
+circular reports only survey limits with no claimed counterpart, leave
+`photometry` empty. (This convention was added after v1 gold over-expanded such
+tables — see the GW counterpart circulars in `hand_v2/`.)
+
 - `filter`: instrument-specific name as written (`g`, `r`, `R`, `clear`,
   `B`, `V`, `J`, `K`, `Ks`, etc.). Don't normalize Sloan vs Bessel — the
   source identifies the system.

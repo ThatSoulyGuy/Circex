@@ -47,12 +47,22 @@ counterpart, extract it into `localization.ra` and `localization.dec`. Always \
 store decimal degrees, ICRS J2000 — CONVERT sexagesimal (e.g. \
 RA 14:57:49.6 -> 224.4567; Dec +28:49:03 -> +28.8175). Extract the TARGET \
 transient's position only, never a comparison star's or a catalog object's.
-- Multi-row magnitude tables: emit one `photometry[]` row per (filter, epoch).
+- Multi-row magnitude tables: emit one `photometry[]` row per (filter, epoch). \
+For the transient's own table, emit EVERY tabulated (filter, epoch) row — do \
+NOT summarize or emit only a few representative rows.
 - COMPARISON STARS: `photometry[]` rows are for the TARGET transient / optical \
 counterpart ONLY. Do NOT emit rows for comparison stars, reference stars, local \
 "standards", or nearby field / catalog objects tabulated for calibration — even \
-when their magnitudes are listed. If the circular reports an observation but no \
-measured magnitude or limit for the transient itself, emit NO photometry rows.
+when their magnitudes are listed. In a wide-field / galaxy-targeted counterpart \
+search (e.g. LVK/neutrino follow-up) that reports limits or detections at many \
+survey positions or unrelated candidate objects, emit rows ONLY for a claimed \
+counterpart — NOT one row per surveyed galaxy or per unrelated candidate. If the \
+circular reports an observation but no measured magnitude or limit for the \
+transient itself, emit NO photometry rows.
+- UPPER LIMITS: a non-detection / upper limit ("> 21.5", "L > 19.5", "3-sigma \
+limit of 20.1", "fainter than 22") goes in `limiting_mag` (with \
+`limiting_mag_sigma`), NEVER in `mag`. A row has EITHER a `mag` (detection) OR a \
+`limiting_mag` (limit), never both.
 - Mag system inference:
     Sloan filters (g, r, i, z, y) default to AB.
     Bessel filters (U, B, V, R, I) default to Vega.
