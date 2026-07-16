@@ -238,7 +238,7 @@ p = para("S25 established the modern treatment of this archive with large langua
          "for extracting gamma-ray burst redshifts, reporting 97.2% accuracy on "
          "redshift-containing Circulars retrieved by retrieval-augmented generation. "
          "We build directly on that work.")
-footnote(p, "S25 code and data: https://github.com/GCN-Circulars-Analysis")
+footnote(p, "S25 code and data: https://github.com/nasa-gcn/circulars-nlp-paper")
 para("The present paper isolates a single design variable that S25 did not vary: the "
      "channel through which the language model’s output is obtained. Where S25 "
      "generate free-form text and parse it after the fact, we serve the identical "
