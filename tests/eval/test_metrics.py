@@ -116,24 +116,28 @@ def test_event_name_disjoint_lists_mismatch() -> None:
     assert e.outcome == "MM"
 
 
+def test_event_name_matches_across_prefix_whitespace() -> None:
+    # GCN writes "GRB 971214" and "GRB971214" for the same event; not a mismatch.
+    gold = _ext(event={"event_name": "GRB 971214"})
+    pred = _ext(event={"event_name": "GRB971214"})
+    e = next(c for c in compare_extractions(gold, pred) if c.field_path == "event.event_name")
+    assert e.outcome == "TP"
+
+
 # ---- enums ----
 
 
 def test_redshift_type_enum_match() -> None:
     gold = _ext(redshift={"redshift": 0.1, "redshift_type": "host"})
     pred = _ext(redshift={"redshift": 0.1, "redshift_type": "host"})
-    t = next(
-        c for c in compare_extractions(gold, pred) if c.field_path == "redshift.redshift_type"
-    )
+    t = next(c for c in compare_extractions(gold, pred) if c.field_path == "redshift.redshift_type")
     assert t.outcome == "TP"
 
 
 def test_redshift_type_enum_mismatch() -> None:
     gold = _ext(redshift={"redshift": 0.1, "redshift_type": "host"})
     pred = _ext(redshift={"redshift": 0.1, "redshift_type": "emission"})
-    t = next(
-        c for c in compare_extractions(gold, pred) if c.field_path == "redshift.redshift_type"
-    )
+    t = next(c for c in compare_extractions(gold, pred) if c.field_path == "redshift.redshift_type")
     assert t.outcome == "MM"
 
 

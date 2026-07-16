@@ -10,8 +10,9 @@ Null-handling convention (consistent across the four-way eval):
 
 Field comparison rules:
   - Numeric (redshift, ra, dec, mag): abs-diff within tolerance per FIELD_TOLERANCES.
-  - String (telescope, event_name, GRB number): normalized string equality
-    (strip whitespace, casefold, collapse multiple spaces).
+  - String (telescope): normalized string equality (casefold, collapse
+    whitespace). Event names additionally strip ALL internal whitespace, so
+    "GRB 971214" == "GRB971214" (GCN writes both for the same event).
   - Enum (mag_system, redshift_measure, redshift_type): exact equality.
   - List (photometry, time_offsets): greedy row matching by (filter, mag)
     or (value, unit). Each matched pair counts at the row level; unmatched
@@ -67,13 +68,26 @@ def _is_null(value: Any) -> bool:
     return value is None
 
 
+def _normalize_event_name(value: object) -> str:
+    """Whitespace-insensitive normalization for event designations.
+
+    GCN writes the same event both ways — ``"GRB 971214"`` and ``"GRB971214"``,
+    ``"XRF 030723"`` and ``"XRF030723"`` — so *all* internal whitespace is
+    stripped (not just collapsed) before matching. Otherwise identical events
+    score as mismatches purely on a space between prefix and number.
+    """
+    if not isinstance(value, str):
+        return str(value)
+    return _WS_RE.sub("", value).casefold()
+
+
 def _event_name_set(value: Any) -> set[str]:
     """Event names can be str or list[str]; return a normalized set."""
     if value is None:
         return set()
     if isinstance(value, list):
-        return {_normalize_str(v) for v in value if v}
-    return {_normalize_str(value)}
+        return {_normalize_event_name(v) for v in value if v}
+    return {_normalize_event_name(value)}
 
 
 # ---------- field comparisons ----------
@@ -122,9 +136,7 @@ def _compare_scalar(
     )
 
 
-def _compare_event_name(
-    circular_id: int, gold: Any, pred: Any
-) -> Comparison:
+def _compare_event_name(circular_id: int, gold: Any, pred: Any) -> Comparison:
     """Event names: list/string-tolerant; match if intersection non-empty."""
     g_set = _event_name_set(gold)
     p_set = _event_name_set(pred)
@@ -270,9 +282,7 @@ def _compare_time_offsets(
 # ---------- top-level extraction comparison ----------
 
 
-def compare_extractions(
-    gold: CircularExtraction, pred: CircularExtraction
-) -> list[Comparison]:
+def compare_extractions(gold: CircularExtraction, pred: CircularExtraction) -> list[Comparison]:
     """Compare every field of two CircularExtractions. Returns flat list of Comparison."""
     cid = gold.circular_id
     out: list[Comparison] = []
