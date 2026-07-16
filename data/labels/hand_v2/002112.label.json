@@ -1,0 +1,93 @@
+{
+  "circular_id": 2112,
+  "event": {
+    "event_name": "GRB 030329"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "B",
+      "mag": 18.2,
+      "mag_error": 0.15,
+      "mag_system": "Vega",
+      "obs_mjd": 52731.83542,
+      "obs_time": "2003-04-02T20:03:00.000Z",
+      "telescope": "50cm Maksutov (Crimean/SAI)",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "V",
+      "mag": 18.05,
+      "mag_error": 0.25,
+      "mag_system": "Vega",
+      "obs_mjd": 52731.88194,
+      "obs_time": "2003-04-02T21:10:00.000Z",
+      "telescope": "50cm Maksutov (Crimean/SAI)",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 18.4,
+      "obs_mjd": 52733.79028,
+      "obs_time": "2003-04-04T18:58:00.000Z",
+      "telescope": "50cm Maksutov (Crimean/SAI)",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "B",
+      "mag": 18.8,
+      "mag_error": 0.3,
+      "mag_system": "Vega",
+      "obs_mjd": 52733.85278,
+      "obs_time": "2003-04-04T20:28:00.000Z",
+      "telescope": "50cm Maksutov (Crimean/SAI)",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 926,
+      "end": 987,
+      "snippet": "2003-04-02      19:33:00-20:33:00       B        18.20   0.15"
+    },
+    "photometry[1]": {
+      "start": 988,
+      "end": 1049,
+      "snippet": "2003-04-02      20:45:00-21:35:00       V        18.05   0.25"
+    },
+    "photometry[2]": {
+      "start": 1050,
+      "end": 1109,
+      "snippet": "2003-04-04      18:18:00-19:38:00       V       >18.4     -"
+    },
+    "photometry[3]": {
+      "start": 1110,
+      "end": 1171,
+      "snippet": "2003-04-04      19:48:00-21:08:00       B        18.80   0.30"
+    },
+    "event": {
+      "start": 104,
+      "end": 175,
+      "snippet": "I have continued photographic observations of the GRB030329 OT found by"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "photographic B/V photometry of the GRB 030329 OT (14-star calibration, Henden GCN2082->Other), exposure-window midpoints; a new fading phase seen. V>18.4 (Apr4) is an upper limit"
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "circular_id": 1968,
+  "event": {
+    "event_name": "GRB 030323"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 16.59,
+      "obs_mjd": 52722.19,
+      "obs_time": "2003-03-24T04:33:36.000Z",
+      "telescope": "Palomar 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 16.26,
+      "obs_mjd": 52722.23,
+      "obs_time": "2003-03-24T05:31:12.000Z",
+      "telescope": "Palomar 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "mag": 18.83,
+      "mag_error": 0.09,
+      "obs_mjd": 52722.27,
+      "obs_time": "2003-03-24T06:28:48.000Z",
+      "telescope": "Palomar 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 569,
+      "end": 610,
+      "snippet": "2003 Mar 24.19   [ 16.59                 "
+    },
+    "photometry[1]": {
+      "start": 611,
+      "end": 652,
+      "snippet": "2003 Mar 24.23   [ 16.26                 "
+    },
+    "photometry[2]": {
+      "start": 336,
+      "end": 406,
+      "snippet": "et. al (GCN #1949) at a unfiltered magnitude of 18.83 +0.09-0.08.  Two"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "OT detected unfiltered = 18.83 (+0.09/-0.08) on Mar 24.27 2003; two earlier Mar 24 images (poor conditions) are non-detections to shallow limits 16.59/16.26. USNO-A V1.0 R calibration->Other"
+    ]
+  }
+}

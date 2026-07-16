@@ -1,0 +1,149 @@
+{
+  "circular_id": 2245,
+  "event": {
+    "event_name": "GRB 030329"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "I",
+      "mag": 20.02,
+      "mag_error": 0.1,
+      "mag_system": "Vega",
+      "obs_mjd": 52755.13958,
+      "obs_time": "2003-04-26T03:21:00.000Z",
+      "telescope": "Guillermo Haro 2.1m",
+      "instrument": "LFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.49,
+      "mag_error": 0.07,
+      "mag_system": "Vega",
+      "obs_mjd": 52757.13889,
+      "obs_time": "2003-04-28T03:20:00.000Z",
+      "telescope": "Guillermo Haro 2.1m",
+      "instrument": "LFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.6,
+      "mag_error": 0.08,
+      "mag_system": "Vega",
+      "obs_mjd": 52759.14167,
+      "obs_time": "2003-04-30T03:24:00.000Z",
+      "telescope": "Guillermo Haro 2.1m",
+      "instrument": "LFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.64,
+      "mag_error": 0.08,
+      "mag_system": "Vega",
+      "obs_mjd": 52761.14444,
+      "obs_time": "2003-05-02T03:28:00.000Z",
+      "telescope": "Guillermo Haro 2.1m",
+      "instrument": "LFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.9,
+      "mag_error": 0.12,
+      "mag_system": "Vega",
+      "obs_mjd": 52764.16319,
+      "obs_time": "2003-05-05T03:55:00.000Z",
+      "telescope": "Guillermo Haro 2.1m",
+      "instrument": "LFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.9,
+      "mag_error": 0.12,
+      "mag_system": "Vega",
+      "obs_mjd": 52765.13125,
+      "obs_time": "2003-05-06T03:09:00.000Z",
+      "telescope": "Guillermo Haro 2.1m",
+      "instrument": "LFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 20.88,
+      "mag_error": 0.11,
+      "mag_system": "Vega",
+      "obs_mjd": 52767.15486,
+      "obs_time": "2003-05-08T03:43:00.000Z",
+      "telescope": "Guillermo Haro 2.1m",
+      "instrument": "LFOSC",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 686,
+      "end": 733,
+      "snippet": "April 26      03:21         I         20.02(10)"
+    },
+    "photometry[1]": {
+      "start": 734,
+      "end": 781,
+      "snippet": "April 28      03:20         R         20.49(7) "
+    },
+    "photometry[2]": {
+      "start": 782,
+      "end": 829,
+      "snippet": "April 30      03:24         R         20.60(8) "
+    },
+    "photometry[3]": {
+      "start": 830,
+      "end": 876,
+      "snippet": "May   2       03:28         R         20.64(8)"
+    },
+    "photometry[4]": {
+      "start": 877,
+      "end": 925,
+      "snippet": "May   5       03:55         R         20.90(12) "
+    },
+    "photometry[5]": {
+      "start": 926,
+      "end": 974,
+      "snippet": "May   6       03:09         R         20.90(12) "
+    },
+    "photometry[6]": {
+      "start": 975,
+      "end": 1022,
+      "snippet": "May   8       03:43         R         20.88(11)"
+    },
+    "event": {
+      "start": 68,
+      "end": 139,
+      "snippet": "We have observed the OT GRB030329 found by B.Peterson and P.Price (GCN "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "late GRB 030329 OT I/R photometry (Guillermo Haro 2.1m/LFOSC, Cananea), Henden GCN2082 calibration->Other. Errors are last-digit: 20.02(10)=20.02+-0.10"
+    ]
+  }
+}

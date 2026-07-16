@@ -1,0 +1,205 @@
+{
+  "circular_id": 1957,
+  "event": {
+    "event_name": "GRB 030323"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.19,
+      "obs_mjd": 52286.56,
+      "obs_time": "2002-01-12T13:26:24.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.09,
+      "obs_mjd": 52286.57,
+      "obs_time": "2002-01-12T13:40:48.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.16,
+      "obs_mjd": 52287.57,
+      "obs_time": "2002-01-13T13:40:48.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 19.77,
+      "obs_mjd": 52287.58,
+      "obs_time": "2002-01-13T13:55:12.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.16,
+      "obs_mjd": 52316.36,
+      "obs_time": "2002-02-11T08:38:24.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.19,
+      "obs_mjd": 52316.38,
+      "obs_time": "2002-02-11T09:07:12.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.09,
+      "obs_mjd": 52316.4,
+      "obs_time": "2002-02-11T09:36:00.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.33,
+      "obs_mjd": 52651.53,
+      "obs_time": "2003-01-12T12:43:12.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.31,
+      "obs_mjd": 52651.55,
+      "obs_time": "2003-01-12T13:12:00.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.28,
+      "obs_mjd": 52651.56,
+      "obs_time": "2003-01-12T13:26:24.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 20.22,
+      "obs_mjd": 52710.38,
+      "obs_time": "2003-03-12T09:07:12.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "unfiltered",
+      "limiting_mag": 19.69,
+      "obs_mjd": 52718.3,
+      "obs_time": "2003-03-20T07:12:00.000Z",
+      "telescope": "Palomar Oschin 1.2m",
+      "instrument": "NEAT",
+      "calibration_reference": "Other",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 522,
+      "end": 571,
+      "snippet": "2002 Jan 12.56            [ 20.19                "
+    },
+    "photometry[1]": {
+      "start": 572,
+      "end": 621,
+      "snippet": "2002 Jan 12.57            [ 20.09                "
+    },
+    "photometry[2]": {
+      "start": 622,
+      "end": 671,
+      "snippet": "2002 Jan 13.57            [ 20.16                "
+    },
+    "photometry[3]": {
+      "start": 672,
+      "end": 721,
+      "snippet": "2002 Jan 13.58            [ 19.77                "
+    },
+    "photometry[4]": {
+      "start": 722,
+      "end": 771,
+      "snippet": "2002 Feb 11.36            [ 20.16                "
+    },
+    "photometry[5]": {
+      "start": 772,
+      "end": 821,
+      "snippet": "2002 Feb 11.38            [ 20.19                "
+    },
+    "photometry[6]": {
+      "start": 822,
+      "end": 871,
+      "snippet": "2002 Feb 11.40            [ 20.09                "
+    },
+    "photometry[7]": {
+      "start": 872,
+      "end": 921,
+      "snippet": "2003 Jan 12.53            [ 20.33                "
+    },
+    "photometry[8]": {
+      "start": 922,
+      "end": 971,
+      "snippet": "2003 Jan 12.55            [ 20.31                "
+    },
+    "photometry[9]": {
+      "start": 972,
+      "end": 1021,
+      "snippet": "2003 Jan 12.56            [ 20.28                "
+    },
+    "photometry[10]": {
+      "start": 1022,
+      "end": 1071,
+      "snippet": "2003 Mar 12.38            [ 20.22                "
+    },
+    "photometry[11]": {
+      "start": 1072,
+      "end": 1121,
+      "snippet": "2003 Mar 20.30            [ 19.69                "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "historical PRE-burst NEAT (Palomar Oschin 1.2m) unfiltered upper limits at the GRB 030323 OT location (2002-2003), S/N=3, USNO-A calibration->Other. Co-addition limit 21.87 (S/N=3) noted only"
+    ]
+  }
+}

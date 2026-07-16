@@ -1,0 +1,100 @@
+{
+  "circular_id": 1920,
+  "event": {
+    "event_name": "GRB 030227"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 21.1,
+      "obs_mjd": 52697.44653,
+      "obs_time": "2003-02-27T10:43:00.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "I",
+      "mag_system": "Vega",
+      "limiting_mag": 20.1,
+      "obs_mjd": 52697.46181,
+      "obs_time": "2003-02-27T11:05:00.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "V",
+      "mag_system": "Vega",
+      "limiting_mag": 20.9,
+      "obs_mjd": 52697.47708,
+      "obs_time": "2003-02-27T11:27:00.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 21.7,
+      "obs_mjd": 52697.49236,
+      "obs_time": "2003-02-27T11:49:00.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "R",
+      "mag_system": "Vega",
+      "limiting_mag": 20.6,
+      "obs_mjd": 52697.53056,
+      "obs_time": "2003-02-27T12:44:00.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": false
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 544,
+      "end": 584,
+      "snippet": "02-27 10:43-11:03 R     300s x 3  21.1  "
+    },
+    "photometry[1]": {
+      "start": 585,
+      "end": 625,
+      "snippet": "      11:05-11:24 I     300s x 3  20.1  "
+    },
+    "photometry[2]": {
+      "start": 626,
+      "end": 666,
+      "snippet": "      11:27-11:32 V     300s x 3  20.9  "
+    },
+    "photometry[3]": {
+      "start": 667,
+      "end": 707,
+      "snippet": "      11:49-12:08 B     300s x 3  21.7  "
+    },
+    "photometry[4]": {
+      "start": 708,
+      "end": 746,
+      "snippet": "      12:44-12:54 R     600s      20.6"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "afterglow (S1-A) not detected; S/N=3 limiting magnitudes (Henden GCN1917 calibration->Other)"
+    ]
+  }
+}

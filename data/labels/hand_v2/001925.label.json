@@ -1,0 +1,149 @@
+{
+  "circular_id": 1925,
+  "event": {
+    "event_name": "GRB 030226"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "V",
+      "mag": 22.07,
+      "mag_error": 0.19,
+      "mag_system": "Vega",
+      "obs_mjd": 52697.96,
+      "obs_time": "2003-02-27T23:02:24.000Z",
+      "telescope": "Zeiss-1000 (1m)",
+      "calibration_reference": "Other",
+      "seeing": 3.0,
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 21.75,
+      "mag_error": 0.18,
+      "mag_system": "Vega",
+      "obs_mjd": 52697.92,
+      "obs_time": "2003-02-27T22:04:48.000Z",
+      "telescope": "Zeiss-1000 (1m)",
+      "calibration_reference": "Other",
+      "seeing": 3.0,
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag": 24.64,
+      "mag_error": 0.21,
+      "mag_system": "Vega",
+      "obs_mjd": 52698.99,
+      "obs_time": "2003-02-28T23:45:36.000Z",
+      "telescope": "BTA 6m",
+      "calibration_reference": "Other",
+      "seeing": 2.5,
+      "is_detection": true
+    },
+    {
+      "filter": "V",
+      "mag": 23.66,
+      "mag_error": 0.16,
+      "mag_system": "Vega",
+      "obs_mjd": 52699.0,
+      "obs_time": "2003-03-01T00:00:00.000Z",
+      "telescope": "BTA 6m",
+      "calibration_reference": "Other",
+      "seeing": 2.5,
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 22.96,
+      "mag_error": 0.12,
+      "mag_system": "Vega",
+      "obs_mjd": 52698.99,
+      "obs_time": "2003-02-28T23:45:36.000Z",
+      "telescope": "BTA 6m",
+      "calibration_reference": "Other",
+      "seeing": 2.5,
+      "is_detection": true
+    },
+    {
+      "filter": "V",
+      "mag": 23.89,
+      "mag_error": 0.12,
+      "mag_system": "Vega",
+      "obs_mjd": 52699.94,
+      "obs_time": "2003-03-01T22:33:36.000Z",
+      "telescope": "BTA 6m",
+      "calibration_reference": "Other",
+      "seeing": 1.4,
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 23.39,
+      "mag_error": 0.09,
+      "mag_system": "Vega",
+      "obs_mjd": 52699.92,
+      "obs_time": "2003-03-01T22:04:48.000Z",
+      "telescope": "BTA 6m",
+      "calibration_reference": "Other",
+      "seeing": 1.4,
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 958,
+      "end": 1026,
+      "snippet": " Zeiss-1000 |    27.96 Feb.  |  2400s    |  V     | 22.07 +/- 0.19  "
+    },
+    "photometry[1]": {
+      "start": 1027,
+      "end": 1095,
+      "snippet": " Zeiss-1000 |    27.92 Feb.  |  2000s    |  Rc    | 21.75 +/- 0.18  "
+    },
+    "photometry[2]": {
+      "start": 1097,
+      "end": 1165,
+      "snippet": "  6-m       |    28.99 Feb.  |  1200s    |  B     | 24.64 +/- 0.21  "
+    },
+    "photometry[3]": {
+      "start": 1166,
+      "end": 1234,
+      "snippet": "  6-m       |    01.00 Mar.  |  1350s    |  V     | 23.66 +/- 0.16  "
+    },
+    "photometry[4]": {
+      "start": 1235,
+      "end": 1303,
+      "snippet": "  6-m       |    28.99 Feb.  |  720s     |  Rc    | 22.96 +/- 0.12  "
+    },
+    "photometry[5]": {
+      "start": 1305,
+      "end": 1371,
+      "snippet": "  6-m       |    01.94 Mar.  |  1200s    |  V     | 23.89 +/- 0.12"
+    },
+    "photometry[6]": {
+      "start": 1372,
+      "end": 1438,
+      "snippet": "  6-m       |    01.92 Mar.  |  1200s    |  Rc    | 23.39 +/- 0.09"
+    },
+    "event.event_name": {
+      "start": 112,
+      "end": 181,
+      "snippet": "The field of the GRB 030226 optical transient (Fox et al., GCN #1879)"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "OT B/V/Rc photometry (Zeiss-1000 + BTA 6m, SAO RAS), Henden GCN1916 calibration->Other. An extended object R=22.9 2.5\" SE may contaminate the OT aperture photometry"
+    ]
+  }
+}

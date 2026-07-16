@@ -1,0 +1,194 @@
+{
+  "circular_id": 2193,
+  "event": {
+    "event_name": "GRB 030329"
+  },
+  "follow_up": null,
+  "localization": {
+    "ra": 161.208458,
+    "dec": 21.521694,
+    "ra_dec_error": 0.000139
+  },
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 14.54,
+      "mag_error": 0.01,
+      "mag_system": "Vega",
+      "obs_mjd": 52727.84792,
+      "obs_time": "2003-03-29T20:21:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 14.57,
+      "mag_error": 0.01,
+      "mag_system": "Vega",
+      "obs_mjd": 52727.87361,
+      "obs_time": "2003-03-29T20:58:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 16.35,
+      "mag_error": 0.05,
+      "mag_system": "Vega",
+      "obs_mjd": 52728.80278,
+      "obs_time": "2003-03-30T19:16:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 16.35,
+      "mag_error": 0.04,
+      "mag_system": "Vega",
+      "obs_mjd": 52728.8125,
+      "obs_time": "2003-03-30T19:30:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 16.8,
+      "mag_error": 0.04,
+      "mag_system": "Vega",
+      "obs_mjd": 52729.8875,
+      "obs_time": "2003-03-31T21:18:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 19.24,
+      "mag_error": 0.29,
+      "mag_system": "Vega",
+      "obs_mjd": 52736.875,
+      "obs_time": "2003-04-07T21:00:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 19.2,
+      "mag_error": 0.18,
+      "mag_system": "Vega",
+      "obs_mjd": 52736.88056,
+      "obs_time": "2003-04-07T21:08:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 18.92,
+      "mag_error": 0.13,
+      "mag_system": "Vega",
+      "obs_mjd": 52736.90625,
+      "obs_time": "2003-04-07T21:45:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "I",
+      "mag": 18.82,
+      "mag_error": 0.14,
+      "mag_system": "Vega",
+      "obs_mjd": 52736.93472,
+      "obs_time": "2003-04-07T22:26:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "V",
+      "mag": 19.09,
+      "mag_error": 0.14,
+      "mag_system": "Vega",
+      "obs_mjd": 52736.9625,
+      "obs_time": "2003-04-07T23:06:00.000Z",
+      "telescope": "Danish 0.4m Brorfelde Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 578,
+      "end": 620,
+      "snippet": "Mar 29   20:21 \t   \t1080 \t\tR\t14.54+-0.01\t\t"
+    },
+    "photometry[1]": {
+      "start": 621,
+      "end": 664,
+      "snippet": "Mar 29   20:58 \t    \t 600 \t\tR\t14.57+-0.01\t\t"
+    },
+    "photometry[2]": {
+      "start": 665,
+      "end": 708,
+      "snippet": "Mar 30   19:16 \t    \t 360 \t\tR\t16.35+-0.05\t\t"
+    },
+    "photometry[3]": {
+      "start": 709,
+      "end": 752,
+      "snippet": "Mar 30   19:30 \t    \t 540 \t\tR\t16.35+-0.04\t\t"
+    },
+    "photometry[4]": {
+      "start": 753,
+      "end": 794,
+      "snippet": "Mar 31   21:18\t    \t 540 \t\tR\t16.80+-0.04\t"
+    },
+    "photometry[5]": {
+      "start": 795,
+      "end": 838,
+      "snippet": "Apr 7    21:00 \t    \t 270 \t\tR\t19.24+-0.29\t\t"
+    },
+    "photometry[6]": {
+      "start": 795,
+      "end": 838,
+      "snippet": "Apr 7    21:00 \t    \t 270 \t\tR\t19.24+-0.29\t\t"
+    },
+    "photometry[7]": {
+      "start": 883,
+      "end": 925,
+      "snippet": "Apr 7    21:45 \t   \t1620 \t\tR\t18.92+-0.13\t\t"
+    },
+    "photometry[8]": {
+      "start": 926,
+      "end": 967,
+      "snippet": "Apr 7    22:26\t   \t1800 \t\tI\t18.82+-0.14\t\t"
+    },
+    "photometry[9]": {
+      "start": 968,
+      "end": 1009,
+      "snippet": "Apr 7    23:06\t   \t1800 \t\tV\t19.09+-0.14\t\t"
+    },
+    "event": {
+      "start": 77,
+      "end": 148,
+      "snippet": "We have obtained V, R and I-band images of the error box of GRB 030329 "
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "GRB 030329 OT R/I/V light curve (Danish 0.4m Brorfelde Schmidt), Henden GCN2023 (11 stars)->Other; R-band power-law slope 1.31+-0.04. I/V errors may be underestimated"
+    ]
+  }
+}

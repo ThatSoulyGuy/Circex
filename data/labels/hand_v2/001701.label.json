@@ -1,0 +1,157 @@
+{
+  "circular_id": 1701,
+  "event": {
+    "event_name": "GRB 021112"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "V",
+      "mag": 21.48,
+      "mag_error": 0.08,
+      "mag_system": "Vega",
+      "obs_mjd": 52594.2,
+      "obs_time": "2002-11-16T04:48:00.000Z",
+      "telescope": "Bok 90-inch",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag_system": "Vega",
+      "limiting_mag": 22.6,
+      "obs_mjd": 52594.3,
+      "obs_time": "2002-11-16T07:12:00.000Z",
+      "telescope": "Bok 90-inch",
+      "calibration_reference": "Other",
+      "is_detection": false
+    },
+    {
+      "filter": "Ic",
+      "mag": 19.39,
+      "mag_error": 0.09,
+      "mag_system": "Vega",
+      "obs_mjd": 52594.3,
+      "obs_time": "2002-11-16T07:12:00.000Z",
+      "telescope": "Tenagra II 32-inch",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 20.87,
+      "mag_error": 0.07,
+      "mag_system": "Vega",
+      "obs_mjd": 52594.3,
+      "obs_time": "2002-11-16T07:12:00.000Z",
+      "telescope": "Tenagra II 32-inch",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 20.84,
+      "mag_error": 0.06,
+      "mag_system": "Vega",
+      "obs_mjd": 52596.3,
+      "obs_time": "2002-11-18T07:12:00.000Z",
+      "telescope": "USNO 1.0m",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "H",
+      "mag": 17.44,
+      "mag_error": 0.17,
+      "mag_system": "Vega",
+      "obs_mjd": 52597.2,
+      "obs_time": "2002-11-19T04:48:00.000Z",
+      "telescope": "USNO 1.55m",
+      "calibration_reference": "2MASS",
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 20.86,
+      "mag_error": 0.05,
+      "mag_system": "Vega",
+      "obs_mjd": 52590.3,
+      "obs_time": "2002-11-12T07:12:00.000Z",
+      "telescope": "4m Mayall",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "Rc",
+      "mag": 20.31,
+      "mag_error": 0.06,
+      "mag_system": "Vega",
+      "obs_mjd": 52591.2,
+      "obs_time": "2002-11-13T04:48:00.000Z",
+      "telescope": "4m Mayall",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 512,
+      "end": 569,
+      "snippet": "Nov 16.2  4.0 days  V       21.48 +- 0.08     90-inch Bok"
+    },
+    "photometry[1]": {
+      "start": 570,
+      "end": 627,
+      "snippet": "Nov 16.3  4.1 days  B       > 22.6 (3 sigma)  90-inch Bok"
+    },
+    "photometry[2]": {
+      "start": 628,
+      "end": 692,
+      "snippet": "Nov 16.3  4.1 days  Ic      19.39 +- 0.09     32-inch Tenagra II"
+    },
+    "photometry[3]": {
+      "start": 693,
+      "end": 757,
+      "snippet": "Nov 16.3  4.1 days  Rc      20.87 +- 0.07     32-inch Tenagra II"
+    },
+    "photometry[4]": {
+      "start": 758,
+      "end": 818,
+      "snippet": "Nov 18.3  6.1 days  Rc      20.84 +- 0.06     1.0-meter USNO"
+    },
+    "photometry[5]": {
+      "start": 819,
+      "end": 880,
+      "snippet": "Nov 19.2  7.0 days  H       * 17.44 +- 0.17   1.55-meter USNO"
+    },
+    "photometry[6]": {
+      "start": 1278,
+      "end": 1337,
+      "snippet": "Nov 12.3  3.2 hours  Rc       20.86 +- 0.05  4-meter Mayall"
+    },
+    "photometry[7]": {
+      "start": 1338,
+      "end": 1397,
+      "snippet": "Nov 13.2  1.0 days   Rc       20.31 +- 0.06  4-meter Mayall"
+    },
+    "event.event_name": {
+      "start": 183,
+      "end": 255,
+      "snippet": "We observed fields containing the candidate afterglow of GRB 021112 (GCN"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "photometry of the GRB 021112 candidate; authors conclude it is PROBABLY A VARIABLE STAR, not the afterglow (star-like profile, outside HETE 90% box, brightened a day after burst). Henden GCN1697 + 2MASS calibration. Last two rows are re-calibrated Strolger data (Mayall)"
+    ]
+  }
+}

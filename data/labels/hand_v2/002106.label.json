@@ -1,0 +1,142 @@
+{
+  "circular_id": 2106,
+  "event": {
+    "event_name": "GRB 030329"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [
+    {
+      "filter": "R",
+      "mag": 13.324,
+      "mag_error": 0.01,
+      "mag_system": "Vega",
+      "obs_mjd": 52727.59988,
+      "obs_time": "2003-03-29T14:23:50.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 12.719,
+      "mag_error": 0.01,
+      "mag_system": "Vega",
+      "obs_mjd": 52727.64166,
+      "obs_time": "2003-03-29T15:23:59.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 13.754,
+      "mag_error": 0.01,
+      "mag_system": "Vega",
+      "obs_mjd": 52727.6819,
+      "obs_time": "2003-03-29T16:21:56.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 13.744,
+      "mag_error": 0.01,
+      "mag_system": "Vega",
+      "obs_mjd": 52727.72384,
+      "obs_time": "2003-03-29T17:22:20.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 13.644,
+      "mag_error": 0.01,
+      "mag_system": "Vega",
+      "obs_mjd": 52727.73769,
+      "obs_time": "2003-03-29T17:42:16.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "R",
+      "mag": 17.281,
+      "mag_error": 0.077,
+      "mag_system": "Vega",
+      "obs_mjd": 52730.45602,
+      "obs_time": "2003-04-01T10:56:40.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    },
+    {
+      "filter": "B",
+      "mag": 17.943,
+      "mag_error": 0.063,
+      "mag_system": "Vega",
+      "obs_mjd": 52730.44531,
+      "obs_time": "2003-04-01T10:41:15.000Z",
+      "telescope": "Kiso 105cm Schmidt",
+      "calibration_reference": "Other",
+      "is_detection": true
+    }
+  ],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "photometry[0]": {
+      "start": 788,
+      "end": 837,
+      "snippet": " 2003-03-29 14:23:50     60.0 R     13.324  0.010"
+    },
+    "photometry[1]": {
+      "start": 838,
+      "end": 887,
+      "snippet": " 2003-03-29 15:23:59     60.0 R     12.719  0.010"
+    },
+    "photometry[2]": {
+      "start": 888,
+      "end": 937,
+      "snippet": " 2003-03-29 16:21:56    120.0 R     13.754  0.010"
+    },
+    "photometry[3]": {
+      "start": 938,
+      "end": 987,
+      "snippet": " 2003-03-29 17:22:20     60.0 R     13.744  0.010"
+    },
+    "photometry[4]": {
+      "start": 988,
+      "end": 1037,
+      "snippet": " 2003-03-29 17:42:16     60.0 R     13.644  0.010"
+    },
+    "photometry[5]": {
+      "start": 1038,
+      "end": 1087,
+      "snippet": " 2003-04-01 10:56:40    300.0 R     17.281  0.077"
+    },
+    "photometry[6]": {
+      "start": 1088,
+      "end": 1137,
+      "snippet": " 2003-04-01 10:41:15    300.0 B     17.943  0.063"
+    },
+    "event": {
+      "start": 321,
+      "end": 391,
+      "snippet": "of GRB030329 on the nights of 2003 March 29 and April 1 using the Kiso"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "bright GRB 030329 afterglow R/B light curve (Kiso 105cm Schmidt), Henden GCN2082 calibration->Other. R=12.719 at 15:24 is as printed"
+    ]
+  }
+}

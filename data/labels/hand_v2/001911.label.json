@@ -1,0 +1,29 @@
+{
+  "circular_id": 1911,
+  "event": {
+    "event_name": "GRB 030226"
+  },
+  "follow_up": null,
+  "localization": null,
+  "datetime": null,
+  "time_offsets": [],
+  "photometry": [],
+  "spectroscopy": null,
+  "classification": null,
+  "redshift": null,
+  "reporter": null,
+  "provenance": {
+    "event": {
+      "start": 198,
+      "end": 261,
+      "snippet": "Price GCN 1879) of GRB 030226 (Suzuki et al. GCN 1888) with the"
+    }
+  },
+  "extraction_meta": {
+    "extractor": "hand-v2",
+    "cache_hit": false,
+    "notes": [
+      "Keck-II/ESI: R-band flux faded by 1.6+-0.1 mag from day 2.3 to 3.3 (power-law alpha~4). No absolute magnitude quoted -> empty photometry. Removed draft classification 'GRB' (not a source-typing statement)"
+    ]
+  }
+}
