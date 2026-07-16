@@ -22,7 +22,7 @@ from typing import Any, TypedDict
 from circex.extract.protocol import Circular
 from circex.schema import CircularExtraction
 
-PROMPT_V1 = "2026-06-04"
+PROMPT_V1 = "2026-07-16"
 
 
 class Message(TypedDict):
@@ -42,8 +42,17 @@ exactly once with the structured object.
 POLICY:
 - Extract ONLY what the circular explicitly states. Use null when a field is \
 not stated. Never guess. Never fill in plausible defaults.
-- Coordinates: always store as decimal degrees, ICRS J2000.
+- POSITION: when the circular states the position of the transient / optical \
+counterpart, extract it into `localization.ra` and `localization.dec`. Always \
+store decimal degrees, ICRS J2000 — CONVERT sexagesimal (e.g. \
+RA 14:57:49.6 -> 224.4567; Dec +28:49:03 -> +28.8175). Extract the TARGET \
+transient's position only, never a comparison star's or a catalog object's.
 - Multi-row magnitude tables: emit one `photometry[]` row per (filter, epoch).
+- COMPARISON STARS: `photometry[]` rows are for the TARGET transient / optical \
+counterpart ONLY. Do NOT emit rows for comparison stars, reference stars, local \
+"standards", or nearby field / catalog objects tabulated for calibration — even \
+when their magnitudes are listed. If the circular reports an observation but no \
+measured magnitude or limit for the transient itself, emit NO photometry rows.
 - Mag system inference:
     Sloan filters (g, r, i, z, y) default to AB.
     Bessel filters (U, B, V, R, I) default to Vega.
@@ -68,6 +77,9 @@ leave the whole classification null. Set `classification.confidence` in [0,1] \
 when the circular states or implies a probability (e.g. "likely", "tentative", \
 "secure"); leave null otherwise. Do NOT set `taxonomy_path` — the runner fills \
 it from the canonical class.
+- REDSHIFT method/type: set `redshift_measure` (spectroscopic/photometric) and \
+`redshift_type` (emission/absorption/host) ONLY when the circular states the \
+method or the spectral feature; leave them null when it reports only a bare z.
 - GCN cross-references (e.g., "GCN #12345") populate `follow_up.reference`.
 - Telescope/instrument: set `photometry[].telescope` and `.instrument` to the \
 name AS WRITTEN in the circular. Do NOT set `telescope_canonical` / \
@@ -112,6 +124,7 @@ _FEW_SHOTS: list[tuple[str, dict[str, Any]]] = [
         """GRB 240101A: NOT optical observations
 
 We observed the field of GRB 240101A with the ALFOSC instrument on the NOT.
+The optical afterglow is located at RA = 93.44790, Dec = +12.58240 (J2000).
 Photometry calibrated against PS1:
 
   Date            Filter   Mag     Err
@@ -123,19 +136,47 @@ Seeing was 1.1 arcsec; airmass 1.3.""",
         {
             "circular_id": 0,
             "event": {"event_name": "GRB 240101A"},
+            "localization": {"ra": 93.4479, "dec": 12.5824},
             "photometry": [
-                {"filter": "r", "bandpass": "sdssr", "mag": 20.42, "mag_error": 0.05,
-                 "mag_system": "AB", "obs_time": "2024-01-02T04:30:00Z", "telescope": "NOT",
-                 "instrument": "ALFOSC", "calibration_reference": "PS1", "seeing": 1.1,
-                 "airmass": 1.3},
-                {"filter": "r", "bandpass": "sdssr", "mag": 20.55, "mag_error": 0.05,
-                 "mag_system": "AB", "obs_time": "2024-01-02T05:10:00Z", "telescope": "NOT",
-                 "instrument": "ALFOSC", "calibration_reference": "PS1", "seeing": 1.1,
-                 "airmass": 1.3},
-                {"filter": "g", "bandpass": "sdssg", "mag": 21.10, "mag_error": 0.07,
-                 "mag_system": "AB", "obs_time": "2024-01-02T05:50:00Z", "telescope": "NOT",
-                 "instrument": "ALFOSC", "calibration_reference": "PS1", "seeing": 1.1,
-                 "airmass": 1.3},
+                {
+                    "filter": "r",
+                    "bandpass": "sdssr",
+                    "mag": 20.42,
+                    "mag_error": 0.05,
+                    "mag_system": "AB",
+                    "obs_time": "2024-01-02T04:30:00Z",
+                    "telescope": "NOT",
+                    "instrument": "ALFOSC",
+                    "calibration_reference": "PS1",
+                    "seeing": 1.1,
+                    "airmass": 1.3,
+                },
+                {
+                    "filter": "r",
+                    "bandpass": "sdssr",
+                    "mag": 20.55,
+                    "mag_error": 0.05,
+                    "mag_system": "AB",
+                    "obs_time": "2024-01-02T05:10:00Z",
+                    "telescope": "NOT",
+                    "instrument": "ALFOSC",
+                    "calibration_reference": "PS1",
+                    "seeing": 1.1,
+                    "airmass": 1.3,
+                },
+                {
+                    "filter": "g",
+                    "bandpass": "sdssg",
+                    "mag": 21.10,
+                    "mag_error": 0.07,
+                    "mag_system": "AB",
+                    "obs_time": "2024-01-02T05:50:00Z",
+                    "telescope": "NOT",
+                    "instrument": "ALFOSC",
+                    "calibration_reference": "PS1",
+                    "seeing": 1.1,
+                    "airmass": 1.3,
+                },
             ],
         },
     ),
@@ -175,8 +216,12 @@ white light (clear).""",
             "event": {"event_name": "GRB 240505B"},
             "time_offsets": [{"value": 450.0, "unit": "s", "reference": "T+"}],
             "photometry": [
-                {"filter": "clear", "limiting_mag": 19.5, "limiting_mag_sigma": 3.0,
-                 "telescope": "GOTO"},
+                {
+                    "filter": "clear",
+                    "limiting_mag": 19.5,
+                    "limiting_mag_sigma": 3.0,
+                    "telescope": "GOTO",
+                },
             ],
         },
     ),
@@ -210,8 +255,7 @@ def _render_few_shots() -> list[Message]:
             {
                 "role": "assistant",
                 "content": (
-                    "<call submit_extraction with input:>\n"
-                    + json.dumps(extraction, indent=2)
+                    "<call submit_extraction with input:>\n" + json.dumps(extraction, indent=2)
                 ),
             }
         )
@@ -259,7 +303,7 @@ def llm_input_schema() -> dict[str, Any]:
                 "description": (
                     "Annotations for facts the schema can't represent. For a "
                     "bound redshift, leave `redshift` null and add "
-                    "\"redshift_bound: <verbatim phrase>\" here."
+                    '"redshift_bound: <verbatim phrase>" here.'
                 ),
             }
         },
