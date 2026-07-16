@@ -170,12 +170,12 @@ abstract = (
     "time-domain and multimessenger observations; the archive of more than 40,500 "
     "prose Circulars is difficult to ingest into structured downstream systems. "
     "Building directly on the LLM-based analysis of the Circulars archive by "
-    "Sharma et al. (2026, hereafter S25) — whose released topic labels, archive, "
+    "Sharma et al. (2026, hereafter Sha26) — whose released topic labels, archive, "
     "and Swift-validated redshift table we adopt — we present Circex, a pipeline "
     "that converts optical Circulars into validated JSON conforming to a single "
     "output schema (nasa-gcn/gcn-schema). Extractors sharing that schema are "
-    "compared on 500 rows of the S25 gold set: a transparent regular-expression "
-    "baseline, and the same Mistral-7B-Instruct-v0.2 model used by S25, served "
+    "compared on 500 rows of the Sha26 gold set: a transparent regular-expression "
+    "baseline, and the same Mistral-7B-Instruct-v0.2 model used by Sha26, served "
     "locally with grammar-constrained decoding so the sampler cannot emit a token "
     "that violates the schema. The constrained model attains F1 = 0.935 on redshift "
     "extraction, against 0.690 for the identical model under free-form generation "
@@ -232,15 +232,15 @@ para("Time-domain and multimessenger astronomy generate a continuous stream of "
      "prose format — magnitudes, filters, redshifts, and telescopes embedded in "
      "natural language — makes bulk ingestion into structured systems such as "
      "SkyPortal (van der Walt et al. 2019) laborious.", before=1)
-p = para("S25 established the modern treatment of this archive with large language "
+p = para("Sha26 established the modern treatment of this archive with large language "
          "models, contributing a neural topic-modeling pipeline, a contrastively "
          "fine-tuned classifier of observation wave bands, and a Mistral-based system "
          "for extracting gamma-ray burst redshifts, reporting 97.2% accuracy on "
          "redshift-containing Circulars retrieved by retrieval-augmented generation. "
          "We build directly on that work.")
-footnote(p, "S25 code and data: https://github.com/nasa-gcn/circulars-nlp-paper")
-para("The present paper isolates a single design variable that S25 did not vary: the "
-     "channel through which the language model’s output is obtained. Where S25 "
+footnote(p, "Sha26 code and data: https://github.com/nasa-gcn/circulars-nlp-paper")
+para("The present paper isolates a single design variable that Sha26 did not vary: the "
+     "channel through which the language model’s output is obtained. Where Sha26 "
      "generate free-form text and parse it after the fact, we serve the identical "
      "model with grammar-constrained decoding, in which the sampler is masked at "
      "every step to tokens that continue a schema-valid string. Because the model is "
@@ -270,29 +270,29 @@ para("2.1.2. Regular-expression baseline. — Six sub-parsers cover event names,
      "deterministic and transparent: it fabricates nothing, and its errors are "
      "inspectable.")
 para("2.1.3. Evaluation. — We score against the first 500 rows of the 13,593-row "
-     "Swift-validated redshift table released by S25, using a null-aware comparator "
+     "Swift-validated redshift table released by Sha26, using a null-aware comparator "
      "with per-field precision, recall, and F1. Numeric fields use tolerances; list "
-     "fields use greedy matching. Both our extractors and the S25 predictions are "
+     "fields use greedy matching. Both our extractors and the Sha26 predictions are "
      "scored against the same Actual columns, so all denominators are identical.")
 subheading("2.2", "Results")
 para("On the three fields with non-zero gold support (Table 1), the regex baseline "
      "reaches F1 = 0.869 on event names and 0.862 on redshift, exceeding the "
      "published Mistral predictions by +0.020 and +0.171 respectively. That a "
      "transparent baseline already matches a language model on these fields is not a "
-     "criticism of S25 but a calibration: it establishes the floor above which the "
+     "criticism of Sha26 but a calibration: it establishes the floor above which the "
      "constrained-decoding gain of Section 3 is measured.", before=1)
 
 # ---- Table 1 (full width) ----
 fullwidth_start()
 para("Table 1", align=WD_ALIGN_PARAGRAPH.CENTER, bold=True, size=9.5, first_indent=0, before=6)
-para("Per-field F1 on 500 rows of the S25 Swift-validated gold set. Support is the "
+para("Per-field F1 on 500 rows of the Sha26 Swift-validated gold set. Support is the "
      "number of non-null gold values (TP + FN). The regex baseline does not attempt "
      "telescope-name extraction.", align=WD_ALIGN_PARAGRAPH.CENTER, italic=True,
      size=8.5, first_indent=0, after=4)
 tbl = doc.add_table(rows=1, cols=5); tbl.style = "Table Grid"
 tbl.alignment = WD_ALIGN_PARAGRAPH.CENTER
 hdr = ["Field", "Support", "Regex (this work)", "Mistral-7B, constrained (this work)",
-       "Mistral-7B (S25)"]
+       "Mistral-7B (Sha26)"]
 for c, h in zip(tbl.rows[0].cells, hdr):
     rp = c.paragraphs[0]; rp.alignment = WD_ALIGN_PARAGRAPH.CENTER
     rr = rp.add_run(h); rr.bold, rr.font.size = True, Pt(8.5)
@@ -315,11 +315,11 @@ twocol_resume()
 heading(3, "Schema-Constrained Language Model Extraction")
 subheading("3.1", "Methods")
 para("3.1.1. Model and serving. — We use the same Mistral-7B-Instruct-v0.2 model "
-     "as S25 (Jiang et al. 2023), served locally through a llama.cpp server exposing "
+     "as Sha26 (Jiang et al. 2023), served locally through a llama.cpp server exposing "
      "an OpenAI-compatible interface on a single GPU. The prompt — an extraction "
      "policy and few-shot examples — is shared across all backends; only the output "
      "channel varies.", before=1)
-para("3.1.2. Two output configurations. — In the first, resembling the S25 harness, "
+para("3.1.2. Two output configurations. — In the first, resembling the Sha26 harness, "
      "the schema is described in the prompt and the model is asked to comply in JSON "
      "mode; output is parsed afterward, with a single repair retry and a discard path "
      "on failure. This is a post-hoc constraint: nothing prevents malformed output, "
@@ -363,7 +363,7 @@ for c, h in zip(t2.rows[0].cells, ["Extractor", "Precision", "Recall", "F1"]):
     rr = rp.add_run(h); rr.bold, rr.font.size = True, Pt(8.5)
 for row in [("Regex", "0.870", "0.854", "0.862"),
             ("Mistral-7B (constrained)", "0.932", "0.937", "0.935"),
-            ("Mistral-7B (S25)", "0.903", "0.559", "0.690")]:
+            ("Mistral-7B (Sha26)", "0.903", "0.559", "0.690")]:
     cells = t2.add_row().cells
     for i, val in enumerate(row):
         cp = cells[i].paragraphs[0]
@@ -375,7 +375,7 @@ para("We state the finding plainly: the reported weakness of open 7B models on t
      "model. The same weights that score 0.690 score 0.935 when the decoder is "
      "constrained — a gain of +0.245 F1 with no fine-tuning, no retrieval, and no "
      "larger model. This also reconciles an apparent tension with the 97.2% headline "
-     "of S25: that figure is conditional on Circulars known to contain a redshift, "
+     "of Sha26: that figure is conditional on Circulars known to contain a redshift, "
      "after retrieval, whereas the F1 here is unconditioned over the released "
      "predictions; both are scored against the same denominator as those predictions.",
      before=4)
@@ -404,7 +404,7 @@ if FIG.exists():
     fp.add_run().add_picture(str(FIG), width=Inches(6.6))
 para("Figure 1.", align=WD_ALIGN_PARAGRAPH.CENTER, bold=True, first_indent=0, before=2)
 para("Per-field F1 for the regex baseline, the grammar-constrained Mistral-7B "
-     "extractor, and the published Mistral-7B predictions of S25 (top), and ΔF1 "
+     "extractor, and the published Mistral-7B predictions of Sha26 (top), and ΔF1 "
      "against the published baseline (bottom). Hatched bars denote a non-extracting "
      "extractor or zero gold support.", align=WD_ALIGN_PARAGRAPH.CENTER, italic=True,
      size=8.5, first_indent=0, after=4)
@@ -437,7 +437,7 @@ para("The path was validated end-to-end against the live GCN stream and a produc
 # ---------------- 5. Discussion ----------------
 heading(5, "Discussion and Conclusion")
 para("Holding the model fixed and varying only the output channel isolates a result "
-     "that we believe is favorable to the thesis of S25 rather than a correction to "
+     "that we believe is favorable to the thesis of Sha26 rather than a correction to "
      "it: open 7B models are more capable at structured scientific extraction than "
      "free-form-generation numbers indicate, once the serialization bottleneck is "
      "removed. The +0.245 F1 recovered on redshift is obtained with the released "
@@ -449,7 +449,7 @@ subheading("5.1", "Challenges and Limitations")
 para("First, the redshift result is a lower bound on the constrained model’s "
      "advantage: the fields on which a language model should separate most sharply "
      "from regex — multi-row photometry tables, in-prose classification, unlabeled "
-     "coordinates — are precisely those S25 did not extract, so no gold exists to "
+     "coordinates — are precisely those Sha26 did not extract, so no gold exists to "
      "score them. A hand-labeled set covering these fields is the natural next "
      "experiment. Second, constrained decoding must be engineered, not merely "
      "enabled: a naive schema-to-grammar conversion of a realistic Pydantic model "
@@ -467,7 +467,7 @@ para("We thank Sushant Sharma Chaudhary for deploying the Mistral-7B llama.cpp "
      "the mechanism on which the central result rests. The authors acknowledge the "
      "Minnesota Supercomputing Institute (MSI) at the University of Minnesota for "
      "providing the GPU resources that contributed to the results reported here. This "
-     "work builds directly on S25 and uses their released Circulars archive, topic "
+     "work builds directly on Sha26 and uses their released Circulars archive, topic "
      "labels, and Swift-validated redshift table, together with the "
      "skyportal/timedomain-taxonomy controlled vocabulary. Portions of the SQLite/FTS "
      "indexer and the GCN poller were ported from the sjhend03/GCNMCP prototype with "
