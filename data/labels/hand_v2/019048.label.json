@@ -21,24 +21,12 @@
       "reference": "GW event"
     }
   ],
-  "photometry": [
-    {
-      "filter": "R",
-      "limiting_mag": 18.5,
-      "telescope": "TAROT-Chile",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 317,
-      "end": 389,
-      "snippet": " >18.5 and 19.8. If we take a conservative limit of R> 18.5 at 2.8 days "
-    },
     "follow_up.reference.gcn_circular": {
       "start": 177,
       "end": 244,

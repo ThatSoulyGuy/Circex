@@ -29,43 +29,12 @@
       "reference": "G299232 mid"
     }
   ],
-  "photometry": [
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 19.3,
-      "limiting_mag_sigma": 5.0,
-      "obs_mjd": 57990.64182,
-      "obs_time": "2017-08-25T15:24:13.000Z",
-      "telescope": "VT-78a (Khureltogot observatory)",
-      "calibration_reference": "Other",
-      "is_detection": false
-    },
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 19.4,
-      "limiting_mag_sigma": 5.0,
-      "obs_mjd": 57990.68949,
-      "obs_time": "2017-08-25T16:32:52.000Z",
-      "telescope": "VT-78a (Khureltogot observatory)",
-      "calibration_reference": "Other",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 882,
-      "end": 945,
-      "snippet": "2017-08-25 15:24:13  0.11289   60*60  19.3     27.1, 45.1  85.1"
-    },
-    "photometry[1]": {
-      "start": 946,
-      "end": 1009,
-      "snippet": "2017-08-25 16:32:52  0.16054   60*60  19.4     28.2, 44.8  78.3"
-    },
     "event.event_name": {
       "start": 1173,
       "end": 1234,

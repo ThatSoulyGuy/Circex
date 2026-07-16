@@ -18,41 +18,12 @@
   },
   "datetime": null,
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "unfiltered",
-      "mag": 17.3,
-      "limiting_mag": 17.8,
-      "obs_mjd": 57281.87912,
-      "obs_time": "2015-09-16T21:05:55.968Z",
-      "telescope": "MASTER-SAAO",
-      "is_detection": true
-    },
-    {
-      "filter": "unfiltered",
-      "mag": 16.9,
-      "limiting_mag": 19.2,
-      "obs_mjd": 57286.99535,
-      "obs_time": "2015-09-21T23:53:18.240Z",
-      "telescope": "MASTER-SAAO",
-      "is_detection": true
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 1710,
-      "end": 1768,
-      "snippet": "The OT unfiltered magnitude is 17.3m (the limit is 17.8m)."
-    },
-    "photometry[1]": {
-      "start": 1656,
-      "end": 1709,
-      "snippet": "04h 09m 38.68s -54d 13m 16.9s on 2015-09-16.87912 UT."
-    },
     "event.event_name": {
       "start": 3043,
       "end": 3116,

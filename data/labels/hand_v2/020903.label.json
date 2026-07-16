@@ -19,39 +19,12 @@
     "trigger_time": "2017-03-12T13:49:39.830Z"
   },
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 19.2,
-      "obs_mjd": 57825.08789,
-      "obs_time": "2017-03-13T02:06:34.000Z",
-      "telescope": "MASTER-SAAO",
-      "is_detection": false
-    },
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 19.1,
-      "obs_mjd": 57826.36031,
-      "obs_time": "2017-03-14T08:38:51.000Z",
-      "telescope": "MASTER-OAFA",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 1724,
-      "end": 1762,
-      "snippet": "inspect on13 Mar, mlim=19.2, 20 images"
-    },
-    "photometry[1]": {
-      "start": 1905,
-      "end": 1952,
-      "snippet": "inspect on 13,19 Mar, mlim=18.5-19.1, 16 images"
-    },
     "event.event_name": {
       "start": 905,
       "end": 975,

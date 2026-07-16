@@ -18,14 +18,7 @@
     "observation_stop": "2015-09-19T04:14:23.000Z"
   },
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "C",
-      "limiting_mag": 18.0,
-      "telescope": "TAROT",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,

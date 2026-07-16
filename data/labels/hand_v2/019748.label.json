@@ -31,55 +31,12 @@
       "reference": "trigger"
     }
   ],
-  "photometry": [
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 19.8,
-      "limiting_mag_sigma": 5.0,
-      "obs_mjd": 57600.80784,
-      "obs_time": "2016-07-31T19:23:17.000Z",
-      "telescope": "MASTER-Kislovodsk",
-      "is_detection": false
-    },
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 20.7,
-      "limiting_mag_sigma": 5.0,
-      "obs_mjd": 57600.89255,
-      "obs_time": "2016-07-31T21:25:16.000Z",
-      "telescope": "MASTER-IAC",
-      "is_detection": false
-    },
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 20.5,
-      "limiting_mag_sigma": 5.0,
-      "obs_mjd": 57600.9552,
-      "obs_time": "2016-07-31T22:55:29.000Z",
-      "telescope": "MASTER-OAFA",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 1568,
-      "end": 1634,
-      "snippet": "been about 19.0 on single (180 sec) and 19.8 on coadd (1260 sec ) "
-    },
-    "photometry[1]": {
-      "start": 1872,
-      "end": 1933,
-      "snippet": "about 20.0 on single (180 sec) and 20.7 on coadd (2160 sec ) "
-    },
-    "photometry[2]": {
-      "start": 2175,
-      "end": 2249,
-      "snippet": "19.8 on single (180 sec) and 20.5 on coadd (3600 sec ) unfiletered images."
-    },
     "event.event_name": {
       "start": 923,
       "end": 997,

@@ -10,33 +10,12 @@
   },
   "datetime": null,
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "unfiltered",
-      "mag": 16.1,
-      "obs_mjd": 57783.0,
-      "obs_time": "2017-01-30T00:00:00.000Z",
-      "telescope": "MASTER-Kislovodsk auto-detection system",
-      "is_detection": true
-    },
-    {
-      "filter": "unfiltered",
-      "mag_error": 0.3,
-      "obs_mjd": 56423.0,
-      "obs_time": "2013-05-11T00:00:00.000Z",
-      "telescope": "reference image"
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 783,
-      "end": 834,
-      "snippet": "The OT unfiltered magnitude is 16.1m (limit 19.4m)."
-    },
     "localization.ra": {
       "start": 1060,
       "end": 1234,

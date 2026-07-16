@@ -21,14 +21,7 @@
     "observation_stop": "2017-08-16T18:00:00.000Z"
   },
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "open",
-      "limiting_mag": 19.0,
-      "telescope": "PROMPT5",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
@@ -38,11 +31,6 @@
       "start": 240,
       "end": 436,
       "snippet": "We report the observation of 24 galaxies within the LVC error region for the GW trigger GW170814 using the LIGO bayestar HLV localization map. We selected galaxies from the GWGC catalogue within 9"
-    },
-    "photometry[0]": {
-      "start": 640,
-      "end": 771,
-      "snippet": "are part of the ongoing DLT40 search. The DLT40 search limit magnitude, for those galaxies is 19.0 (open filter scaled to r band). "
     }
   },
   "extraction_meta": {

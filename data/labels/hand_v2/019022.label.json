@@ -12,17 +12,7 @@
   "localization": null,
   "datetime": null,
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "clear",
-      "limiting_mag": 5.0,
-      "obs_mjd": 57279.40998,
-      "obs_time": "2015-09-14T09:50:22.000Z",
-      "telescope": "BOOTES-3",
-      "instrument": "CASANDRA-3 allsky camera",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
@@ -37,11 +27,6 @@
       "start": 554,
       "end": 762,
       "snippet": "ndreds of exposures, there is one starting at 09:50:22 UT that is contemporaneous to the LIGO/Virgo GW150914 event. Although a detailed investigation is ongoing, a limit of ~5th magnitude (due to poor weather"
-    },
-    "photometry[0]": {
-      "start": 289,
-      "end": 454,
-      "snippet": "A search of the CASANDRA-3 allsky camera database at the BOOTES-3 astronomical station in Lauder (New Zealand), reveals a series of 36s images taken during the night"
     }
   },
   "extraction_meta": {

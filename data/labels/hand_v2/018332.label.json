@@ -18,14 +18,7 @@
     "observation_stop": "2015-09-17T08:34:21.000Z"
   },
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "C",
-      "limiting_mag": 18.0,
-      "telescope": "TAROT La Silla Observatory",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,

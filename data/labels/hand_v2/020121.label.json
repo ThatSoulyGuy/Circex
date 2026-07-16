@@ -27,42 +27,12 @@
       "reference": "trigger"
     }
   ],
-  "photometry": [
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 20.2,
-      "limiting_mag_sigma": 5.0,
-      "obs_mjd": 57695.75457,
-      "obs_time": "2016-11-03T18:06:35.000Z",
-      "telescope": "MASTER-SAAO",
-      "calibration_reference": "Other",
-      "is_detection": false
-    },
-    {
-      "filter": "unfiltered",
-      "limiting_mag": 20.5,
-      "limiting_mag_sigma": 5.0,
-      "obs_mjd": 57695.76007,
-      "obs_time": "2016-11-03T18:14:30.000Z",
-      "telescope": "MASTER-Kislovodsk",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 1180,
-      "end": 1248,
-      "snippet": "error-box brighter then unfiltered mlim=20.2 mag (the 5-sigma upper "
-    },
-    "photometry[1]": {
-      "start": 1835,
-      "end": 1899,
-      "snippet": "error-box  brighter then 20.5m (unfiltered  5-sigma upper limit)"
-    },
     "follow_up.reference.gcn_circular": {
       "start": 991,
       "end": 1058,

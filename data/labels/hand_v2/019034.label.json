@@ -14,35 +14,12 @@
     "observation_start": "2015-09-26T00:00:00.000Z"
   },
   "time_offsets": [],
-  "photometry": [
-    {
-      "filter": "R",
-      "limiting_mag": 11.5,
-      "telescope": "Pi of the Sky",
-      "is_detection": false
-    },
-    {
-      "filter": "IR-cut",
-      "limiting_mag": 11.5,
-      "telescope": "Pi of the Sky",
-      "is_detection": false
-    }
-  ],
+  "photometry": [],
   "spectroscopy": null,
   "classification": null,
   "redshift": null,
   "reporter": null,
   "provenance": {
-    "photometry[0]": {
-      "start": 819,
-      "end": 928,
-      "snippet": "elescope has made three 10 s exposures.  During Observations have limiting brightness between 11mag-11.5mag. "
-    },
-    "photometry[1]": {
-      "start": 683,
-      "end": 889,
-      "snippet": "observations using two cameras, both observing same field, one using R filter and second using only IR-cut filter. For each field, the telescope has made three 10 s exposures.  During Observations have limi"
-    },
     "event": {
       "start": 256,
       "end": 464,
