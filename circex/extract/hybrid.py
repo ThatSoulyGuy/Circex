@@ -67,11 +67,23 @@ def _provenance_for(source: CircularExtraction, field: str) -> dict[str, Span]:
 
 
 class HybridExtractor(Extractor):
-    """Merge a regex extractor and an LLM extractor by the per-field routing table."""
+    """Merge a regex extractor and an LLM extractor by the per-field routing table.
 
-    def __init__(self, regex: Extractor, llm: Extractor) -> None:
+    `routing_overrides` replaces individual entries of the default table — e.g. a
+    consumer whose regex side carries a trained SN-type classifier passes
+    ``{"classification": ("llm", "regex")}`` so that classifier output survives
+    when the LLM abstains (the default drops regex classification as noise).
+    """
+
+    def __init__(
+        self,
+        regex: Extractor,
+        llm: Extractor,
+        routing_overrides: dict[str, tuple[str, str | None]] | None = None,
+    ) -> None:
         self._regex = regex
         self._llm = llm
+        self._routing = {**_ROUTING, **(routing_overrides or {})}
 
     @property
     def extractor_id(self) -> str:
@@ -82,7 +94,7 @@ class HybridExtractor(Extractor):
         fields: dict[str, object] = {"circular_id": circular.circular_id}
         provenance: dict[str, Span] = {}
 
-        for field, (primary, secondary) in _ROUTING.items():
+        for field, (primary, secondary) in self._routing.items():
             value = getattr(sources[primary], field)
             chosen = primary if _present(value) else None
             if chosen is None and secondary is not None:

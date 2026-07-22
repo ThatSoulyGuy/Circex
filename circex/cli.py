@@ -868,6 +868,12 @@ def consume(
     kafka: bool = typer.Option(
         False, "--kafka", help="consume live from GCN Kafka (needs GCN_CLIENT_ID/SECRET env)"
     ),
+    extractor: str = typer.Option(
+        "regex",
+        "--extractor",
+        help="regex | hybrid (regex + grammar-constrained LLM via CIRCEX_LLAMA_URL)",
+    ),
+    cache_db: Path = typer.Option(Path("data/cache/llm.sqlite"), "--cache-db"),
     model: Path | None = typer.Option(
         None, "--model", help="SN-type classifier model for the classification field"
     ),
@@ -894,7 +900,28 @@ def consume(
         from circex.classify import SNTypeClassifier
 
         clf = SNTypeClassifier.load(model)
-    extractor = RegexExtractor(sn_classifier=clf)
+    regex_ext = RegexExtractor(sn_classifier=clf)
+    ext: Extractor
+    if extractor == "hybrid":
+        # Per-field routing (paper §4.3.4): regex owns identity + coordinates, the
+        # constrained LLM owns photometry/redshift. The LLM side fail-softs on
+        # server/tunnel errors, so a dead CIRCEX_LLAMA_URL degrades per circular
+        # to regex-only fields rather than stalling the stream.
+        from circex.cache.llm import LLMCache
+        from circex.extract.hybrid import HybridExtractor
+        from circex.extract.llm import LlamaServerExtractor
+
+        overrides: dict[str, tuple[str, str | None]] = {}
+        if clf is not None:
+            # keep the trained SN-type classifier as fallback when the LLM abstains
+            overrides["classification"] = ("llm", "regex")
+        ext = HybridExtractor(
+            regex_ext, LlamaServerExtractor(cache=LLMCache(cache_db)), routing_overrides=overrides
+        )
+    elif extractor == "regex":
+        ext = regex_ext
+    else:
+        raise typer.BadParameter(f"unknown extractor {extractor!r}; choose regex | hybrid")
     gids = [int(g) for g in group_ids.split(",") if g.strip()]
     imap: dict[str, int] = {}
     if instrument_map is not None:
@@ -939,7 +966,7 @@ def consume(
             ]
 
     mode = "LIVE POST" if (live and token) else "DRY-RUN (nothing sent)"
-    tag = "regex+classifier" if clf else "regex"
+    tag = ext.extractor_id + ("+classifier" if clf else "")
     console.print(f"\n[bold]circex consume — {mode}[/]  (extractor: {tag})\n")
 
     def report(result: Any) -> None:
@@ -954,7 +981,7 @@ def consume(
 
     run(
         records,
-        extractor=extractor,
+        extractor=ext,
         poster=poster,
         fetch=fetch,
         group_ids=gids,

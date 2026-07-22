@@ -81,3 +81,17 @@ def test_hybrid_drops_llm_only_fields_when_regex_is_the_lone_source() -> None:
     m = hybrid.extract(Circular(circular_id=1, subject="", body="x"))
 
     assert m.classification is None
+
+
+def test_hybrid_routing_override_keeps_classifier_fallback() -> None:
+    # The consumer's SN-type classifier writes through the regex side; with the
+    # override, its classification survives when the LLM abstains.
+    regex_ex = _mk(classification={"classification": "Ia"})
+    hybrid = HybridExtractor(
+        _Fake(regex_ex, "regex-v1"),
+        _Fake(_mk(), "llm"),
+        routing_overrides={"classification": ("llm", "regex")},
+    )
+    m = hybrid.extract(Circular(circular_id=1, subject="", body="x"))
+
+    assert m.classification is not None and m.classification.classification == "Ia"
