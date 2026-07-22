@@ -897,6 +897,14 @@ def consume(
 
     clf = None
     if model is not None:
+        if not model.exists():
+            # data/models/ is gitignored — a fresh clone won't have the trained
+            # model. Fail with instructions instead of a FileNotFoundError trace.
+            raise typer.BadParameter(
+                f"SN-type model not found: {model}. Copy it from a machine that has "
+                "it (it is gitignored), retrain with `circex classify-train`, or "
+                "omit --model to run without the classification fallback."
+            )
         from circex.classify import SNTypeClassifier
 
         clf = SNTypeClassifier.load(model)
