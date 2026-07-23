@@ -59,7 +59,9 @@ Date          Filter   Mag      Err
     rows = parse_mag_table(text)
     assert len(rows) == 3
     assert {(p.filter, p.mag) for p in rows} == {
-        ("r", 18.42), ("r", 18.51), ("g", 19.10),
+        ("r", 18.42),
+        ("r", 18.51),
+        ("g", 19.10),
     }
 
 
@@ -302,3 +304,56 @@ def test_fixed_width_ignores_loose_generic_table() -> None:
 
     text = "Date              Filter  Mag     Err\n2024-01-02 04:30  r       20.42   0.05\n"
     assert parse_fixed_width_table_with_spans(text) == []
+
+
+# ---- ZTF/GROWTH boxed candidate table (GCN 45198 template) ----
+
+_ZTF_TABLE = """\
+We are left with the following high-significance transient candidate by our
+pipeline, lying within the 90.0% localization of the skymap.
+
++--------------------------------------------------------------------------------+
+| ZTF Name     | IAU Name  | RA (deg)    | DEC (deg)   | Filter | Mag   | MagErr |
++--------------------------------------------------------------------------------+
+| ZTF26abjbxfs |  AT 2026vts  | 191.3022538 | +30.5970446 | r      | 19.78 | 0.07   |
++--------------------------------------------------------------------------------+
+"""
+
+
+def test_pipe_table_reads_boxed_ztf_template() -> None:
+    """+---+ frame lines must not end the row scan; MagErr is its own column."""
+    from circex.extract.regex.mag_table import parse_pipe_table_with_spans
+
+    rows = parse_pipe_table_with_spans(_ZTF_TABLE)
+    assert len(rows) == 1
+    row, span = rows[0]
+    assert row.filter == "r"
+    assert row.mag == 19.78
+    assert row.mag_error == 0.07  # from the MagErr column, not the Mag cell
+    assert "ZTF26abjbxfs" in span.snippet
+
+
+def test_pipe_candidate_extracts_names_and_decimal_coords() -> None:
+    from circex.extract.regex.mag_table import parse_pipe_candidate_with_span
+
+    hit = parse_pipe_candidate_with_span(_ZTF_TABLE)
+    assert hit is not None
+    names, ra, dec, span = hit
+    assert names == ["ZTF26abjbxfs", "AT 2026vts"]
+    assert ra == 191.3022538
+    assert dec == 30.5970446
+    assert "191.3022538" in span.snippet
+
+
+def test_pipe_candidate_refuses_multi_row_survey_lists() -> None:
+    """Two candidates = a survey product, not a claimed counterpart (spec rule)."""
+    from circex.extract.regex.mag_table import parse_pipe_candidate_with_span
+
+    multi = (
+        _ZTF_TABLE.replace(
+            "+--------------------------------------------------------------------------------+\n",
+            "",
+        )
+        + "| ZTF26xxyyzzq |  AT 2026abc  | 12.5000000 | -4.1000000 | g      | 20.10 | 0.10   |\n"
+    )
+    assert parse_pipe_candidate_with_span(multi) is None

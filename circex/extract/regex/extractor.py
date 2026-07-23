@@ -17,6 +17,7 @@ from circex.extract.regex.dates import parse_time_offsets_with_spans
 from circex.extract.regex.mag_table import (
     parse_fixed_width_table_with_spans,
     parse_mag_table_with_spans,
+    parse_pipe_candidate_with_span,
     parse_pipe_table_with_spans,
     parse_single_mags_with_spans,
 )
@@ -75,9 +76,7 @@ class RegexExtractor(Extractor):
             # list so the AT/optical name doesn't get dropped — matches the
             # Event.event_name `str | list[str]` schema and the LLM-extractor
             # behavior demonstrated in few-shot #4.
-            name_value: str | list[str] = (
-                all_events if len(all_events) > 1 else primary_event_raw
-            )
+            name_value: str | list[str] = all_events if len(all_events) > 1 else primary_event_raw
             event = Event(event_name=name_value)
             # Try to ground the primary event in body text. Only spans that point
             # into circular.body are recorded; eventId / subject sources are not
@@ -111,6 +110,25 @@ class RegexExtractor(Extractor):
             (ra, dec), loc_span = coord_hit
             localization = Localization(ra=ra, dec=dec)
             provenance["localization"] = loc_span
+        if localization is None:
+            # Single-candidate counterpart table (ZTF/GROWTH neutrino/GW template,
+            # e.g. GCN 45198): decimal-degree position + the counterpart's own
+            # designation, which SkyPortal keys the source on (AT name preferred).
+            cand = parse_pipe_candidate_with_span(body)
+            if cand is not None:
+                cand_names, cand_ra, cand_dec, cand_span = cand
+                localization = Localization(ra=cand_ra, dec=cand_dec)
+                provenance["localization"] = cand_span
+                if cand_names:
+                    existing = event.event_name if event is not None else None
+                    merged = (
+                        existing if isinstance(existing, list) else ([existing] if existing else [])
+                    )
+                    merged += [n for n in cand_names if n not in merged]
+                    if event is not None:
+                        event = event.model_copy(update={"event_name": merged})
+                    else:
+                        event = Event(event_name=merged if len(merged) > 1 else merged[0])
 
         # ---- photometry: prefer pipe table, then whitespace table, then prose ----
         photo_hits = (

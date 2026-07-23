@@ -95,12 +95,23 @@ def infer_mag_system(filter_name: str) -> MagSystem | None:
 # normalized name. `clear`/`C` (unfiltered) have no canonical bandpass.
 _BANDPASS_CROSSWALK: Final[dict[str, str]] = {
     # Sloan (AB)
-    "u": "sdssu", "g": "sdssg", "r": "sdssr", "i": "sdssi", "z": "sdssz",
+    "u": "sdssu",
+    "g": "sdssg",
+    "r": "sdssr",
+    "i": "sdssi",
+    "z": "sdssz",
     "y": "ps1::y",
     # Bessel (Vega)
-    "U": "bessellu", "B": "bessellb", "V": "bessellv", "R": "bessellr", "I": "besselli",
+    "U": "bessellu",
+    "B": "bessellb",
+    "V": "bessellv",
+    "R": "bessellr",
+    "I": "besselli",
     # 2MASS / NIR (Vega)
-    "J": "2massj", "H": "2massh", "K": "2massks", "Ks": "2massks",
+    "J": "2massj",
+    "H": "2massh",
+    "K": "2massks",
+    "Ks": "2massks",
 }
 
 
@@ -139,7 +150,7 @@ def _contaminant_ranges(text: str) -> list[tuple[int, int]]:
     """
     ranges: list[tuple[int, int]] = []
     for m in _CONTAMINANT_RE.finditer(text):
-        end_match = re.search(r"\.(?:\s|$)", text[m.start():])
+        end_match = re.search(r"\.(?:\s|$)", text[m.start() :])
         end = m.start() + end_match.end() if end_match else len(text)
         ranges.append((m.start(), end))
     return ranges
@@ -171,16 +182,18 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
             continue
         err = float(match.group("err")) if match.group("err") else None
         consumed.append((match.start(), match.end()))
-        rows.append((
-            PhotometryExt(
-                filter=filter_name,
-                mag=mag,
-                mag_error=err,
-                mag_system=infer_mag_system(filter_name),
-                bandpass=infer_bandpass(filter_name),
-            ),
-            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
-        ))
+        rows.append(
+            (
+                PhotometryExt(
+                    filter=filter_name,
+                    mag=mag,
+                    mag_error=err,
+                    mag_system=infer_mag_system(filter_name),
+                    bandpass=infer_bandpass(filter_name),
+                ),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
 
     # Space-separated form ("Rc  23.08 +/- 0.18"). Skip ranges already matched
     # by the '=' form above so a value isn't double-counted.
@@ -195,16 +208,18 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
         mag = float(match.group("mag"))
         if not _plausible_mag(base, mag):
             continue
-        rows.append((
-            PhotometryExt(
-                filter=base,
-                mag=mag,
-                mag_error=float(match.group("err")),
-                mag_system=infer_mag_system(base),
-                bandpass=infer_bandpass(base),
-            ),
-            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
-        ))
+        rows.append(
+            (
+                PhotometryExt(
+                    filter=base,
+                    mag=mag,
+                    mag_error=float(match.group("err")),
+                    mag_system=infer_mag_system(base),
+                    bandpass=infer_bandpass(base),
+                ),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
 
     for match in _UPPER_LIMIT_RE.finditer(text):
         filter_name = match.group("filter")
@@ -214,16 +229,18 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
             continue
         limit = float(match.group("limit"))
         sigma = float(match.group("sigma")) if match.group("sigma") else None
-        rows.append((
-            PhotometryExt(
-                filter=filter_name,
-                limiting_mag=limit,
-                limiting_mag_sigma=sigma,
-                mag_system=infer_mag_system(filter_name),
-                bandpass=infer_bandpass(filter_name),
-            ),
-            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
-        ))
+        rows.append(
+            (
+                PhotometryExt(
+                    filter=filter_name,
+                    limiting_mag=limit,
+                    limiting_mag_sigma=sigma,
+                    mag_system=infer_mag_system(filter_name),
+                    bandpass=infer_bandpass(filter_name),
+                ),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
 
     return rows
 
@@ -231,8 +248,20 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
 # ---- Multi-row table detector ----
 
 _COLUMN_SPLIT_RE = re.compile(r"\s{2,}|\t")
-_HEADER_KEYWORDS = {"date", "mjd", "epoch", "filter", "band", "mag", "magnitude",
-                    "err", "error", "exp", "exptime", "exposure"}
+_HEADER_KEYWORDS = {
+    "date",
+    "mjd",
+    "epoch",
+    "filter",
+    "band",
+    "mag",
+    "magnitude",
+    "err",
+    "error",
+    "exp",
+    "exptime",
+    "exposure",
+}
 
 
 def _looks_like_header(line: str) -> bool:
@@ -299,13 +328,28 @@ def _classify_pipe_columns(cells: list[str]) -> dict[int, str]:
         t = tok.lower()
         if "filter" in t or t == "band":
             roles[i] = "filter"
+        elif re.search(r"mag\s*err|magerr|\berr", t):
+            # Checked BEFORE "mag": a "MagErr" column would otherwise classify as
+            # a second mag column and overwrite the real one (ZTF/GROWTH template).
+            roles[i] = "mag_err"
         elif "mag" in t:  # mag / magnitude / abmag / mag (ab)
             roles[i] = "mag"
+        elif re.search(r"\bra\b", t):
+            roles[i] = "ra"
+        elif re.search(r"\bdec\b", t):
+            roles[i] = "dec"
+        elif "name" in t:  # "ZTF Name" / "IAU Name" — counterpart designation
+            roles[i] = "name"
         elif re.search(r"t0|tgrb|t-t|tmid", t) and re.search(r"h\b|hour|hr", t):
             roles[i] = "rel_hours"
         elif re.search(r"mid-?time|date|\but\b|utc", t):
             roles[i] = "abs_time"
     return roles
+
+
+# "+----+" / "+===+" frame lines of ASCII-boxed tables (no "|" in them), which
+# would otherwise terminate the data-row scan before the first row is reached.
+_PIPE_FRAME_RE = re.compile(r"^\s*\+[-=+\s]*\+?\s*$")
 
 
 def _parse_pipe_row(
@@ -315,6 +359,15 @@ def _parse_pipe_row(
     m = _PIPE_MAG_RE.search(by.get("mag", ""))
     mag = float(m.group("mag")) if m else None
     err = float(m.group("err")) if m else None
+    if mag is None:
+        # Bare magnitude cell ("19.78") — the error lives in its own MagErr column.
+        bare = re.fullmatch(r"(\d{1,2}\.\d{1,4})", by.get("mag", "").strip())
+        if bare:
+            mag = float(bare.group(1))
+    if err is None and by.get("mag_err"):
+        err_m = re.search(r"\d+(?:\.\d+)?", by["mag_err"])
+        if err_m:
+            err = float(err_m.group())
     lim_m = _PIPE_LIMIT_RE.search(by.get("mag", ""))
     limit = float(lim_m.group("lim")) if lim_m else None
     if mag is None and limit is None:
@@ -332,9 +385,14 @@ def _parse_pipe_row(
         if num and (ep := epoch_from_offset(trigger_time, float(num.group()), "h")) is not None:
             obs_mjd, obs_time = ep
     return PhotometryExt(
-        filter=base, mag=mag, mag_error=err, limiting_mag=limit,
-        mag_system=infer_mag_system(base), bandpass=infer_bandpass(base),
-        obs_mjd=obs_mjd, obs_time=obs_time,
+        filter=base,
+        mag=mag,
+        mag_error=err,
+        limiting_mag=limit,
+        mag_system=infer_mag_system(base),
+        bandpass=infer_bandpass(base),
+        obs_mjd=obs_mjd,
+        obs_time=obs_time,
     )
 
 
@@ -359,19 +417,80 @@ def parse_pipe_table_with_spans(
             i += 1
             continue
         j = i + 1
-        while j < len(lines) and "|" in lines[j]:
+        while j < len(lines) and ("|" in lines[j] or _PIPE_FRAME_RE.match(lines[j])):
+            if _PIPE_FRAME_RE.match(lines[j]):
+                j += 1  # ASCII box frame, not a data row — but not the end either
+                continue
             cells = _pipe_cells(lines[j])
             if not _is_separator_row(cells):
                 row = _parse_pipe_row(cells, roles, trigger_time)
                 if row is not None:
                     row_text = lines[j].rstrip("\r\n")
-                    rows.append((
-                        row,
-                        Span(start=offsets[j], end=offsets[j] + len(row_text), snippet=row_text),
-                    ))
+                    rows.append(
+                        (
+                            row,
+                            Span(
+                                start=offsets[j], end=offsets[j] + len(row_text), snippet=row_text
+                            ),
+                        )
+                    )
             j += 1
         i = max(j, i + 1)
     return rows
+
+
+def parse_pipe_candidate_with_span(text: str) -> tuple[list[str], float, float, Span] | None:
+    """Counterpart designation + decimal-degree position from a candidate table.
+
+    The ZTF/GROWTH follow-up template announces a counterpart candidate as a
+    pipe table with Name / RA (deg) / DEC (deg) / Filter / Mag columns (e.g.
+    GCN 45198). Returns (names, ra, dec, span-of-row) ONLY when the table has
+    exactly one data row: a single named candidate is a claimed counterpart,
+    while a multi-row list is a survey product that must not become one source
+    (same convention as the labeling spec's wide-field-search rule).
+    """
+    lines = text.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines:
+        offsets.append(offsets[-1] + len(line))
+    i = 0
+    while i < len(lines):
+        if "|" not in lines[i]:
+            i += 1
+            continue
+        roles = _classify_pipe_columns(_pipe_cells(lines[i]))
+        vals = set(roles.values())
+        if not ({"ra", "dec"} <= vals):
+            i += 1
+            continue
+        hits: list[tuple[list[str], float, float, Span]] = []
+        j = i + 1
+        while j < len(lines) and ("|" in lines[j] or _PIPE_FRAME_RE.match(lines[j])):
+            if _PIPE_FRAME_RE.match(lines[j]):
+                j += 1
+                continue
+            cells = _pipe_cells(lines[j])
+            if not _is_separator_row(cells):
+                by: dict[str, list[str]] = {}
+                for idx, role in roles.items():
+                    if idx < len(cells):
+                        by.setdefault(role, []).append(cells[idx])
+                try:
+                    ra = float(by["ra"][0])
+                    dec = float(by["dec"][0])
+                except (KeyError, IndexError, ValueError):
+                    j += 1
+                    continue
+                if 0.0 <= ra <= 360.0 and -90.0 <= dec <= 90.0:
+                    names = [n for n in by.get("name", []) if n]
+                    row_text = lines[j].rstrip("\r\n")
+                    span = Span(start=offsets[j], end=offsets[j] + len(row_text), snippet=row_text)
+                    hits.append((names, ra, dec, span))
+            j += 1
+        if len(hits) == 1:
+            return hits[0]
+        i = max(j, i + 1)
+    return None
 
 
 # ---- Fixed-width "Date UTstart t-T0 Exp. Filter Mag Err. UL" tables ----
@@ -404,7 +523,9 @@ _FIXEDW_ROW_RE = re.compile(
 def _looks_like_fixedw_header(line: str) -> bool:
     low = line.lower()
     return (
-        "date" in low and "filter" in low and "mag" in low
+        "date" in low
+        and "filter" in low
+        and "mag" in low
         and ("utstart" in low or "t-t0" in low or "exp" in low)
     )
 
@@ -433,19 +554,21 @@ def parse_fixed_width_table_with_spans(text: str) -> list[tuple[PhotometryExt, S
         ep = epoch_from_absolute(m.group("dt").replace(".", "-"))
         obs_mjd, obs_time = ep if ep is not None else (None, None)
         row_text = line.rstrip("\r\n")
-        rows.append((
-            PhotometryExt(
-                filter=base,
-                mag=float(m.group("mag")),
-                mag_error=float(m.group("err")),
-                limiting_mag=float(m.group("ul")) if m.group("ul") else None,
-                mag_system=infer_mag_system(base),
-                bandpass=infer_bandpass(base),
-                obs_mjd=obs_mjd,
-                obs_time=obs_time,
-            ),
-            Span(start=offsets[j], end=offsets[j] + len(row_text), snippet=row_text),
-        ))
+        rows.append(
+            (
+                PhotometryExt(
+                    filter=base,
+                    mag=float(m.group("mag")),
+                    mag_error=float(m.group("err")),
+                    limiting_mag=float(m.group("ul")) if m.group("ul") else None,
+                    mag_system=infer_mag_system(base),
+                    bandpass=infer_bandpass(base),
+                    obs_mjd=obs_mjd,
+                    obs_time=obs_time,
+                ),
+                Span(start=offsets[j], end=offsets[j] + len(row_text), snippet=row_text),
+            )
+        )
     return rows
 
 
@@ -511,18 +634,20 @@ def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                 obs_mjd, obs_time = (None, None)
                 if (epoch := epoch_from_absolute(row_data.get("date"))) is not None:
                     obs_mjd, obs_time = epoch
-                rows.append((
-                    PhotometryExt(
-                        filter=filter_token,
-                        mag=mag,
-                        mag_error=err,
-                        mag_system=infer_mag_system(filter_token),
-                        bandpass=infer_bandpass(filter_token),
-                        obs_mjd=obs_mjd,
-                        obs_time=obs_time,
-                    ),
-                    Span(start=row_start, end=row_end, snippet=row_text),
-                ))
+                rows.append(
+                    (
+                        PhotometryExt(
+                            filter=filter_token,
+                            mag=mag,
+                            mag_error=err,
+                            mag_system=infer_mag_system(filter_token),
+                            bandpass=infer_bandpass(filter_token),
+                            obs_mjd=obs_mjd,
+                            obs_time=obs_time,
+                        ),
+                        Span(start=row_start, end=row_end, snippet=row_text),
+                    )
+                )
             j += 1
         i = j if j > i + 1 else i + 1
 

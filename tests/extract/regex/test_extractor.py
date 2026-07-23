@@ -28,8 +28,7 @@ def test_extracts_event_from_subject() -> None:
 
 def test_extracts_redshift_and_classification_together() -> None:
     body = (
-        "Spectroscopic typing indicates SNIa. Host galaxy emission lines yield "
-        "z = 0.0987 ± 0.0005."
+        "Spectroscopic typing indicates SNIa. Host galaxy emission lines yield z = 0.0987 ± 0.0005."
     )
     r = RegexExtractor().extract(_circular(2, "GRB optical follow-up", body))
     assert r.redshift is not None and r.redshift.redshift == 0.0987
@@ -119,7 +118,7 @@ def test_bound_redshift_sets_null_and_notes() -> None:
     assert r.extraction_meta.notes == ["redshift_bound: z =< 1.61"]
     assert "_redshift_bound" in r.provenance
     span = r.provenance["_redshift_bound"]
-    assert body[span.start:span.end] == span.snippet
+    assert body[span.start : span.end] == span.snippet
 
 
 def test_point_redshift_takes_precedence_over_bound() -> None:
@@ -129,3 +128,29 @@ def test_point_redshift_takes_precedence_over_bound() -> None:
     assert r.redshift is not None and r.redshift.redshift == 0.215
     assert r.extraction_meta.notes == []
     assert "_redshift_bound" not in r.provenance
+
+
+def test_ztf_candidate_table_yields_position_and_counterpart_name() -> None:
+    """GCN 45198 regression: a single-candidate ZTF table must produce a
+    postable extraction — position from the table, counterpart designation
+    merged into event_name (SkyPortal keys the source on the AT name)."""
+    from circex.extract.protocol import Circular
+    from circex.extract.regex import RegexExtractor
+
+    body = (
+        "We observed the localization region of the neutrino event "
+        "IceCube-260722A (GCN 45194) with the Palomar 48-inch telescope.\n"
+        "We are left with the following high-significance transient candidate.\n"
+        "+-----------------------------------------------------------------+\n"
+        "| ZTF Name     | IAU Name  | RA (deg)    | DEC (deg)   | Filter | Mag   | MagErr |\n"
+        "+-----------------------------------------------------------------+\n"
+        "| ZTF26abjbxfs |  AT 2026vts  | 191.3022538 | +30.5970446 | r      | 19.78 | 0.07   |\n"
+        "+-----------------------------------------------------------------+\n"
+    )
+    ext = RegexExtractor().extract(Circular(circular_id=45198, subject="", body=body))
+    assert ext.localization is not None
+    assert ext.localization.ra == 191.3022538
+    assert ext.localization.dec == 30.5970446
+    names = ext.event.event_name if ext.event else None
+    assert isinstance(names, list) and "AT 2026vts" in names
+    assert any(r.mag == 19.78 for r in ext.photometry)
