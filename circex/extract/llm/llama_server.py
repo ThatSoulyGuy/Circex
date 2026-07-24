@@ -33,7 +33,7 @@ from circex.extract.llm.prompt import (
     llm_grammar_schema,
 )
 from circex.extract.protocol import Circular, Extractor
-from circex.extract.timing import resolve_relative_epochs
+from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
 from circex.schema import CircularExtraction, ExtractionMeta
 
 log = structlog.get_logger(__name__)
@@ -88,6 +88,7 @@ class LlamaServerExtractor(Extractor):
                 meta = cached.extraction.extraction_meta.model_copy(update={"cache_hit": True})
                 result = cached.extraction.model_copy(update={"extraction_meta": meta})
                 resolve_relative_epochs(result, circular.trigger_time)
+                resolve_observation_epoch(result, circular.body)
                 return result
 
         started = time.perf_counter()
@@ -147,6 +148,9 @@ class LlamaServerExtractor(Extractor):
                 latency_ms=latency_ms,
             )
         resolve_relative_epochs(merged, circular.trigger_time)
+        # Bind a single body-level observation datetime to untimed rows, so a
+        # table without its own date column still gets an obs_mjd (as regex does).
+        resolve_observation_epoch(merged, circular.body)
         return merged
 
     def _call(self, circular: Circular) -> dict[str, Any]:

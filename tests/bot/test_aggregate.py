@@ -20,9 +20,7 @@ def test_aggregate_fuses_position_and_photometry() -> None:
             "body": "We observed GRB 990102A on 2024-01-02 03:00 UTC, measured r = 19.5 +/- 0.05.",
         },
     ]
-    actions = aggregate_event(
-        records, RegexExtractor(), default_instrument_id=7, group_ids=[3]
-    )
+    actions = aggregate_event(records, RegexExtractor(), default_instrument_id=7, group_ids=[3])
     assert actions.source is not None
     assert actions.source.id == "GRB990102A"
     assert actions.source.ra == 150.0 and actions.source.dec == 20.0
@@ -59,8 +57,11 @@ def test_aggregate_no_position_yields_no_source() -> None:
 
 def test_gather_by_xref_walks_the_citation_graph() -> None:
     db = {
-        40001: {"circularId": 40001, "subject": "s",
-                "body": "See Smith, GCN 40002; Jones, GCN 40003."},
+        40001: {
+            "circularId": 40001,
+            "subject": "s",
+            "body": "See Smith, GCN 40002; Jones, GCN 40003.",
+        },
         40002: {"circularId": 40002, "subject": "c2", "body": "as in GCN 40003"},
         40003: {"circularId": 40003, "subject": "c3", "body": "discovery"},
     }
@@ -94,3 +95,34 @@ def test_aggregate_prefers_refined_position_over_coarse_trigger() -> None:
     actions = aggregate_event(records, RegexExtractor(), group_ids=[3], default_instrument_id=7)
     assert actions.source is not None
     assert abs(actions.source.ra - 224.456) < 0.01  # OT, not the coarse GBM box (220.5)
+
+
+def test_source_created_from_name_and_position_without_surviving_photometry() -> None:
+    """A named counterpart with a position is a source even when its photometry
+    row is unpostable (e.g. no obs_mjd) — the source must not depend on a
+    surviving photometry point (live-consumer regression, GCN 45198)."""
+
+    class _NoMjdExtractor:
+        """Yields a position + a photometry row that can never post (no obs_mjd)."""
+
+        extractor_id = "test"
+
+        def extract(self, circ):  # noqa: ANN001
+            from circex.schema import CircularExtraction
+
+            return CircularExtraction.model_validate(
+                {
+                    "circular_id": circ.circular_id,
+                    "event": {"event_name": "AT2026vts"},
+                    "localization": {"ra": 191.3, "dec": 30.6},
+                    "photometry": [{"filter": "r", "mag": 19.78}],  # no obs_mjd -> skipped
+                    "extraction_meta": {"extractor": "test"},
+                }
+            )
+
+    rec = {"circularId": 45198, "subject": "candidate", "body": "counterpart AT2026vts"}
+    actions = aggregate_event([rec], _NoMjdExtractor(), default_instrument_id=4, group_ids=[1])
+    assert actions.source is not None  # the bug: this was None
+    assert actions.source.id == "AT2026vts"
+    assert actions.source.ra == 191.3 and actions.source.dec == 30.6
+    assert actions.skipped_rows == 1  # the row was still (correctly) unpostable

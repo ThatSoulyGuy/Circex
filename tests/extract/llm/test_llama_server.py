@@ -74,3 +74,16 @@ def test_llama_server_does_not_cache_on_transport_failure(tmp_path: Path) -> Non
 
     assert result.circular_id == 6418  # fail-soft: returns an (empty) extraction
     assert cache.count() == 0  # but nothing was persisted
+
+
+def test_llama_server_binds_body_observation_epoch_to_untimed_rows() -> None:
+    """A table row with no date column gets obs_mjd from a single body-level
+    observation time, matching the regex extractor (GCN 45198 regression)."""
+    model_output = json.dumps(
+        {"event": {"event_name": "AT2026vts"}, "photometry": [{"filter": "r", "mag": 19.78}]}
+    )
+    body = "We began observations at 2026-07-23 04:54 UTC and measured the candidate."
+    ext = LlamaServerExtractor(session=_FakeSession(model_output))
+    result = ext.extract(Circular(circular_id=45198, subject="", body=body))
+    assert result.photometry[0].obs_mjd is not None
+    assert result.photometry[0].obs_time is not None

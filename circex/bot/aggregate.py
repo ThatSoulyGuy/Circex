@@ -134,6 +134,7 @@ def aggregate_event(
     comments: list[str] = []
     skipped = 0
     redshift: tuple[float, float | None] | None = None
+    source: SourceUpsert | None = None
     event = Event(event_name=name) if name is not None else None
 
     for extraction in extractions:
@@ -146,6 +147,12 @@ def aggregate_event(
             default_instrument_id=default_instrument_id,
             group_ids=group_ids,
         )
+        # The source is defined by the event name + the aggregated position, NOT
+        # by whether any photometry row survives — a named counterpart with a
+        # position (but skipped/absent photometry) is still a source. Reuse
+        # to_actions' source, which already guards the positionless case.
+        if source is None and actions.source is not None:
+            source = actions.source
         photometry.extend(actions.photometry)
         comments.extend(actions.comments)
         skipped += actions.skipped_rows
@@ -160,13 +167,6 @@ def aggregate_event(
         if key not in seen:
             seen.add(key)
             deduped.append(point)
-
-    obj_id = deduped[0].obj_id if deduped else None
-    source: SourceUpsert | None = None
-    if obj_id is not None and localization is not None:
-        source = SourceUpsert(
-            id=obj_id, ra=localization.ra, dec=localization.dec, group_ids=group_ids
-        )
 
     # Unique comments, order preserved.
     seen_c: set[str] = set()
