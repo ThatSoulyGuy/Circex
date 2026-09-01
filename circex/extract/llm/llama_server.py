@@ -47,6 +47,13 @@ DEFAULT_LLAMA_TIMEOUT = float(os.environ.get("CIRCEX_LLAMA_TIMEOUT", "300"))
 # looping model stops here instead of grinding out 10k tokens under constrained
 # sampling. A rich extraction fits comfortably in this budget.
 DEFAULT_LLAMA_MAX_TOKENS = int(os.environ.get("CIRCEX_LLAMA_MAX_TOKENS", "2048"))
+# Whether the grammar names every field in `required`. Model-dependent — see
+# llm_grammar_schema. Off suits Mistral-7B; Qwen3 extracts nothing without it.
+DEFAULT_LLAMA_REQUIRE_FIELDS = os.environ.get("CIRCEX_LLAMA_REQUIRE_FIELDS", "").lower() in (
+    "1",
+    "true",
+    "yes",
+)
 
 
 class LlamaServerExtractor(Extractor):
@@ -59,12 +66,14 @@ class LlamaServerExtractor(Extractor):
         cache: LLMCache | None = None,
         timeout: float = DEFAULT_LLAMA_TIMEOUT,
         session: Any | None = None,
+        require_fields: bool = DEFAULT_LLAMA_REQUIRE_FIELDS,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._model_id = model_id
         self._cache = cache
         self._timeout = timeout
         self._session = session or requests  # injectable for tests
+        self._require_fields = require_fields
 
     @property
     def extractor_id(self) -> str:
@@ -76,13 +85,19 @@ class LlamaServerExtractor(Extractor):
 
     @property
     def prompt_version(self) -> str:
-        return PROMPT_V1
+        # The grammar shape changes what the model emits, so it belongs in the
+        # cache key: entries from the two variants must not collide.
+        return f"{PROMPT_V1}+required" if self._require_fields else PROMPT_V1
 
     def extract(self, circular: Circular) -> CircularExtraction:
         body_hash = cache_key(circular.body)
         if self._cache is not None:
             cached = self._cache.get(
-                self.extractor_id, self._model_id, PROMPT_V1, circular.circular_id, body_hash
+                self.extractor_id,
+                self._model_id,
+                self.prompt_version,
+                circular.circular_id,
+                body_hash,
             )
             if cached is not None:
                 meta = cached.extraction.extraction_meta.model_copy(update={"cache_hit": True})
@@ -129,7 +144,7 @@ class LlamaServerExtractor(Extractor):
         meta = ExtractionMeta(
             extractor=self.extractor_id,
             model_id=self._model_id,
-            prompt_version=PROMPT_V1,
+            prompt_version=self.prompt_version,
             latency_ms=latency_ms,
             cache_hit=False,
         )
@@ -141,7 +156,7 @@ class LlamaServerExtractor(Extractor):
             self._cache.put(
                 extractor_id=self.extractor_id,
                 model_id=self._model_id,
-                prompt_version=PROMPT_V1,
+                prompt_version=self.prompt_version,
                 circular_id=circular.circular_id,
                 body_sha1=body_hash,
                 extraction=merged,
@@ -169,7 +184,8 @@ class LlamaServerExtractor(Extractor):
                     "type": "json_schema",
                     "json_schema": {
                         "name": "circular_extraction",
-                        "schema": llm_grammar_schema(),  # lean: scored fields only
+                        # lean: scored fields only
+                        "schema": llm_grammar_schema(require_fields=self._require_fields),
                     },
                 },
             },

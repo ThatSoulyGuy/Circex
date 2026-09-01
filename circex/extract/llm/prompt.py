@@ -385,7 +385,7 @@ def _reachable_defs(node: Any, defs: dict[str, Any], seen: set[str]) -> set[str]
     return seen
 
 
-def llm_grammar_schema() -> dict[str, Any]:
+def llm_grammar_schema(*, require_fields: bool = False) -> dict[str, Any]:
     """Lean schema for grammar-constrained decoding (llama.cpp `response_format`).
 
     The full CircularExtraction schema is impractical as a grammar: it makes a huge
@@ -394,6 +394,19 @@ def llm_grammar_schema() -> dict[str, Any]:
     timed out. This keeps only the scored fields, which shrinks both the grammar and
     the output — provenance is recovered from the regex path anyway, and the model's
     offsets were never reliable.
+
+    `require_fields` names every top-level field in `required`. The fields stay
+    nullable, so this compels the model to *mention* each one, not to invent a
+    value for it. Which way this cuts is model-dependent, so it is off by default:
+
+      Mistral-7B  fills the fields regardless, and requiring them makes it pad the
+                  photometry array to its maxItems cap with rows that carry a
+                  telescope and a filter but no magnitude. Leave it off.
+      Qwen3-27B   otherwise returns `{}` — the empty object satisfies a schema whose
+                  `required` is empty, and it takes that out on every circular.
+                  Requiring the fields is what makes it extract at all.
+
+    Measured on the GRB 260604C flurry; see docs/known_issues.md.
     """
     full = CircularExtraction.model_json_schema()
     props = {k: v for k, v in full.get("properties", {}).items() if k in _GRAMMAR_FIELDS}
@@ -417,7 +430,8 @@ def llm_grammar_schema() -> dict[str, Any]:
         pruned[name] = node
 
     used = _reachable_defs(props, pruned, set())
-    lean: dict[str, Any] = {"type": "object", "properties": props, "required": []}
+    required = list(props) if require_fields else []
+    lean: dict[str, Any] = {"type": "object", "properties": props, "required": required}
     if used:
         lean["$defs"] = {name: pruned[name] for name in used}
     # Deep-copy before mutating: the dicts above are shallow copies that still share

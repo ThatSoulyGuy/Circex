@@ -9,6 +9,7 @@ import requests
 
 from circex.cache.llm import LLMCache
 from circex.extract.llm import LlamaServerExtractor
+from circex.extract.llm.prompt import llm_grammar_schema
 from circex.extract.protocol import Circular
 
 
@@ -87,3 +88,53 @@ def test_llama_server_binds_body_observation_epoch_to_untimed_rows() -> None:
     result = ext.extract(Circular(circular_id=45198, subject="", body=body))
     assert result.photometry[0].obs_mjd is not None
     assert result.photometry[0].obs_time is not None
+
+
+def test_grammar_requires_no_fields_by_default():
+    """Mistral pads the photometry array to maxItems when the fields are required."""
+    assert llm_grammar_schema()["required"] == []
+
+
+def test_require_fields_names_every_top_level_field():
+    """Qwen3 returns {} otherwise — the empty object satisfies an empty `required`."""
+    schema = llm_grammar_schema(require_fields=True)
+    assert set(schema["required"]) == set(schema["properties"])
+
+
+def test_require_fields_changes_only_the_required_list():
+    lean, strict = llm_grammar_schema(), llm_grammar_schema(require_fields=True)
+    assert {k: v for k, v in lean.items() if k != "required"} == {
+        k: v for k, v in strict.items() if k != "required"
+    }
+
+
+def test_required_fields_stay_nullable():
+    """Requiring a field compels the model to mention it, not to invent a value."""
+    schema = llm_grammar_schema(require_fields=True)
+    event = schema["properties"]["event"]
+    assert {"type": "null"} in event["anyOf"]
+
+
+def test_require_fields_is_part_of_the_cache_key():
+    """The grammar changes the output, so the two variants must not share cache entries."""
+    lean = LlamaServerExtractor(session=object())
+    strict = LlamaServerExtractor(session=object(), require_fields=True)
+    assert lean.prompt_version != strict.prompt_version
+
+
+def test_require_fields_reaches_the_request_schema():
+    class Recorder:
+        def __init__(self):
+            self.payload = None
+
+        def post(self, url, json, timeout):
+            self.payload = json
+            raise requests.RequestException("stop here; the schema is what we assert on")
+
+    for require, expected in ((False, False), (True, True)):
+        session = Recorder()
+        LlamaServerExtractor(session=session, require_fields=require).extract(
+            Circular(circular_id=1, subject="s", body="b")
+        )
+        sent = session.payload["response_format"]["json_schema"]["schema"]
+        assert bool(sent["required"]) is expected

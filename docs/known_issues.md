@@ -389,6 +389,62 @@ of. Update `docs/labeling_spec.md` "Known gaps" section in parallel.)
 
 ---
 
+## Sprint 7 — production deployment
+
+### SVOM discovery-circular positions unparsed — **resolved**
+**Severity:** H (silently wrong data, not just missing). SVOM writes the
+position two ways, and `coords.py` matched neither:
+
+    The localization of the best alert is R.A., Dec. 339.4431, 53.2195 degrees
+    R.A. (J2000) = 22h37m45s
+    Dec. (J2000) = 53d14m02s
+
+Three causes: `_PAIR_RE` used `.{0,40}?`, which cannot cross the newline between
+the split RA and Dec lines; neither label pattern accepted `R.A.` with periods
+or a trailing `(J2000)`; and `_PAIR_COMBINED_RE` required an `=` that SVOM does
+not write.
+
+Because the discovery circular is where an event's position comes from, the
+whole event was affected. On GRB 260802A (live stream, 4 circulars) no source
+was created at all and two photometry rows were discarded. Worse, on GRB 260618B
+the *counterpart* circular failed to parse and the aggregate silently fell back
+to a Fermi GBM real-time box **3 degrees away** — so events that looked fine
+were being given the wrong position. Any source whose position came from a
+circular in this format should be re-checked.
+**Where:** `circex/extract/regex/coords.py`, `tests/extract/regex/test_coords.py`.
+**First surfaced:** circulars 44823, 45270 (SVOM), 45001 (SVOM/VT counterpart).
+
+### Grammar `required` is model-specific — **accepted (per-model flag)**
+**Severity:** M. `llm_grammar_schema()` leaves `required` empty. That is
+load-bearing, and which way it cuts depends on the model:
+
+| model | `required: []` (default) | `required: [all fields]` |
+|---|---|---|
+| Mistral-7B-Instruct-v0.3 | 5 photometry rows (correct) | **15 rows** — the 5 real ones plus 10 fabricated (telescope + filter, no magnitude), running to `maxItems` |
+| Qwen3-27B | **nothing** — `{}` satisfies an empty `required` | 5 photometry rows (correct) |
+
+So there is no single grammar that suits both: an empty `required` protects
+Mistral's precision, and naming the fields is the only thing that makes Qwen
+extract at all. Exposed as `llm_grammar_schema(require_fields=...)` and
+`LlamaServerExtractor(require_fields=...)` / `CIRCEX_LLAMA_REQUIRE_FIELDS`,
+default off (Mistral's behaviour, unchanged). Requiring a field does not force a
+value — the fields stay nullable — it only compels the model to mention them.
+**Not yet validated on gold**; measured on the GRB 260604C flurry only.
+**Where:** `circex/extract/llm/prompt.py`, `circex/extract/llm/llama_server.py`.
+
+### Qwen3 reasoning tokens exhaust the decode budget — **resolved (server-side)**
+**Severity:** L (affects the Qwen backend only). Qwen3 emits chain-of-thought
+before its answer; llama.cpp routes it to `reasoning_content`, so at
+`max_tokens=2048` the budget was spent thinking and `content` came back empty.
+At 8192 it completed but took 279 s. Disabling thinking server-side
+(`llama-server --reasoning-budget 0`; `--reasoning-format none` is *not* the
+same thing and does not stop generation) cut it to ~5 s with byte-identical
+output. Thinking was never the cause of the empty extraction — see the grammar
+entry above for that.
+**Where:** MSI `agc03:8081` deployment, not this repo.
+
+---
+
 ## Process / non-code
 
 ### Solo-labeler drift risk — **open (mitigation defined)**
