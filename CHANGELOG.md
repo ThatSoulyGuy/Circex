@@ -6,6 +6,11 @@ The grammar-constrained LLM path and the hybrid router — the system the write-
 describes and the one running in production — were never in 0.1.0. This release
 publishes them.
 
+### Changed
+
+- Minimum Python is now 3.12, down from 3.13. SkyPortal pins `>=3.12,<3.13`, and
+  circex has to install into the same environment to run as a service alongside it.
+
 ### Added
 
 - **`HybridExtractor`** (`circex.extract.hybrid`). Routes each field to whichever

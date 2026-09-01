@@ -8,13 +8,14 @@ version = "0.2.0"
 description = "LLM-based extractor for GCN optical circulars, with regex baseline and MCP server"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 authors = [{ name = "Circex contributors" }]
 keywords = ["astronomy", "GCN", "circulars", "SkyPortal", "transients", "extraction"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Astronomy",
     "Operating System :: OS Independent",
@@ -94,7 +95,7 @@ include = [
 # ---------- Ruff ----------
 [tool.ruff]
 line-length = 100
-target-version = "py313"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
@@ -107,7 +108,7 @@ ignore = []
 
 # ---------- Mypy ----------
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.12"
 strict = true
 warn_unused_configs = true
 files = ["circex"]

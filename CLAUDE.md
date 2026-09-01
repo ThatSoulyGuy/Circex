@@ -14,7 +14,7 @@ MCP tools SkyPortal can call.
 
 ## Repo layout (target)
 
-- `circex/` — main Python package (Python 3.13+, Pydantic v2)
+- `circex/` — main Python package (Python 3.12+, Pydantic v2)
 - `references/` — **read-only** clones of four upstream repos (gitignored). Do not modify.
 - `schemas/` — JSON Schema artifacts dumped from Pydantic for upstream PR.
 - `data/` — gitignored runtime data (untarred archive, labels, subsets).
@@ -36,7 +36,8 @@ circex --help           # CLI
 
 ## Conventions
 
-- Python 3.13+ syntax (`X | None`, not `Optional[X]`).
+- Python 3.12+ syntax (`X | None`, not `Optional[X]`). SkyPortal pins `<3.13`,
+  so the package must stay installable on 3.12.
 - `pathlib.Path` everywhere; no raw string slashes.
 - Pydantic v2 (`BaseModel`, `Field`, `model_validate`, `model_dump`).
 - `structlog` for logging; never `print` outside CLI command outputs.
