@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "circex"
-version = "0.1.0"
+version = "0.2.0"
 description = "LLM-based extractor for GCN optical circulars, with regex baseline and MCP server"
 readme = "README.md"
 license = { text = "MIT" }
@@ -76,6 +76,20 @@ Issues = "https://github.com/skyportal/Circex/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["circex"]
+
+# Without an explicit list the sdist sweeps in the whole working tree — the
+# gitignored data/ (including the hand-labelled gold set), the paper drafts,
+# and the hypothesis cache. Ship the package, its tests and the schema artifacts.
+[tool.hatch.build.targets.sdist]
+include = [
+    "/circex",
+    "/tests",
+    "/schemas",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE",
+    "/pyproject.toml",
+]
 
 # ---------- Ruff ----------
 [tool.ruff]
