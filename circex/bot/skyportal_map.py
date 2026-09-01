@@ -103,6 +103,10 @@ class SkyPortalActions:
     redshift: tuple[float, float | None] | None  # (z, z_err)
     comments: list[str]
     skipped_rows: int  # photometry rows we could not post (no mjd/filter)
+    # The extractions these actions were built from. Callers that need fields with
+    # no place in the SkyPortal write bundle (event designations, classification)
+    # would otherwise have to run the extractor a second time.
+    extractions: tuple[CircularExtraction, ...] = ()
 
 
 def _provenance_note(extraction: CircularExtraction, path: str) -> str | None:
@@ -182,6 +186,7 @@ def to_actions(
         redshift=redshift,
         comments=comments,
         skipped_rows=skipped,
+        extractions=(extraction,),
     )
 
 

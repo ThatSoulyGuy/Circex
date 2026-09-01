@@ -182,4 +182,5 @@ def aggregate_event(
         redshift=redshift,
         comments=uniq_comments,
         skipped_rows=skipped,
+        extractions=tuple(extractions),
     )
