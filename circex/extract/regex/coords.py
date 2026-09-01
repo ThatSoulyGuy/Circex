@@ -33,17 +33,26 @@ _DEC_INNER = (
     r"|[+\-]?\d{1,2})"
 )
 
-# Interleaved labels: "RA = <ra> ... Dec = <dec>".
+# Labels, which circulars punctuate several ways: RA, R.A., R.A. (J2000).
+_EPOCH = r"(?:\s*\((?:J2000(?:\.0)?|ICRS|FK5)\))?"
+_RA_LABEL = r"\bR\.?\s?A\.?" + _EPOCH
+_DEC_LABEL = r"\bDec(?:l)?\.?" + _EPOCH
+
+# Interleaved labels: "RA = <ra> ... Dec = <dec>". The gap is [\s\S] rather than
+# . so the pair can straddle a line break, which SVOM's discovery circulars do:
+#   R.A. (J2000) = 22h37m45s
+#   Dec. (J2000) = 53d14m02s
 _PAIR_RE = re.compile(
-    r"\bRA\s*[=:]?\s*(?P<ra>" + _RA_INNER + r").{0,40}?"
-    r"\bDec(?:l?)\s*[=:]?\s*(?P<dec>" + _DEC_INNER + r")",
+    _RA_LABEL + r"\s*[=:]?\s*(?P<ra>" + _RA_INNER + r")[\s\S]{0,40}?"
+    + _DEC_LABEL + r"\s*[=:]?\s*(?P<dec>" + _DEC_INNER + r")",
     re.IGNORECASE,
 )
 
 # Combined label then both values: "(RA, Dec) = <ra> <dec>" / "RA, Decl. = <ra> <dec>".
-# The two values are separated by whitespace (with an optional comma).
+# The separator is optional because SVOM writes no "=" at all:
+#   The localization of the best alert is R.A., Dec. 339.4431, 53.2195 degrees
 _PAIR_COMBINED_RE = re.compile(
-    r"\(?\s*RA\s*,\s*Dec(?:l?)\.?\s*\)?\s*[=:]\s*"
+    r"\(?\s*" + _RA_LABEL + r"\s*,\s*" + _DEC_LABEL + r"\s*\)?\s*(?:[=:]\s*)?"
     r"(?P<ra>" + _RA_INNER + r")\s*,?\s+(?P<dec>" + _DEC_INNER + r")",
     re.IGNORECASE,
 )

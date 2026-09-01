@@ -88,3 +88,40 @@ def test_combined_label_decimal() -> None:
     ra, dec = result
     assert math.isclose(ra, 224.4566, abs_tol=1e-3)
     assert math.isclose(dec, 28.8175, abs_tol=1e-3)
+
+
+# SVOM discovery circulars carry the position in two notations, neither of which
+# the parser accepted: a combined "R.A., Dec." label with no "=", and a
+# split-line "R.A. (J2000) = .." / "Dec. (J2000) = ..". Because the discovery
+# circular is where an event's position comes from, missing them cost the whole
+# event its source and discarded every follow-up's photometry.
+SVOM_45270 = """The localization of the best alert is R.A., Dec. 339.4431, 53.2195 degrees
+(J2000) with a 90% confidence level (C.L.) radius of 13.0 arcminutes.
+
+Using onboard processed data we found a new X-ray source located at:
+R.A. (J2000) = 22h37m45s
+Dec. (J2000) = 53d14m02s
+with a 90% C.L. radius of 161 arcseconds.
+"""
+
+
+def test_svom_split_line_sexagesimal():
+    ra, dec = parse_coords("R.A. (J2000) = 22h37m45s\nDec. (J2000) = 53d14m02s")
+    assert ra == pytest.approx(339.4375, abs=1e-3)
+    assert dec == pytest.approx(53.2339, abs=1e-3)
+
+
+def test_svom_combined_label_without_separator():
+    ra, dec = parse_coords("is R.A., Dec. 339.4431, 53.2195 degrees (J2000) with a 90%")
+    assert (ra, dec) == pytest.approx((339.4431, 53.2195))
+
+
+def test_svom_discovery_circular_prefers_the_refined_position():
+    """Both notations appear; the refined MXT position is the one to keep."""
+    ra, dec = parse_coords(SVOM_45270)
+    assert ra == pytest.approx(339.4375, abs=1e-3)
+    assert dec == pytest.approx(53.2339, abs=1e-3)
+
+
+def test_ra_label_does_not_match_mid_word():
+    assert parse_coords("The SPECTRA 12.5, Dec. 4.5 were reduced") is None
