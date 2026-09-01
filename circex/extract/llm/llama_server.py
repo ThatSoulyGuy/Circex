@@ -54,6 +54,9 @@ DEFAULT_LLAMA_REQUIRE_FIELDS = os.environ.get("CIRCEX_LLAMA_REQUIRE_FIELDS", "")
     "true",
     "yes",
 )
+# Bearer token, for a server reached over the open internet rather than through
+# an ssh tunnel. A llama-server on localhost needs none.
+DEFAULT_LLAMA_API_KEY = os.environ.get("CIRCEX_LLAMA_API_KEY") or None
 
 
 class LlamaServerExtractor(Extractor):
@@ -67,6 +70,7 @@ class LlamaServerExtractor(Extractor):
         timeout: float = DEFAULT_LLAMA_TIMEOUT,
         session: Any | None = None,
         require_fields: bool = DEFAULT_LLAMA_REQUIRE_FIELDS,
+        api_key: str | None = DEFAULT_LLAMA_API_KEY,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._model_id = model_id
@@ -74,6 +78,7 @@ class LlamaServerExtractor(Extractor):
         self._timeout = timeout
         self._session = session or requests  # injectable for tests
         self._require_fields = require_fields
+        self._api_key = api_key
 
     @property
     def extractor_id(self) -> str:
@@ -168,6 +173,11 @@ class LlamaServerExtractor(Extractor):
         resolve_observation_epoch(merged, circular.body)
         return merged
 
+    @property
+    def _headers(self) -> dict[str, str]:
+        """Auth header, when the server is behind one. Never logged."""
+        return {"Authorization": f"Bearer {self._api_key}"} if self._api_key else {}
+
     def _call(self, circular: Circular) -> dict[str, Any]:
         messages = [
             {"role": "system", "content": build_system_text()},
@@ -189,6 +199,7 @@ class LlamaServerExtractor(Extractor):
                     },
                 },
             },
+            headers=self._headers,
             timeout=self._timeout,
         )
         resp.raise_for_status()

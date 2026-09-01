@@ -28,9 +28,11 @@ class _FakeSession:
     def __init__(self, content: str) -> None:
         self.content = content
         self.calls: list[tuple[str, dict]] = []
+        self.headers: dict | None = None
 
-    def post(self, url: str, json: dict, timeout: float) -> _FakeResp:  # noqa: A002
+    def post(self, url: str, json: dict, timeout: float, headers: dict | None = None) -> _FakeResp:  # noqa: A002
         self.calls.append((url, json))
+        self.headers = headers
         return _FakeResp(self.content)
 
 
@@ -62,7 +64,7 @@ def test_llama_server_uses_grammar_constrained_request() -> None:
 class _FailSession:
     """Session whose POST always dies mid-flight, like a dropped tunnel."""
 
-    def post(self, url: str, json: dict, timeout: float) -> _FakeResp:  # noqa: A002
+    def post(self, url: str, json: dict, timeout: float, headers: dict | None = None) -> _FakeResp:  # noqa: A002
         raise requests.ConnectionError("('Connection aborted.', ConnectionResetError(54, ...))")
 
 
@@ -127,8 +129,9 @@ def test_require_fields_reaches_the_request_schema():
         def __init__(self):
             self.payload = None
 
-        def post(self, url, json, timeout):
+        def post(self, url, json, timeout, headers=None):
             self.payload = json
+            self.headers = headers
             raise requests.RequestException("stop here; the schema is what we assert on")
 
     for require, expected in ((False, False), (True, True)):
@@ -138,3 +141,28 @@ def test_require_fields_reaches_the_request_schema():
         )
         sent = session.payload["response_format"]["json_schema"]["schema"]
         assert bool(sent["required"]) is expected
+
+
+def test_no_auth_header_without_an_api_key():
+    """A llama-server on localhost needs none; don't send an empty Bearer."""
+    session = _FakeSession(json.dumps({"choices": [{"message": {"content": "{}"}}]}))
+    LlamaServerExtractor(session=session).extract(Circular(circular_id=1, subject="", body="b"))
+    assert not session.headers
+
+
+def test_api_key_is_sent_as_a_bearer_token():
+    session = _FakeSession(json.dumps({"choices": [{"message": {"content": "{}"}}]}))
+    LlamaServerExtractor(session=session, api_key="sekrit").extract(
+        Circular(circular_id=1, subject="", body="b")
+    )
+    assert session.headers == {"Authorization": "Bearer sekrit"}
+
+
+def test_api_key_is_not_part_of_the_cache_key():
+    """The same model and grammar give the same answer however you authenticate."""
+    plain = LlamaServerExtractor(session=object())
+    keyed = LlamaServerExtractor(session=object(), api_key="sekrit")
+    assert (plain.extractor_id, plain.prompt_version) == (
+        keyed.extractor_id,
+        keyed.prompt_version,
+    )
