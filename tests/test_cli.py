@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import typer.main
 from typer.testing import CliRunner
 
 from circex import __version__
@@ -32,9 +33,13 @@ def test_subcommands_are_registered() -> None:
 def test_label_scaffold_is_registered_and_documented() -> None:
     result = runner.invoke(app, ["label-scaffold", "--help"])
     assert result.exit_code == 0
+    # Assert on the declared parameters rather than the rendered help: Rich
+    # re-wraps help to the terminal width, so whether a given option name
+    # survives as a contiguous substring depends on where the wrap lands.
+    command = typer.main.get_command(app).commands["label-scaffold"]
+    names = {opt for param in command.params for opt in param.opts}
     # the two inputs a labeler drives it with
-    assert "--circulars" in result.stdout
-    assert "--extractor" in result.stdout
+    assert {"--circulars", "--extractor"} <= names
 
 
 def test_post_dry_run_from_file_regex() -> None:
