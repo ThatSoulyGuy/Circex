@@ -22,7 +22,7 @@ from typing import Any, TypedDict
 from circex.extract.protocol import Circular
 from circex.schema import CircularExtraction
 
-PROMPT_V1 = "2026-07-16"
+PROMPT_V1 = "2026-09-02"
 
 
 class Message(TypedDict):
@@ -94,6 +94,14 @@ method or the spectral feature; leave them null when it reports only a bare z.
 - Telescope/instrument: set `photometry[].telescope` and `.instrument` to the \
 name AS WRITTEN in the circular. Do NOT set `telescope_canonical` / \
 `instrument_canonical` — the runner fills those from an alias map.
+- RADIO/mm measurements report a flux density at a frequency, not a magnitude. \
+Set `photometry[].flux_density` (or `limiting_flux_density` for an N-sigma upper \
+limit), `flux_density_error`, `flux_density_unit` (uJy/mJy/Jy) and \
+`frequency_ghz`, and leave `mag`, `mag_error` and `filter` null. Put the sigma \
+level of a limit in `limiting_mag_sigma`. Report the value AS WRITTEN — do not \
+convert between units. When one sentence gives several flux densities and \
+several frequencies ("... of 170 +/- 30 and 150 +/- 20 microJy at 5.5 and 9 GHz, \
+respectively"), emit one row per pair, in the order written.
 - The reporter is the *alerting party*, NOT the photometry telescope. Most \
 optical observation circulars do not need to populate reporter.
 - DO NOT populate `extraction_meta` other than `notes` (see below).
@@ -343,7 +351,21 @@ _LEAN_DEF_FIELDS: dict[str, frozenset[str]] = {
     "Redshift": frozenset({"redshift", "redshift_error", "redshift_measure", "redshift_type"}),
     "Classification": frozenset({"classification"}),
     "PhotometryExt": frozenset(
-        {"filter", "mag", "mag_error", "mag_system", "limiting_mag", "obs_mjd", "telescope"}
+        {
+            "filter",
+            "mag",
+            "mag_error",
+            "mag_system",
+            "limiting_mag",
+            "limiting_mag_sigma",
+            "obs_mjd",
+            "telescope",
+            "flux_density",
+            "flux_density_error",
+            "limiting_flux_density",
+            "flux_density_unit",
+            "frequency_ghz",
+        }
     ),
     "TimeOffset": frozenset({"value", "unit", "reference"}),
 }
