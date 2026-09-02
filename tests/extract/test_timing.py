@@ -14,6 +14,7 @@ from circex.extract.timing import (
     epoch_from_offset,
     normalize_pair,
     parse_observation_epoch,
+    resolve_observation_epoch,
     resolve_relative_epochs,
 )
 from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt, TimeOffset
@@ -321,3 +322,26 @@ def test_kilosecond_offsets(text: str, seconds: float) -> None:
     """Swift and UVOT quote offsets in ks; the schema's units stop at seconds."""
     offsets = parse_time_offsets(text)
     assert [(o.value, o.unit) for o in offsets] == [(seconds, "s")]
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_mjd"),
+    [
+        # A decimal day carries the time: Aug 18.85 is the 18th at 20:24 UT.
+        ("We observed on 2017 Aug 18.85 UT.", 57983.85),
+        ("Observations began on 2017 August 18.99 UT.", 57983.99),
+        ("We observed the field on 2017-08-18.85 UT.", 57983.85),
+        ("We observed on 2017 Aug 20.424 UT.", 57985.424),
+        # An explicit clock time still wins, and a whole day stays whole.
+        ("We observed on 2017 Aug 18 at 20:24 UT.", 57983.85),
+        ("We observed on 2017 Aug 18 UT.", 57983.0),
+    ],
+)
+def test_fractional_day_epoch(text: str, expected_mjd: float) -> None:
+    extraction = CircularExtraction(
+        circular_id=1,
+        photometry=[PhotometryExt(filter="r", mag=20.0)],
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    resolve_observation_epoch(extraction, text)
+    assert extraction.photometry[0].obs_mjd == pytest.approx(expected_mjd, abs=1e-3)

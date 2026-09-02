@@ -63,11 +63,28 @@ def epoch_from_absolute(token: str | None) -> tuple[float, str] | None:
             return _to_pair(val)
         return None  # a number outside MJD range isn't a date we trust
     # Calendar date/time.
+    token, day_fraction = _split_fractional_day(token)
     try:
         dt = date_parser.parse(token)
     except (ValueError, OverflowError):
         return None
+    if day_fraction:
+        return _to_pair(float(Time(dt.replace(tzinfo=UTC)).mjd) + day_fraction)
     return _to_pair(dt)
+
+
+def _split_fractional_day(token: str) -> tuple[str, float]:
+    """Separate a decimal day from its date: "Aug 18.85" is the 18th at 20:24 UT.
+
+    A token carrying a clock time already states it, so it is left alone.
+    """
+    if ":" in token:
+        return token, 0.0
+    match = re.search(r"\b(\d{1,2})\.(\d+)\b", token)
+    if match is None:
+        return token, 0.0
+    cleaned = token[: match.start()] + match.group(1) + token[match.end() :]
+    return cleaned, float("0." + match.group(2))
 
 
 def normalize_pair(obs_mjd: float | None, obs_time: str | None) -> tuple[float, str] | None:
@@ -100,11 +117,14 @@ _MONTH = (
 # "2023-03-12", "2017 August 18", "2017-Aug-19", "20 August 2017",
 # "August 18 2017", "August 18th 2017".
 _ORDINAL = r"(?:st|nd|rd|th)?"
+# Astronomical dates carry the time as a decimal day ("2017 Aug 18.85 UT"), so
+# the day-of-month may be fractional wherever it appears.
+_DAY = r"\d{1,2}(?:\.\d+)?"
 _DATE = (
-    r"(?:\d{4}[-.]\d{2}[-.]\d{2}"
-    rf"|\d{{4}}[-.\s]+{_MONTH}[-.\s]+\d{{1,2}}{_ORDINAL}"
-    rf"|\d{{1,2}}{_ORDINAL}[-.\s]+{_MONTH}[-.\s]+\d{{4}}"
-    rf"|{_MONTH}\s+\d{{1,2}}{_ORDINAL}[,\s]+\d{{4}})"
+    rf"(?:\d{{4}}[-.]\d{{2}}[-.]\d{{2}}(?:\.\d+)?"
+    rf"|\d{{4}}[-.\s]+{_MONTH}[-.\s]+{_DAY}{_ORDINAL}"
+    rf"|{_DAY}{_ORDINAL}[-.\s]+{_MONTH}[-.\s]+\d{{4}}"
+    rf"|{_MONTH}\s+{_DAY}{_ORDINAL}[,\s]+\d{{4}})"
 )
 # Radio circulars separate date from time with "_" or " at " as often as a space.
 _TIME = r"(?:(?:[ T_]|\s+at\s+)\d{1,2}:\d{2}(?::\d{2}(?:\.\d+)?)?)?"

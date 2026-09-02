@@ -107,6 +107,9 @@ _BANDPASS_CROSSWALK: Final[dict[str, str]] = {
     "V": "bessellv",
     "R": "bessellr",
     "I": "besselli",
+    # Cousins R/I, as the circulars write them.
+    "Rc": "bessellr",
+    "Ic": "besselli",
     # 2MASS / NIR (Vega)
     "J": "2massj",
     "H": "2massh",
