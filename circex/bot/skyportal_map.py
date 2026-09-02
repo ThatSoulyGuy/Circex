@@ -16,6 +16,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
+import structlog
+
 from circex.extract.regex.mag_table import (
     infer_bandpass,
     infer_mag_system,
@@ -25,6 +27,8 @@ from circex.schema import CircularExtraction, PhotometryExt
 
 # mag_system (our enum) -> SkyPortal magsys (lowercase). STMag has no direct
 # SkyPortal equivalent; map to the closest and flag it in a comment upstream.
+log = structlog.get_logger(__name__)
+
 _MAGSYS = {"AB": "ab", "Vega": "vega", "STMag": "ab"}
 
 
@@ -224,6 +228,24 @@ def _row_to_point(
     mapped = instrument_map.get(row.telescope_canonical) if row.telescope_canonical else None
     instrument_id = mapped if mapped is not None else default_instrument_id
     if obj_id is None or row.obs_mjd is None or band is None or instrument_id is None:
+        # Name the reason: a filter with no bandpass is a crosswalk gap and the
+        # row is lost silently otherwise, which reads as a thin light curve
+        # rather than as missing data.
+        log.info(
+            "photometry_row_dropped",
+            circular_id=extraction.circular_id,
+            reason=(
+                "no bandpass"
+                if band is None
+                else "no obs_mjd"
+                if row.obs_mjd is None
+                else "no obj_id"
+                if obj_id is None
+                else "no instrument_id"
+            ),
+            filter=row.filter,
+            telescope=row.telescope,
+        )
         return None
 
     # SkyPortal's photometry endpoint REQUIRES a non-null limiting_mag for
