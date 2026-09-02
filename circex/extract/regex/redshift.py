@@ -77,7 +77,10 @@ def _classify_measure(context: str, at: int | None = None) -> RedshiftMeasure | 
         return "spectroscopic"
     if at is None:
         return "spectroscopic"
-    distance = lambda m: min(abs(m.start() - at), abs(m.end() - at))  # noqa: E731
+
+    def distance(m: re.Match[str]) -> int:
+        return min(abs(m.start() - at), abs(m.end() - at))
+
     return "spectroscopic" if distance(spec) <= distance(photo) else "photometric"
 
 
