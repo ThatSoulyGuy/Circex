@@ -81,8 +81,7 @@ class SNTypeClassifier:
             denom = total_tokens[c] + alpha * v
             default_log_prob[c] = math.log(alpha / denom)
             feature_log_prob[c] = {
-                tok: math.log((count + alpha) / denom)
-                for tok, count in token_counts[c].items()
+                tok: math.log((count + alpha) / denom) for tok, count in token_counts[c].items()
             }
         return cls(classes, class_log_prior, feature_log_prob, default_log_prob)
 

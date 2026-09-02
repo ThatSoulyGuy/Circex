@@ -18,8 +18,7 @@ class Localization(BaseModel):
     dec: float | None = Field(
         default=None,
         description=(
-            "ICRS declination [deg], utilizes the J2000 epoch and an equatorial "
-            "coordinate system."
+            "ICRS declination [deg], utilizes the J2000 epoch and an equatorial coordinate system."
         ),
     )
     ra_dec_error: float | list[float] | None = Field(
@@ -40,12 +39,8 @@ class Localization(BaseModel):
             "True when systematic error is included in ra_dec_error, false when it is not."
         ),
     )
-    instrument_phi: float | None = Field(
-        default=None, description="Instrument phi [deg]."
-    )
-    instrument_theta: float | None = Field(
-        default=None, description="Instrument theta [deg]."
-    )
+    instrument_phi: float | None = Field(default=None, description="Instrument phi [deg].")
+    instrument_theta: float | None = Field(default=None, description="Instrument theta [deg].")
     instrument_semimajor_angle: float | None = Field(
         default=None,
         description="Position angle of semi-major axis in instrument coordinates [deg].",

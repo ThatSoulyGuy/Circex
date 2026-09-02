@@ -64,8 +64,7 @@ class CircularExtraction(BaseModel):
     photometry: list[PhotometryExt] = Field(
         default_factory=list,
         description=(
-            "One PhotometryExt per (filter, epoch) row. Multi-epoch tables become "
-            "multiple rows."
+            "One PhotometryExt per (filter, epoch) row. Multi-epoch tables become multiple rows."
         ),
     )
     spectroscopy: SpectralLines | None = Field(

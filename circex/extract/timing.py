@@ -70,9 +70,7 @@ def epoch_from_absolute(token: str | None) -> tuple[float, str] | None:
     return _to_pair(dt)
 
 
-def normalize_pair(
-    obs_mjd: float | None, obs_time: str | None
-) -> tuple[float, str] | None:
+def normalize_pair(obs_mjd: float | None, obs_time: str | None) -> tuple[float, str] | None:
     """Given whichever of (obs_mjd, obs_time) is set, return both. None if neither.
 
     obs_mjd wins when both are present (numeric, unambiguous). Used to backfill
@@ -84,9 +82,7 @@ def normalize_pair(
     return epoch_from_absolute(obs_time)
 
 
-def epoch_from_offset(
-    trigger_time: datetime, value: float, unit: str
-) -> tuple[float, str] | None:
+def epoch_from_offset(trigger_time: datetime, value: float, unit: str) -> tuple[float, str] | None:
     """Resolve T0 + offset into (obs_mjd, obs_time). None if the unit is unknown."""
     seconds = _UNIT_SECONDS.get(unit)
     if seconds is None:
@@ -164,9 +160,7 @@ def resolve_observation_epoch(extraction: CircularExtraction, body: str) -> None
     )
 
 
-def resolve_relative_epochs(
-    extraction: CircularExtraction, trigger_time: datetime | None
-) -> None:
+def resolve_relative_epochs(extraction: CircularExtraction, trigger_time: datetime | None) -> None:
     """Fill obs_mjd/obs_time on rows that lack an epoch, in place.
 
     Conservative single-epoch rule: only applied when the circular has exactly

@@ -92,6 +92,33 @@ class PhotometryExt(BaseModel):
         ),
     )
 
+    # ---- X-ray/gamma-ray: energy flux over a stated band ----
+    energy_flux: float | None = Field(
+        default=None,
+        description=(
+            "Band-integrated energy flux in erg cm^-2 s^-1, for X-ray and "
+            "gamma-ray rows. Distinct from a fluence (erg cm^-2) and from a "
+            "luminosity (erg s^-1), neither of which is photometry."
+        ),
+    )
+    energy_flux_error: float | None = Field(
+        default=None,
+        description="1-sigma uncertainty on energy_flux, erg cm^-2 s^-1.",
+    )
+    limiting_energy_flux: float | None = Field(
+        default=None,
+        description=(
+            "Upper limit on the energy flux, erg cm^-2 s^-1, at `limiting_mag_sigma` sigma."
+        ),
+    )
+    energy_band_kev: list[float] | None = Field(
+        default=None,
+        description=(
+            "Energy band the flux is integrated over, [low, high] in keV. What "
+            "identifies the band for X-ray rows, where `filter` is meaningless."
+        ),
+    )
+
     # ---- per-row observation epoch (ICARE P0 #2) ----
     obs_mjd: float | None = Field(
         default=None,
@@ -166,9 +193,17 @@ class PhotometryExt(BaseModel):
     def _infer_is_detection(self) -> PhotometryExt:
         """Auto-set is_detection when the caller leaves it null."""
         if self.is_detection is None:
-            if self.mag is not None or self.flux_density is not None:
+            if (
+                self.mag is not None
+                or self.flux_density is not None
+                or self.energy_flux is not None
+            ):
                 self.is_detection = True
-            elif self.limiting_mag is not None or self.limiting_flux_density is not None:
+            elif (
+                self.limiting_mag is not None
+                or self.limiting_flux_density is not None
+                or self.limiting_energy_flux is not None
+            ):
                 self.is_detection = False
         return self
 

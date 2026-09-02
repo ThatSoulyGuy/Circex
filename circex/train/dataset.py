@@ -111,9 +111,10 @@ def write_jsonl(
     train_path = out_dir / "train.jsonl"
     val_path = out_dir / "val.jsonl"
     n_train = n_val = 0
-    with train_path.open("w", encoding="utf-8") as train_f, val_path.open(
-        "w", encoding="utf-8"
-    ) as val_f:
+    with (
+        train_path.open("w", encoding="utf-8") as train_f,
+        val_path.open("w", encoding="utf-8") as val_f,
+    ):
         for i, example in enumerate(examples):
             line = json.dumps(example, ensure_ascii=False) + "\n"
             if val_every > 0 and i % val_every == 0:

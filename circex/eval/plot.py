@@ -38,8 +38,7 @@ def _require_matplotlib() -> object:
         import matplotlib
     except ImportError as exc:
         raise ImportError(
-            "matplotlib is required for `circex eval --plot`. "
-            "Install with: pip install matplotlib"
+            "matplotlib is required for `circex eval --plot`. Install with: pip install matplotlib"
         ) from exc
     matplotlib.use("Agg")  # non-interactive backend; safe on CI/headless
     return matplotlib
@@ -52,9 +51,7 @@ def _f1_or_none(report: ExtractorReport, field: str) -> float | None:
     return m.f1
 
 
-def _fields_with_data(
-    reports: list[ExtractorReport], candidate_fields: list[str]
-) -> list[str]:
+def _fields_with_data(reports: list[ExtractorReport], candidate_fields: list[str]) -> list[str]:
     """Drop fields where every extractor reports None F1 (no gold support)."""
     keep: list[str] = []
     for f in candidate_fields:
@@ -91,7 +88,9 @@ def plot_eval(
 
     # ── Top panel: grouped F1 bars ─────────────────────────────────────────
     fig, (ax_top, ax_bot) = plt.subplots(
-        2, 1, figsize=(max(10, n_fields * 1.2), 9),
+        2,
+        1,
+        figsize=(max(10, n_fields * 1.2), 9),
         gridspec_kw={"height_ratios": [3, 2], "hspace": 0.45},
         constrained_layout=True,
     )
@@ -124,14 +123,19 @@ def plot_eval(
                     bar.get_x() + bar.get_width() / 2,
                     NO_DATA_HEIGHT + 0.015,
                     "n/a",
-                    ha="center", va="bottom", fontsize=7, color="gray",
+                    ha="center",
+                    va="bottom",
+                    fontsize=7,
+                    color="gray",
                 )
                 continue
             ax_top.text(
                 bar.get_x() + bar.get_width() / 2,
                 score + 0.015,
                 f"{score:.2f}",
-                ha="center", va="bottom", fontsize=8,
+                ha="center",
+                va="bottom",
+                fontsize=8,
             )
 
     ax_top.set_xticks(x + bar_width * (n_extractors - 1) / 2)
@@ -150,9 +154,13 @@ def plot_eval(
     baseline_report = next((r for r in reports if r.extractor_id == baseline_id), None)
     if baseline_report is None:
         ax_bot.text(
-            0.5, 0.5,
+            0.5,
+            0.5,
             f"(no Δ panel — baseline {baseline_id!r} not in results)",
-            ha="center", va="center", transform=ax_bot.transAxes, fontsize=10,
+            ha="center",
+            va="center",
+            transform=ax_bot.transAxes,
+            fontsize=10,
             color="gray",
         )
         ax_bot.set_axis_off()
@@ -160,8 +168,13 @@ def plot_eval(
         others = [r for r in reports if r.extractor_id != baseline_id]
         if not others:
             ax_bot.text(
-                0.5, 0.5, "(no Δ panel — only baseline run)",
-                ha="center", va="center", transform=ax_bot.transAxes, fontsize=10,
+                0.5,
+                0.5,
+                "(no Δ panel — only baseline run)",
+                ha="center",
+                va="center",
+                transform=ax_bot.transAxes,
+                fontsize=10,
                 color="gray",
             )
             ax_bot.set_axis_off()
@@ -196,7 +209,9 @@ def plot_eval(
                         bar.get_x() + bar.get_width() / 2,
                         y_text,
                         f"{sign}{delta:.2f}",
-                        ha="center", va=va, fontsize=8,
+                        ha="center",
+                        va=va,
+                        fontsize=8,
                     )
 
             ax_bot.axhline(0, color="black", linewidth=0.8)

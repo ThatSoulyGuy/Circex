@@ -22,9 +22,7 @@ from circex.config import get_settings
 
 log = structlog.get_logger(__name__)
 
-DEFAULT_TARBALL = Path(
-    "references/circulars-nlp-paper/data/archive_2025.json.tar.gz"
-)
+DEFAULT_TARBALL = Path("references/circulars-nlp-paper/data/archive_2025.json.tar.gz")
 ARCHIVE_DIRNAME = "archive_2025"
 SENTINEL_FILENAME = ".circex_archive_extracted"
 

@@ -86,8 +86,11 @@ class SkyPortalPoster:
             url = self.base_url.rstrip("/") + req["path"]
             try:
                 resp = requests.request(
-                    req["method"], url, headers=headers,
-                    data=json.dumps(req["payload"]), timeout=self.timeout,
+                    req["method"],
+                    url,
+                    headers=headers,
+                    data=json.dumps(req["payload"]),
+                    timeout=self.timeout,
                 )
                 resp.raise_for_status()
                 # SkyPortal also signals failure as HTTP 200 with status="error".
@@ -101,12 +104,16 @@ class SkyPortalPoster:
                 # must not kill the stream.
                 log.warning(
                     "skyportal_post_failed",
-                    method=req["method"], path=req["path"], error=str(exc)[:200],
+                    method=req["method"],
+                    path=req["path"],
+                    error=str(exc)[:200],
                 )
                 continue
             log.info(
                 "skyportal_posted",
-                method=req["method"], path=req["path"], status=resp.status_code,
+                method=req["method"],
+                path=req["path"],
+                status=resp.status_code,
             )
 
 

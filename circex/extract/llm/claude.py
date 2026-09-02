@@ -236,6 +236,4 @@ class ClaudeExtractor(Extractor):
                 tool_input = _attr_or_key(block, "input")
                 if isinstance(tool_input, dict):
                     return tool_input
-        raise ValueError(
-            "Claude response did not contain a submit_extraction tool_use block"
-        )
+        raise ValueError("Claude response did not contain a submit_extraction tool_use block")

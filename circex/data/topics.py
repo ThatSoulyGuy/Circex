@@ -19,8 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 DEFAULT_TOPICS_CSV = Path(
-    "references/circulars-nlp-paper/tables/topic-modeling-tables/"
-    "observation_based_topics.csv"
+    "references/circulars-nlp-paper/tables/topic-modeling-tables/observation_based_topics.csv"
 )
 
 OPTICAL_LABEL = "Optical Observations"
@@ -49,8 +48,7 @@ def load_topic_labels(path: Path = DEFAULT_TOPICS_CSV) -> Iterator[TopicLabel]:
     """Stream TopicLabel records from the CSV, skipping malformed rows."""
     if not path.exists():
         raise FileNotFoundError(
-            f"Topics CSV not found at {path}. Clone nasa-gcn/circulars-nlp-paper into "
-            f"references/."
+            f"Topics CSV not found at {path}. Clone nasa-gcn/circulars-nlp-paper into references/."
         )
     with path.open("r", encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
@@ -69,7 +67,5 @@ def load_topic_labels(path: Path = DEFAULT_TOPICS_CSV) -> Iterator[TopicLabel]:
 def load_optical_ids(path: Path = DEFAULT_TOPICS_CSV) -> list[int]:
     """Return the sorted list of circular IDs labeled 'Optical Observations'."""
     return sorted(
-        record.circular_id
-        for record in load_topic_labels(path)
-        if record.label == OPTICAL_LABEL
+        record.circular_id for record in load_topic_labels(path) if record.label == OPTICAL_LABEL
     )

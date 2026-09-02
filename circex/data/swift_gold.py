@@ -58,9 +58,17 @@ def _to_float(s: str) -> float | None:
         return None
 
 
-_NULL_SENTINELS: frozenset[str] = frozenset({
-    "nan", "none", "null", "no information", "n/a", "na", "-",
-})
+_NULL_SENTINELS: frozenset[str] = frozenset(
+    {
+        "nan",
+        "none",
+        "null",
+        "no information",
+        "n/a",
+        "na",
+        "-",
+    }
+)
 
 
 def _to_str(s: str) -> str | None:

@@ -34,6 +34,7 @@ from circex.extract.regex.regex_events import (
     extract_gcn_xrefs_with_positions,
     extract_matches_with_positions,
 )
+from circex.extract.regex.xray import parse_xray_with_spans
 from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
 from circex.schema import (
     CircularExtraction,
@@ -150,9 +151,9 @@ class RegexExtractor(Extractor):
             or parse_mag_table_with_spans(body)
             or parse_single_mags_with_spans(body)
         )
-        # Radio rows are additive: they use flux density rather than magnitude, so
-        # they never compete with the magnitude parsers above.
-        photo_hits = list(photo_hits) + parse_radio_with_spans(body)
+        # Radio and X-ray rows are additive: they carry a flux density and an
+        # energy flux, so neither competes with the magnitude parsers above.
+        photo_hits = list(photo_hits) + parse_radio_with_spans(body) + parse_xray_with_spans(body)
         photometry = [row for row, _ in photo_hits]
         for idx, (_, span) in enumerate(photo_hits):
             provenance[f"photometry[{idx}]"] = span

@@ -66,8 +66,7 @@ def extract_properties(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]
 
     if extractor is None:
         raise ValueError(
-            "no default extractor configured and circular "
-            f"{circular_id} is not in the store"
+            f"no default extractor configured and circular {circular_id} is not in the store"
         )
 
     # Fetch raw circular body and extract.
@@ -184,9 +183,7 @@ def get_classification(ctx: ToolContext, args: dict[str, Any]) -> dict[str, Any]
     extractor_id = getattr(ctx.default_extractor, "extractor_id", None)
     for ex in ctx.store.find_by_event(event, extractor_id=extractor_id):
         if ex.classification is not None:
-            payload: dict[str, Any] = ex.classification.model_dump(
-                mode="json", exclude_none=True
-            )
+            payload: dict[str, Any] = ex.classification.model_dump(mode="json", exclude_none=True)
             return payload
     return None
 
@@ -270,6 +267,7 @@ def search_gcn_circulars(ctx: ToolContext, args: dict[str, Any]) -> list[dict[st
         raise ValueError("search requires ctx.db_path to point to a circulars FTS database")
 
     from circex.search import search_circulars
+
     return list(
         search_circulars(
             db_path=ctx.db_path,

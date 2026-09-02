@@ -15,8 +15,7 @@ class ExtractionMeta(BaseModel):
 
     extractor: str = Field(
         description=(
-            "Extractor identifier "
-            "(e.g., 'regex-v1', 'claude-haiku-4-5', 'ollama-mistral-7b')."
+            "Extractor identifier (e.g., 'regex-v1', 'claude-haiku-4-5', 'ollama-mistral-7b')."
         ),
     )
     model_id: str | None = Field(
@@ -27,27 +26,21 @@ class ExtractionMeta(BaseModel):
         default=None,
         description="Prompt version string (e.g., 'PROMPT_V1'). None for regex extractor.",
     )
-    tokens_in: int | None = Field(
-        default=None, description="Prompt tokens billed."
-    )
-    tokens_out: int | None = Field(
-        default=None, description="Completion tokens billed."
-    )
+    tokens_in: int | None = Field(default=None, description="Prompt tokens billed.")
+    tokens_out: int | None = Field(default=None, description="Completion tokens billed.")
     latency_ms: float | None = Field(
         default=None, description="Wall-clock latency for this extraction [ms]."
     )
     cost_usd: float | None = Field(
         default=None, description="Computed cost for this extraction [USD]."
     )
-    cache_hit: bool = Field(
-        default=False, description="True if served from the local LLM cache."
-    )
+    cache_hit: bool = Field(default=False, description="True if served from the local LLM cache.")
     notes: list[str] = Field(
         default_factory=list,
         description=(
             "Free-form annotations from the extractor. Used for facts the "
             "current schema cannot represent — most importantly bound redshifts "
-            "(e.g. \"z <= 1.61\") that the v1 Redshift model cannot encode. "
+            '(e.g. "z <= 1.61") that the v1 Redshift model cannot encode. '
             "Convention: when a bound is found, set redshift to None and append "
             "the original phrasing here; downstream consumers should display "
             "these as comments rather than treating them as structured values."

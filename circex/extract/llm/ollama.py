@@ -36,9 +36,7 @@ log = structlog.get_logger(__name__)
 # The bare `mistral:7b-instruct-v0.2` is not a pullable tag in the Ollama
 # registry; the v0.2 variants are all quantizations. Q4_K_M is the standard
 # balanced choice (~4 GB, near-FP16 quality). Override with CIRCEX_OLLAMA_MODEL.
-DEFAULT_OLLAMA_MODEL = os.environ.get(
-    "CIRCEX_OLLAMA_MODEL", "mistral:7b-instruct-v0.2-q4_K_M"
-)
+DEFAULT_OLLAMA_MODEL = os.environ.get("CIRCEX_OLLAMA_MODEL", "mistral:7b-instruct-v0.2-q4_K_M")
 
 
 class OllamaExtractor(Extractor):
@@ -170,9 +168,7 @@ class OllamaExtractor(Extractor):
             *build_messages(circular),
         ]
 
-        first = self._client.chat(
-            model=self._model_id, messages=messages, format="json"
-        )
+        first = self._client.chat(model=self._model_id, messages=messages, format="json")
         first_content = first["message"]["content"]
         try:
             return self._parse_validate(first_content, circular.body)
@@ -191,9 +187,7 @@ class OllamaExtractor(Extractor):
                 ),
             }
         )
-        second = self._client.chat(
-            model=self._model_id, messages=messages, format="json"
-        )
+        second = self._client.chat(model=self._model_id, messages=messages, format="json")
         return self._parse_validate(second["message"]["content"], circular.body)
 
     def _parse_validate(self, content: str, body: str) -> dict[str, Any]:

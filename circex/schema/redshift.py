@@ -20,8 +20,7 @@ class Redshift(BaseModel):
     redshift_error: float | list[float] | None = Field(
         default=None,
         description=(
-            "Statistical error in redshift. Number for symmetric, 2-element array for "
-            "asymmetric."
+            "Statistical error in redshift. Number for symmetric, 2-element array for asymmetric."
         ),
     )
     redshift_measure: RedshiftMeasure | None = Field(

@@ -87,9 +87,7 @@ async def serve(
     )
     log.info("worker_starting", host=host, port=port, store=str(store_path))
 
-    async def handler(
-        reader: asyncio.StreamReader, writer: asyncio.StreamWriter
-    ) -> None:
+    async def handler(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         await _handle_client(reader, writer, ctx)
 
     server = await asyncio.start_server(handler, host=host, port=port)

@@ -91,9 +91,7 @@ class ExtractionStore:
         for col in ("ra", "dec"):
             if col not in cols:
                 self._conn.execute(f"ALTER TABLE extractions ADD COLUMN {col} REAL")
-        self._conn.execute(
-            "CREATE INDEX IF NOT EXISTS idx_extractions_dec ON extractions(dec)"
-        )
+        self._conn.execute("CREATE INDEX IF NOT EXISTS idx_extractions_dec ON extractions(dec)")
         self._conn.commit()
 
     def close(self) -> None:

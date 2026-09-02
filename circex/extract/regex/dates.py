@@ -40,10 +40,22 @@ _POST_TRIGGER_RE = re.compile(
 )
 
 _UNIT_MAP: dict[str, TimeOffsetUnit] = {
-    "s": "s", "sec": "s", "secs": "s", "second": "s", "seconds": "s",
-    "m": "m", "min": "m", "mins": "m", "minute": "m", "minutes": "m",
-    "h": "h", "hour": "h", "hours": "h",
-    "d": "d", "day": "d", "days": "d",
+    "s": "s",
+    "sec": "s",
+    "secs": "s",
+    "second": "s",
+    "seconds": "s",
+    "m": "m",
+    "min": "m",
+    "mins": "m",
+    "minute": "m",
+    "minutes": "m",
+    "h": "h",
+    "hour": "h",
+    "hours": "h",
+    "d": "d",
+    "day": "d",
+    "days": "d",
 }
 
 
@@ -71,18 +83,22 @@ def parse_time_offsets_with_spans(text: str) -> list[tuple[TimeOffset, Span]]:
             reference = "T-"
         else:
             reference = "T+"
-        out.append((
-            TimeOffset(value=value, unit=unit, reference=reference),
-            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
-        ))
+        out.append(
+            (
+                TimeOffset(value=value, unit=unit, reference=reference),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
 
     for match in _POST_TRIGGER_RE.finditer(text):
         unit = _normalize_unit(match.group("unit"))
         if unit is None:
             continue
-        out.append((
-            TimeOffset(value=float(match.group("value")), unit=unit, reference="trigger"),
-            Span(start=match.start(), end=match.end(), snippet=match.group(0)),
-        ))
+        out.append(
+            (
+                TimeOffset(value=float(match.group("value")), unit=unit, reference="trigger"),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
 
     return out

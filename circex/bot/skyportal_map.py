@@ -253,6 +253,8 @@ def _effective_band(row: PhotometryExt) -> tuple[str | None, str]:
     Mistral tagging Cousins "Rc" as sdssr/ab when it is bessellr/vega). Falls
     back to the row's own bandpass/mag_system when the filter isn't recognized.
     """
+    if row.energy_band_kev is not None:
+        return row.bandpass, "ab"
     if row.frequency_ghz is not None:
         return (row.bandpass or bandpass_for_frequency(row.frequency_ghz)), "ab"
     base = normalize_filter(row.filter) if row.filter else None
@@ -281,6 +283,10 @@ def _row_to_point(
     band, magsys = _effective_band(row)
     mapped = instrument_map.get(row.telescope_canonical) if row.telescope_canonical else None
     instrument_id = mapped if mapped is not None else default_instrument_id
+    if row.energy_band_kev is not None:
+        return _xray_row_to_point(
+            extraction, obj_id, idx, row, band, instrument_id, mapped is None, dropped
+        )
     if row.frequency_ghz is not None:
         return _radio_row_to_point(
             extraction, obj_id, idx, row, band, instrument_id, mapped is None, dropped
@@ -429,6 +435,113 @@ def _radio_row_to_point(
         altdata["flux_density_error_fraction"] = ASSUMED_FLUX_ERROR_FRACTION
     if row.limiting_flux_density is not None:
         altdata["limiting_flux_density_sigma"] = row.limiting_mag_sigma or 3.0
+    if instrument_fallback:
+        altdata["instrument_fallback"] = True
+        if row.telescope:
+            altdata["telescope_as_written"] = row.telescope
+    return PhotometryPoint(
+        obj_id=obj_id,
+        mjd=row.obs_mjd,
+        filter=band,
+        magsys="ab",
+        instrument_id=instrument_id,
+        mag=None,
+        magerr=None,
+        limiting_mag=None,
+        flux=flux,
+        fluxerr=fluxerr,
+        zp=_UJY_AB_ZP,
+        altdata=altdata,
+    )
+
+
+# Planck's constant in keV s, for converting an energy band to a frequency width.
+_PLANCK_KEV_S = 4.135667696e-18
+# 1 microjansky in erg cm^-2 s^-1 Hz^-1.
+_UJY_CGS = 1.0e-29
+
+
+def energy_flux_to_ujy(flux: float, band_kev: list[float]) -> float | None:
+    """Band-integrated energy flux to a band-averaged flux density in microjansky.
+
+    Dividing by the width of the band in frequency assumes the spectrum is flat
+    across it, which is the usual convention for placing an X-ray point on a
+    broadband SED and is what makes the value comparable with the optical and
+    radio rows beside it.
+    """
+    if len(band_kev) != 2:
+        return None
+    lo, hi = band_kev
+    if not hi > lo > 0:
+        return None
+    delta_nu = (hi - lo) / _PLANCK_KEV_S
+    return flux / delta_nu / _UJY_CGS
+
+
+def _xray_row_to_point(
+    extraction: CircularExtraction,
+    obj_id: str | None,
+    idx: int,
+    row: PhotometryExt,
+    band: str | None,
+    instrument_id: int | None,
+    instrument_fallback: bool,
+    dropped: list[str],
+) -> PhotometryPoint | None:
+    """An X-ray row as a flux-space point, or None if unpostable."""
+
+    def drop(reason: str) -> PhotometryPoint | None:
+        log.info(
+            "photometry_row_dropped",
+            circular_id=extraction.circular_id,
+            reason=reason,
+            energy_band_kev=row.energy_band_kev,
+            telescope=row.telescope,
+        )
+        dropped.append(reason)
+        return None
+
+    if obj_id is None:
+        return drop("no obj_id")
+    if row.obs_mjd is None:
+        return drop("no obs_mjd")
+    if band is None:
+        return drop("no bandpass")
+    if instrument_id is None:
+        return drop("no instrument_id")
+    band_kev = row.energy_band_kev or []
+
+    flux: float | None = None
+    error_assumed = False
+    if row.energy_flux is not None:
+        flux = energy_flux_to_ujy(row.energy_flux, band_kev)
+        if flux is None:
+            return drop("unusable energy band")
+        if row.energy_flux_error is not None:
+            fluxerr = energy_flux_to_ujy(row.energy_flux_error, band_kev) or 0.0
+        else:
+            fluxerr = abs(flux) * ASSUMED_FLUX_ERROR_FRACTION
+            error_assumed = True
+    elif row.limiting_energy_flux is not None:
+        limit = energy_flux_to_ujy(row.limiting_energy_flux, band_kev)
+        if limit is None:
+            return drop("unusable energy band")
+        fluxerr = limit / (row.limiting_mag_sigma or 3.0)
+    else:
+        return drop("no energy flux")
+    if fluxerr <= 0:
+        return drop("no flux uncertainty")
+
+    altdata: dict[str, Any] = {"circex_circular_id": extraction.circular_id}
+    if (note := _provenance_note(extraction, f"photometry[{idx}]")) is not None:
+        altdata["note"] = note
+    altdata["energy_band_kev"] = band_kev
+    altdata["energy_flux_cgs"] = row.energy_flux or row.limiting_energy_flux
+    if row.limiting_energy_flux is not None:
+        altdata["limiting_energy_flux_sigma"] = row.limiting_mag_sigma or 3.0
+    if error_assumed:
+        altdata["flux_density_error_assumed"] = True
+        altdata["flux_density_error_fraction"] = ASSUMED_FLUX_ERROR_FRACTION
     if instrument_fallback:
         altdata["instrument_fallback"] = True
         if row.telescope:

@@ -113,10 +113,12 @@ def evaluate_extractor(
         cost_usd=telemetry["cost_usd"],
         tokens_in=int(telemetry["tokens_in"]),
         tokens_out=int(telemetry["tokens_out"]),
-        p50_latency_ms=None if telemetry["p50_latency_ms"] != telemetry["p50_latency_ms"]
-                       else telemetry["p50_latency_ms"],
-        p95_latency_ms=None if telemetry["p95_latency_ms"] != telemetry["p95_latency_ms"]
-                       else telemetry["p95_latency_ms"],
+        p50_latency_ms=None
+        if telemetry["p50_latency_ms"] != telemetry["p50_latency_ms"]
+        else telemetry["p50_latency_ms"],
+        p95_latency_ms=None
+        if telemetry["p95_latency_ms"] != telemetry["p95_latency_ms"]
+        else telemetry["p95_latency_ms"],
         comparisons=comparisons,
     )
 
