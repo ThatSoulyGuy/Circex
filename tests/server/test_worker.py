@@ -41,6 +41,25 @@ def populated_store(tmp_path: Path) -> Path:
     return path
 
 
+async def _connect_when_ready(
+    port: int, timeout: float = 10.0
+) -> tuple[asyncio.StreamReader, asyncio.StreamWriter]:
+    """Connect once the worker is listening.
+
+    A fixed sleep is a bet on how fast the event loop schedules the server, which
+    a loaded runner loses.
+    """
+    loop = asyncio.get_running_loop()
+    deadline = loop.time() + timeout
+    while True:
+        try:
+            return await asyncio.open_connection("127.0.0.1", port)
+        except (ConnectionRefusedError, OSError):
+            if loop.time() >= deadline:
+                raise
+            await asyncio.sleep(0.05)
+
+
 @pytest.mark.asyncio
 async def test_worker_round_trip(populated_store: Path) -> None:
     port = _free_port()
@@ -48,11 +67,8 @@ async def test_worker_round_trip(populated_store: Path) -> None:
     server_task = asyncio.create_task(
         serve(store_path=populated_store, host="127.0.0.1", port=port)
     )
-    # Give the server a moment to bind.
-    await asyncio.sleep(0.2)
-
     try:
-        reader, writer = await asyncio.open_connection("127.0.0.1", port)
+        reader, writer = await _connect_when_ready(port)
         request = {"tool": "get_redshift", "arguments": {"event": "GRB 240101A"}, "id": "r1"}
         writer.write((json.dumps(request) + "\n").encode("utf-8"))
         await writer.drain()
@@ -76,10 +92,8 @@ async def test_worker_returns_error_for_unknown_tool(populated_store: Path) -> N
     server_task = asyncio.create_task(
         serve(store_path=populated_store, host="127.0.0.1", port=port)
     )
-    await asyncio.sleep(0.2)
-
     try:
-        reader, writer = await asyncio.open_connection("127.0.0.1", port)
+        reader, writer = await _connect_when_ready(port)
         request = {"tool": "nonexistent_tool", "arguments": {}, "id": "r2"}
         writer.write((json.dumps(request) + "\n").encode("utf-8"))
         await writer.drain()
