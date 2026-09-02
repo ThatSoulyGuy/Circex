@@ -34,6 +34,21 @@ log = structlog.get_logger(__name__)
 _MAGSYS = {"AB": "ab", "Vega": "vega", "STMag": "ab"}
 
 
+# A position whose stated uncertainty is coarser than this describes a region,
+# not a transient. An IPN error-box centre is somewhere to put a localization,
+# never somewhere to put a source.
+MAX_SOURCE_POSITION_ERROR_DEG = 0.02
+
+
+def position_error_deg(extraction: CircularExtraction) -> float | None:
+    """Stated semi-major uncertainty on the position [deg], if the circular gives one."""
+    loc = extraction.localization
+    error = loc.ra_dec_error if loc is not None else None
+    if isinstance(error, list):
+        error = next((e for e in error if isinstance(e, int | float)), None)
+    return float(error) if isinstance(error, int | float) and error > 0 else None
+
+
 def _obj_id(extraction: CircularExtraction) -> str | None:
     """SkyPortal source id from the event name (spaces removed). None if unnamed.
 
@@ -177,7 +192,14 @@ def to_actions(
     # position (it lives in the discovery circular), so guard against emitting a
     # positionless source-create that SkyPortal would reject with a 400.
     source: SourceUpsert | None = None
-    if obj_id is not None and ra is not None and dec is not None:
+    error_deg = position_error_deg(extraction)
+    if error_deg is not None and error_deg > MAX_SOURCE_POSITION_ERROR_DEG:
+        # A region, not a counterpart; it still localizes the event.
+        comments.append(
+            f"Position is an error region ({error_deg:.3f} deg), not a counterpart; "
+            f"no source created."
+        )
+    elif obj_id is not None and ra is not None and dec is not None:
         source = SourceUpsert(id=obj_id, ra=ra, dec=dec, group_ids=group_ids)
     elif obj_id is not None:
         comments.append(

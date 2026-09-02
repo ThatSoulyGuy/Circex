@@ -53,8 +53,15 @@ def test_timed_photometry_becomes_a_point() -> None:
         circular_id=7,
         event=Event(event_name="AT2026xyz"),
         photometry=[
-            PhotometryExt(filter="r", bandpass="sdssr", mag=20.4, mag_error=0.05,
-                          mag_system="AB", obs_mjd=61199.0, telescope="NOT")
+            PhotometryExt(
+                filter="r",
+                bandpass="sdssr",
+                mag=20.4,
+                mag_error=0.05,
+                mag_system="AB",
+                obs_mjd=61199.0,
+                telescope="NOT",
+            )
         ],
         extraction_meta=_meta(),
     )
@@ -82,8 +89,11 @@ def test_non_detection_maps_to_limiting_mag() -> None:
     ex = CircularExtraction(
         circular_id=1,
         event=Event(event_name="AT2026xyz"),
-        photometry=[PhotometryExt(filter="r", bandpass="sdssr", limiting_mag=22.5,
-                                  mag_system="AB", obs_mjd=61199.0)],
+        photometry=[
+            PhotometryExt(
+                filter="r", bandpass="sdssr", limiting_mag=22.5, mag_system="AB", obs_mjd=61199.0
+            )
+        ],
         extraction_meta=_meta(),
     )
     p = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()
@@ -131,8 +141,11 @@ def _photometry_ex(telescope: str | None = None) -> CircularExtraction:
     return CircularExtraction(
         circular_id=1,
         event=Event(event_name="AT2026xyz"),
-        photometry=[PhotometryExt(filter="r", bandpass="sdssr", mag=20.4, obs_mjd=61199.0,
-                                  telescope=telescope)],
+        photometry=[
+            PhotometryExt(
+                filter="r", bandpass="sdssr", mag=20.4, obs_mjd=61199.0, telescope=telescope
+            )
+        ],
         extraction_meta=_meta(),
     )
 
@@ -156,8 +169,9 @@ def test_unmapped_telescope_uses_generic_default_and_flags_it() -> None:
 
 
 def test_mapped_telescope_uses_its_id_no_fallback_flag() -> None:
-    a = to_actions(_photometry_ex(telescope="VLT"), instrument_map={"VLT": 42},
-                   default_instrument_id=1)
+    a = to_actions(
+        _photometry_ex(telescope="VLT"), instrument_map={"VLT": 42}, default_instrument_id=1
+    )
     p = a.photometry[0].to_payload()
     assert p["instrument_id"] == 42
     assert "instrument_fallback" not in p["altdata"]
@@ -180,8 +194,9 @@ def test_dry_run_poster_sends_nothing_and_plans_in_order() -> None:
 
 
 def test_live_post_requires_token() -> None:
-    ex = CircularExtraction(circular_id=1, event=Event(event_name="AT2026xyz"),
-                            extraction_meta=_meta())
+    ex = CircularExtraction(
+        circular_id=1, event=Event(event_name="AT2026xyz"), extraction_meta=_meta()
+    )
     # live=True but no token -> still dry-run (returns plan, sends nothing)
     plan = SkyPortalPoster(live=True, token=None).post(to_actions(ex))
     assert isinstance(plan, list)
@@ -195,8 +210,16 @@ def test_deterministic_band_overrides_llm_mislabel() -> None:
     ex = CircularExtraction(
         circular_id=1,
         event=Event(event_name="AT2026xyz"),
-        photometry=[PhotometryExt(filter="Rc", bandpass="sdssr", mag_system="AB",
-                                  mag=23.08, mag_error=0.18, obs_mjd=61199.83)],
+        photometry=[
+            PhotometryExt(
+                filter="Rc",
+                bandpass="sdssr",
+                mag_system="AB",
+                mag=23.08,
+                mag_error=0.18,
+                obs_mjd=61199.83,
+            )
+        ],
         extraction_meta=_meta(),
     )
     p = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()
@@ -208,8 +231,11 @@ def test_unrecognized_filter_falls_back_to_row_bandpass() -> None:
     ex = CircularExtraction(
         circular_id=1,
         event=Event(event_name="AT2026xyz"),
-        photometry=[PhotometryExt(filter="white", bandpass="ztfg", mag_system="AB",
-                                  mag=20.0, obs_mjd=61199.83)],
+        photometry=[
+            PhotometryExt(
+                filter="white", bandpass="ztfg", mag_system="AB", mag=20.0, obs_mjd=61199.83
+            )
+        ],
         extraction_meta=_meta(),
     )
     p = to_actions(ex, default_instrument_id=1).photometry[0].to_payload()
@@ -234,9 +260,7 @@ def test_detection_without_limit_backfills_limiting_mag() -> None:
         circular_id=44834,
         event=Event(event_name="GRB 260604C"),
         localization=Localization(ra=224.4566, dec=28.8175),
-        photometry=[
-            PhotometryExt(filter="g", mag=19.69, mag_error=0.04, obs_mjd=61200.15)
-        ],
+        photometry=[PhotometryExt(filter="g", mag=19.69, mag_error=0.04, obs_mjd=61200.15)],
         extraction_meta=_meta(),
     )
     a = to_actions(ex, default_instrument_id=4)
@@ -280,10 +304,38 @@ def test_poster_continue_on_error(monkeypatch) -> None:
     monkeypatch.setattr(requests, "request", lambda *a, **k: _Resp())
     actions = SkyPortalActions(
         source=SourceUpsert(id="X", ra=1.0, dec=2.0, group_ids=[1]),
-        photometry=[], redshift=None, comments=[], skipped_rows=0,
+        photometry=[],
+        redshift=None,
+        comments=[],
+        skipped_rows=0,
     )
     # tolerant: logs and continues, no raise
     SkyPortalPoster(token="t", live=True, continue_on_error=True).post(actions)
     # strict (default): propagates
     with pytest.raises(requests.HTTPError):
         SkyPortalPoster(token="t", live=True).post(actions)
+
+
+def test_an_error_region_localizes_the_event_but_makes_no_source():
+    """An IPN error-box centre is not a transient; writing one would invent a source."""
+    ex = CircularExtraction(
+        circular_id=21517,
+        event=Event(event_name="GRB 170816A"),
+        localization=Localization(ra=350.841, dec=12.853, ra_dec_error=[1.225, 0.158]),
+        extraction_meta=_meta(),
+    )
+    actions = to_actions(ex, default_instrument_id=4)
+    assert actions.source is None
+    assert any("error region" in c for c in actions.comments)
+
+
+def test_a_counterpart_position_still_makes_a_source():
+    ex = CircularExtraction(
+        circular_id=1,
+        event=Event(event_name="GRB 230307A"),
+        localization=Localization(ra=45.12, dec=-75.38, ra_dec_error=0.0003),
+        extraction_meta=_meta(),
+    )
+    actions = to_actions(ex, default_instrument_id=4)
+    assert actions.source is not None
+    assert actions.source.ra == 45.12

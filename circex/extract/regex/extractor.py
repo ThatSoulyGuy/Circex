@@ -12,7 +12,10 @@ from typing import TYPE_CHECKING, Final
 
 from circex.extract.protocol import Circular, Extractor
 from circex.extract.regex.classification import parse_classification_with_span
-from circex.extract.regex.coords import parse_coords_with_span
+from circex.extract.regex.coords import (
+    parse_coords_with_span,
+    parse_ipn_error_box_with_span,
+)
 from circex.extract.regex.dates import parse_time_offsets_with_spans
 from circex.extract.regex.mag_table import (
     parse_fixed_width_table_with_spans,
@@ -111,6 +114,15 @@ class RegexExtractor(Extractor):
             (ra, dec), loc_span = coord_hit
             localization = Localization(ra=ra, dec=dec)
             provenance["localization"] = loc_span
+        if localization is None:
+            # IPN triangulation error box. A Konus/IPN-localized burst gets its
+            # only position here, and the stated box dimensions are the only
+            # uncertainty the circular gives.
+            ipn = parse_ipn_error_box_with_span(body)
+            if ipn is not None:
+                (ipn_ra, ipn_dec, extent), ipn_span = ipn
+                localization = Localization(ra=ipn_ra, dec=ipn_dec, ra_dec_error=extent)
+                provenance["localization"] = ipn_span
         if localization is None:
             # Single-candidate counterpart table (ZTF/GROWTH neutrino/GW template,
             # e.g. GCN 45198): decimal-degree position + the counterpart's own
