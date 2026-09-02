@@ -1,7 +1,7 @@
 {
   "$id": "https://gcn.nasa.gov/schema/main/gcn/notices/core/Photometry.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "title": "PhotometryExt",
   "description": "Magnitude-based UV/optical/NIR photometry for one source in one filter (one row).",
   "properties": {
@@ -100,6 +100,76 @@
       "default": null,
       "description": "Significance level [sigma] associated with limiting_mag (default 5).",
       "title": "Limiting Mag Sigma"
+    },
+    "flux_density": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Measured flux density in `flux_density_unit`, for radio/mm rows that report a flux rather than a magnitude. May be negative for a marginal measurement; null for a non-detection.",
+      "title": "Flux Density"
+    },
+    "flux_density_error": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "1-sigma statistical uncertainty on flux_density, same unit.",
+      "title": "Flux Density Error"
+    },
+    "limiting_flux_density": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Upper limit on flux density, same unit, at `limiting_mag_sigma` sigma (circulars almost always quote 3-sigma).",
+      "title": "Limiting Flux Density"
+    },
+    "flux_density_unit": {
+      "anyOf": [
+        {
+          "enum": [
+            "uJy",
+            "mJy",
+            "Jy"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Unit for the flux-density fields. One of [uJy, mJy, Jy].",
+      "title": "Flux Density Unit"
+    },
+    "frequency_ghz": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Observing frequency in GHz. What identifies the band for radio rows, where `filter` is meaningless; crosswalked to a radio-* bandpass.",
+      "title": "Frequency Ghz"
     },
     "obs_mjd": {
       "anyOf": [
