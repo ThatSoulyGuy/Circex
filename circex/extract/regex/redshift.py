@@ -58,12 +58,27 @@ _EMISSION_RE = re.compile(r"\bemission\s+line", re.IGNORECASE)
 _ABSORPTION_RE = re.compile(r"\babsorption\s+line", re.IGNORECASE)
 
 
-def _classify_measure(context: str) -> RedshiftMeasure | None:
-    if _SPEC_RE.search(context):
-        return "spectroscopic"
-    if _PHOTO_RE.search(context):
+def _classify_measure(context: str, at: int | None = None) -> RedshiftMeasure | None:
+    """Spectroscopic or photometric, from whichever cue sits nearest the value.
+
+    Both words appear together whenever a circular compares its own measurement
+    with someone else's: "the photometric redshift of 0.995 +- 0.352, which is
+    marginally consistent with the redshift of 1.673 obtained with GTC
+    spectroscopy". Taking the first rule labelled that photometric value
+    spectroscopic, so the cue is chosen by distance instead.
+    """
+    spec = _SPEC_RE.search(context)
+    photo = _PHOTO_RE.search(context)
+    if spec is None and photo is None:
+        return None
+    if spec is None:
         return "photometric"
-    return None
+    if photo is None:
+        return "spectroscopic"
+    if at is None:
+        return "spectroscopic"
+    distance = lambda m: min(abs(m.start() - at), abs(m.end() - at))  # noqa: E731
+    return "spectroscopic" if distance(spec) <= distance(photo) else "photometric"
 
 
 def _classify_type(context: str) -> RedshiftType | None:
@@ -128,7 +143,7 @@ def parse_redshift_with_span(text: str) -> tuple[Redshift, Span] | None:
     redshift = Redshift(
         redshift=z,
         redshift_error=err,
-        redshift_measure=_classify_measure(context),
+        redshift_measure=_classify_measure(context, match.start() - ctx_start),
         redshift_type=_classify_type(context),
     )
     span = Span(start=match.start(), end=match.end(), snippet=match.group(0))

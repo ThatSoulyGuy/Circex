@@ -322,3 +322,32 @@ def test_a_declared_x_ray_flash_still_classifies() -> None:
     hit = parse_classification_with_span("The event is classified as an X-ray Flash.")
     assert hit is not None
     assert hit[0].classification == "X-ray Flash"
+
+
+def test_the_nearest_cue_decides_the_redshift_measure() -> None:
+    """A circular comparing its own value with someone else's names both methods."""
+    from circex.extract.regex.redshift import parse_redshift
+
+    result = parse_redshift(
+        "the photometric redshift of 0.995 +- 0.352, which is marginally "
+        "consistent with the redshift of 1.673 obtained with GTC spectroscopy"
+    )
+    assert result is not None
+    assert result.redshift == 0.995
+    assert result.redshift_measure == "photometric"
+
+
+@pytest.mark.parametrize(
+    ("text", "measure"),
+    [
+        ("We measure a spectroscopic redshift of z = 0.151", "spectroscopic"),
+        ("The host has a photometric redshift of 0.63.", "photometric"),
+        ("The burst is at z = 1.2.", None),
+    ],
+)
+def test_an_unambiguous_measure_is_unchanged(text: str, measure: str | None) -> None:
+    from circex.extract.regex.redshift import parse_redshift
+
+    result = parse_redshift(text)
+    assert result is not None
+    assert result.redshift_measure == measure
