@@ -281,3 +281,44 @@ def test_magnitudes_outside_the_optical_range_are_rejected(mag: float) -> None:
     from circex.extract.regex.mag_table import parse_single_mags
 
     assert parse_single_mags(f"the source was at R = {mag} in our image") == []
+
+
+# --- classification triggers that are not classifications --------------------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # software that shares a class alias, masking the real classification
+        "Using SNID (Blondin & Tonry 2007) we classify this transient",
+        # institutions and funders in the acknowledgements
+        "We thank the Tata Institute of Fundamental Research for support.",
+        "This work was supported by funding from DST-SERB and IUSSTF.",
+        "We acknowledge the Siding Spring Observatory (SSO), Australia.",
+        # a class named as the target of a search
+        "We searched the data to look for any coincident hard X-ray flash.",
+    ],
+)
+def test_prose_that_names_no_class_is_not_classified(text: str) -> None:
+    from circex.extract.regex.classification import parse_classification_with_span
+
+    assert parse_classification_with_span(text) is None
+
+
+def test_a_masked_classification_is_recovered() -> None:
+    """SNID sorted before the real class, so the tool name used to win."""
+    from circex.extract.regex.classification import parse_classification_with_span
+
+    hit = parse_classification_with_span(
+        "Using SNID we classify the source as a Type Ia supernova at redshift z = 0.1"
+    )
+    assert hit is not None
+    assert hit[0].classification == "Ia"
+
+
+def test_a_declared_x_ray_flash_still_classifies() -> None:
+    from circex.extract.regex.classification import parse_classification_with_span
+
+    hit = parse_classification_with_span("The event is classified as an X-ray Flash.")
+    assert hit is not None
+    assert hit[0].classification == "X-ray Flash"

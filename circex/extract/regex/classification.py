@@ -62,7 +62,34 @@ _NON_TRIGGER_ALIASES = frozenset(
         "m",
         "o",
         "ca ii",
+        # Software, institutions and funding bodies that share a class alias:
+        # "using SNID we classify", "Tata Institute of Fundamental Research",
+        # "funding from DST-SERB", "Siding Spring Observatory (SSO)", and
+        # "a classical long GRB".
+        "snid",
+        "fundamental",
+        "dst",
+        "sso",
+        "classical",
     }
+)
+
+# Trailing acknowledgements name institutions, funders and facilities, none of
+# which classify the transient. Everything from the first such phrase is ignored.
+_ACKNOWLEDGEMENT_RE = re.compile(
+    r"\b(?:we\s+(?:thank|acknowledge|are\s+grateful)|this\s+(?:work|research|"
+    r"publication)\s+(?:was|is|has\s+been)\s+(?:supported|funded|made)|"
+    r"based\s+on\s+observations\s+(?:made|obtained)\s+(?:with|at)|"
+    r"funding\s+from|is\s+(?:supported|funded)\s+by\s+the)",
+    re.IGNORECASE,
+)
+
+# A class named as the target of a search is not the classification of this
+# event: "to look for any coincident hard X-ray flash".
+_SEARCH_CONTEXT_RE = re.compile(
+    r"(?:look(?:ing|ed)?\s+for|search(?:ing|ed)?\s+for|in\s+search\s+of)"
+    r"(?:\s+\S+){0,6}\s*$",
+    re.IGNORECASE,
 )
 
 _SHORT_ALIAS_MAX = 2
@@ -115,9 +142,15 @@ def parse_classification_with_span(
     accepted with a nearby classification cue, so a stray author initial or
     substring is skipped rather than misclassifying the circular.
     """
+    ack = _ACKNOWLEDGEMENT_RE.search(text)
+    body_end = ack.start() if ack else len(text)
     for match in _alias_pattern().finditer(text):
+        if match.start() >= body_end:
+            break
         token = match.group(0)
         if token.lower() in _NON_TRIGGER_ALIASES:
+            continue
+        if _SEARCH_CONTEXT_RE.search(text[max(0, match.start() - 80) : match.start()]):
             continue
         canonical = alias_to_canonical().get(token.lower())
         if canonical is None:
