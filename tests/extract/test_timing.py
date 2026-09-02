@@ -282,3 +282,42 @@ def test_offsets_measured_from_the_burst_as_well_as_the_trigger(
 ) -> None:
     offsets = parse_time_offsets(text)
     assert [(o.value, o.unit) for o in offsets] == [(value, unit)]
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # Month DD YYYY, which the year-first and day-first forms both missed.
+        (
+            "attached to the Subaru telescope on August 18 2017 UT we observed the field",
+            "2017-08-18T00:00:00Z",
+        ),
+        # an ordinal day
+        ("GROND started observing on August 19th 2017", "2017-08-19T00:00:00Z"),
+        # the date ahead of the verb
+        (
+            "On 2017 Aug 18 UT in the process of observing several galaxies",
+            "2017-08-18T00:00:00Z",
+        ),
+        # the clock ahead of the date: without this the time became midnight
+        ("Observations started at 23:15 UT on August 18th 2017.", "2017-08-18T23:15:00Z"),
+    ],
+)
+def test_more_observation_epoch_forms(text: str, expected: str) -> None:
+    result = parse_observation_epoch(text)
+    assert result is not None
+    assert result[1] == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "seconds"),
+    [
+        ("24.3 ks after the EP trigger", 24300.0),
+        ("19.2 ks after the BAT trigger", 19200.0),
+        ("T+19.2 ks", 19200.0),
+    ],
+)
+def test_kilosecond_offsets(text: str, seconds: float) -> None:
+    """Swift and UVOT quote offsets in ks; the schema's units stop at seconds."""
+    offsets = parse_time_offsets(text)
+    assert [(o.value, o.unit) for o in offsets] == [(seconds, "s")]

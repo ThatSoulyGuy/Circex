@@ -97,11 +97,14 @@ _MONTH = (
     r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?"
     r"|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
 )
-# "2023-03-12", "2017 August 18", "2017-Aug-19", "20 August 2017".
+# "2023-03-12", "2017 August 18", "2017-Aug-19", "20 August 2017",
+# "August 18 2017", "August 18th 2017".
+_ORDINAL = r"(?:st|nd|rd|th)?"
 _DATE = (
     r"(?:\d{4}[-.]\d{2}[-.]\d{2}"
-    rf"|\d{{4}}[-.\s]+{_MONTH}[-.\s]+\d{{1,2}}"
-    rf"|\d{{1,2}}[-.\s]+{_MONTH}[-.\s]+\d{{4}})"
+    rf"|\d{{4}}[-.\s]+{_MONTH}[-.\s]+\d{{1,2}}{_ORDINAL}"
+    rf"|\d{{1,2}}{_ORDINAL}[-.\s]+{_MONTH}[-.\s]+\d{{4}}"
+    rf"|{_MONTH}\s+\d{{1,2}}{_ORDINAL}[,\s]+\d{{4}})"
 )
 # Radio circulars separate date from time with "_" or " at " as often as a space.
 _TIME = r"(?:(?:[ T_]|\s+at\s+)\d{1,2}:\d{2}(?::\d{2}(?:\.\d+)?)?)?"
@@ -113,10 +116,28 @@ _WITHIN_SENTENCE = r"(?:(?!(?<![A-Z])\.\s+[A-Z])[\s\S]){0,200}?"
 # An absolute observation datetime stated in prose, near observation language:
 # "We observed from 2026-06-05 03:41 to 03:51 UTC", "beginning at 2017 August 18
 # 02:09:00 UT". Captures the first datetime that follows an observation verb.
-_OBS_EPOCH_RE = re.compile(
+_VERB = (
     r"(?:observ|imag|obtain|acquir|expos|integrat|trigger|detect|begin|began"
     r"|start|monitor|carried\s+out|on\s+target)\w*"
-    rf"{_WITHIN_SENTENCE}({_DATE}{_TIME})",
+)
+# "Observations started at 23:15 UT on August 18th 2017" puts the time before
+# the date. Without this the date still parses and the time silently becomes
+# midnight, which is wrong by up to a day.
+_TIME_FIRST_RE = re.compile(
+    rf"\bat\s+(?P<clock>\d{{1,2}}:\d{{2}}(?::\d{{2}}(?:\.\d+)?)?)\s*(?:UTC?\b)?\s*"
+    rf"on\s+(?P<date>{_DATE})",
+    re.IGNORECASE,
+)
+
+_OBS_EPOCH_RE = re.compile(
+    rf"{_VERB}{_WITHIN_SENTENCE}({_DATE}{_TIME})",
+    re.IGNORECASE,
+)
+# The same sentence with the date first: "On 2017 Aug 18 UT in the process of
+# observing several galaxies". The verb still has to be there, so a bare date in
+# a citation is not mistaken for an observation epoch.
+_OBS_EPOCH_REVERSED_RE = re.compile(
+    rf"\bon\s+({_DATE}{_TIME})\s*(?:UTC?\b)?{_WITHIN_SENTENCE}{_VERB}",
     re.IGNORECASE,
 )
 
@@ -128,7 +149,10 @@ def parse_observation_epoch(text: str) -> tuple[float, str] | None:
     ("observed ... 2026-06-05 03:41"). Used to time prose photometry lists whose
     epoch lives in a separate sentence rather than a per-row column. None if none.
     """
-    match = _OBS_EPOCH_RE.search(text)
+    clock = _TIME_FIRST_RE.search(text)
+    if clock is not None:
+        return epoch_from_absolute(f"{clock.group('date')} {clock.group('clock')}")
+    match = _OBS_EPOCH_RE.search(text) or _OBS_EPOCH_REVERSED_RE.search(text)
     if match is None:
         return None
     return epoch_from_absolute(match.group(1))

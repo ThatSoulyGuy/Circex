@@ -17,7 +17,7 @@ _T_OFFSET_RE = re.compile(
     \s*(?P<sign>[+\-−–])\s*
     (?P<value>\d+(?:\.\d+)?)
     \s*
-    (?P<unit>s(?:ec(?:ond)?s?)?|m(?:in(?:ute)?s?)?|h(?:our)?s?|d(?:ay)?s?)
+    (?P<unit>ks|s(?:ec(?:ond)?s?)?|m(?:in(?:ute)?s?)?|h(?:our)?s?|d(?:ay)?s?)
     \b
     """,
     re.VERBOSE | re.IGNORECASE,
@@ -29,7 +29,7 @@ _T_OFFSET_RE = re.compile(
 _POST_TRIGGER_RE = re.compile(
     r"""
     \b(?P<value>\d+(?:\.\d+)?)\s*
-    (?P<unit>seconds?|minutes?|hours?|days?|[smhd])\s+
+    (?P<unit>ks|seconds?|minutes?|hours?|days?|[smhd])\s+
     (?:
         after\s+(?:the\s+)?(?:\S+\s+){0,2}?(?:trigger|burst|explosion)
       | post[-\s]?(?:trigger|burst|explosion)
@@ -40,6 +40,7 @@ _POST_TRIGGER_RE = re.compile(
 )
 
 _UNIT_MAP: dict[str, TimeOffsetUnit] = {
+    "ks": "s",
     "s": "s",
     "sec": "s",
     "secs": "s",
@@ -59,8 +60,17 @@ _UNIT_MAP: dict[str, TimeOffsetUnit] = {
 }
 
 
+# Swift and UVOT circulars quote offsets in kiloseconds ("19.2 ks after the BAT
+# trigger"). The schema's units stop at seconds, so a ks value is scaled instead.
+_UNIT_SCALE: dict[str, float] = {"ks": 1000.0}
+
+
 def _normalize_unit(token: str) -> TimeOffsetUnit | None:
     return _UNIT_MAP.get(token.lower())
+
+
+def _scaled(value: float, token: str) -> float:
+    return value * _UNIT_SCALE.get(token.lower(), 1.0)
 
 
 def parse_time_offsets(text: str) -> list[TimeOffset]:
@@ -77,7 +87,7 @@ def parse_time_offsets_with_spans(text: str) -> list[tuple[TimeOffset, Span]]:
         if unit is None:
             continue
         sign = match.group("sign")
-        value = float(match.group("value"))
+        value = _scaled(float(match.group("value")), match.group("unit"))
         if sign in ("-", "−", "–"):
             value = -value
             reference = "T-"
@@ -96,7 +106,11 @@ def parse_time_offsets_with_spans(text: str) -> list[tuple[TimeOffset, Span]]:
             continue
         out.append(
             (
-                TimeOffset(value=float(match.group("value")), unit=unit, reference="trigger"),
+                TimeOffset(
+                    value=_scaled(float(match.group("value")), match.group("unit")),
+                    unit=unit,
+                    reference="trigger",
+                ),
                 Span(start=match.start(), end=match.end(), snippet=match.group(0)),
             )
         )
