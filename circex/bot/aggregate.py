@@ -105,6 +105,7 @@ def aggregate_event(
     *,
     trigger_time: datetime | None = None,
     instrument_map: dict[str, int] | None = None,
+    bandpass_instrument_map: dict[str, int] | None = None,
     default_instrument_id: int | None = None,
     group_ids: list[int] | None = None,
     event_name: str | list[str] | None = None,
@@ -144,6 +145,7 @@ def aggregate_event(
         actions = to_actions(
             extraction,
             instrument_map=instrument_map,
+            bandpass_instrument_map=bandpass_instrument_map,
             default_instrument_id=default_instrument_id,
             group_ids=group_ids,
         )

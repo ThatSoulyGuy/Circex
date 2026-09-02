@@ -142,3 +142,32 @@ def test_an_xray_detection_keeps_the_original_flux_in_altdata() -> None:
     point = to_actions(_extraction(row), default_instrument_id=9).photometry[0]
     assert point.altdata["energy_flux_cgs"] == 3.5e-12
     assert point.altdata["energy_band_kev"] == [0.3, 10.0]
+
+
+def test_a_bandpass_routes_to_its_own_instrument() -> None:
+    """EP carries both WXT and FXT, so a telescope-keyed map cannot separate them."""
+    row = PhotometryExt(
+        energy_band_kev=[0.5, 10.0],
+        limiting_energy_flux=1e-13,
+        bandpass="epfxt",
+        obs_mjd=61284.9,
+    )
+    actions = to_actions(
+        _extraction(row),
+        bandpass_instrument_map={"epwxt": 1183, "epfxt": 1184},
+        default_instrument_id=1180,
+    )
+    assert actions.photometry[0].instrument_id == 1184
+
+
+def test_an_unmapped_bandpass_still_falls_back_to_the_default() -> None:
+    row = PhotometryExt(
+        energy_band_kev=[0.5, 10.0],
+        limiting_energy_flux=1e-13,
+        bandpass="epfxt",
+        obs_mjd=61284.9,
+    )
+    actions = to_actions(_extraction(row), default_instrument_id=1180)
+    point = actions.photometry[0]
+    assert point.instrument_id == 1180
+    assert point.altdata["instrument_fallback"] is True

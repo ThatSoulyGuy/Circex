@@ -165,11 +165,16 @@ def to_actions(
     extraction: CircularExtraction,
     *,
     instrument_map: dict[str, int] | None = None,
+    bandpass_instrument_map: dict[str, int] | None = None,
     default_instrument_id: int | None = None,
     group_ids: list[int] | None = None,
 ) -> SkyPortalActions:
     """Build the SkyPortal write bundle for one extraction.
 
+    `bandpass_instrument_map` maps a bandpass -> SkyPortal instrument_id and
+    is tried first: a bandpass names one instrument exactly, where a telescope
+    may carry several (EP has both WXT and FXT), and the radio and X-ray rows
+    carry a bandpass but no telescope.
     `instrument_map` maps `telescope_canonical` -> SkyPortal instrument_id
     (ICARE's table). `default_instrument_id` is the generic GCN instrument used
     when a telescope isn't in the map (matching ICARE's fall-back). SkyPortal's
@@ -177,6 +182,7 @@ def to_actions(
     neither a mapped nor a default id cannot be posted — it becomes a comment.
     """
     instrument_map = instrument_map or {}
+    bandpass_instrument_map = bandpass_instrument_map or {}
     group_ids = group_ids or []
 
     obj_id = _obj_id(extraction)
@@ -209,7 +215,14 @@ def to_actions(
 
     for idx, row in enumerate(extraction.photometry):
         point = _row_to_point(
-            extraction, obj_id, idx, row, instrument_map, default_instrument_id, dropped
+            extraction,
+            obj_id,
+            idx,
+            row,
+            instrument_map,
+            bandpass_instrument_map,
+            default_instrument_id,
+            dropped,
         )
         if point is not None:
             photometry.append(point)
@@ -271,6 +284,7 @@ def _row_to_point(
     idx: int,
     row: PhotometryExt,
     instrument_map: dict[str, int],
+    bandpass_instrument_map: dict[str, int],
     default_instrument_id: int | None,
     dropped: list[str],
 ) -> PhotometryPoint | None:
@@ -281,7 +295,10 @@ def _row_to_point(
     these. Otherwise it cannot be posted.
     """
     band, magsys = _effective_band(row)
-    mapped = instrument_map.get(row.telescope_canonical) if row.telescope_canonical else None
+    # A bandpass names one instrument exactly; a telescope may carry several.
+    mapped = bandpass_instrument_map.get(band) if band else None
+    if mapped is None and row.telescope_canonical:
+        mapped = instrument_map.get(row.telescope_canonical)
     instrument_id = mapped if mapped is not None else default_instrument_id
     if row.energy_band_kev is not None:
         return _xray_row_to_point(
