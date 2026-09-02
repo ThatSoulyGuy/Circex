@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from circex.extract.hybrid import HybridExtractor
+from circex.extract.hybrid import _ROUTING, HybridExtractor
 from circex.extract.protocol import Circular
 from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
 
@@ -156,3 +156,10 @@ def test_retraction_flag_survives_the_merge() -> None:
         Circular(circular_id=1, subject="Trigger 1 is not a GRB", body="b")
     )
     assert merged.retraction is True
+
+
+def test_every_extraction_field_is_routed_or_handled() -> None:
+    # A field absent from both sets is rebuilt at its default by the merge, which
+    # looks like the extractor never found it.
+    handled = set(_ROUTING) | {"circular_id", "provenance", "extraction_meta", "retraction"}
+    assert set(CircularExtraction.model_fields) - handled == set()
