@@ -4,12 +4,16 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+import pytest
+
 from circex.extract.protocol import Circular
 from circex.extract.regex import RegexExtractor
+from circex.extract.regex.dates import parse_time_offsets
 from circex.extract.timing import (
     epoch_from_absolute,
     epoch_from_offset,
     normalize_pair,
+    parse_observation_epoch,
     resolve_relative_epochs,
 )
 from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt, TimeOffset
@@ -170,9 +174,7 @@ def test_regex_table_resolves_absolute_epoch() -> None:
 def test_regex_relative_resolved_with_trigger_time() -> None:
     body = "We observed at T+1 h and measured r = 19.5 mag."
     t0 = datetime(2024, 1, 1, tzinfo=UTC)
-    r = RegexExtractor().extract(
-        Circular(circular_id=2, subject="", body=body, trigger_time=t0)
-    )
+    r = RegexExtractor().extract(Circular(circular_id=2, subject="", body=body, trigger_time=t0))
     detected = [p for p in r.photometry if p.filter == "r"]
     assert detected and detected[0].obs_mjd is not None
 
@@ -223,3 +225,60 @@ def test_resolve_observation_epoch_does_not_clobber_timed_rows() -> None:
     resolve_observation_epoch(ex, "observed on 2026-06-05 03:41 UTC")
     assert ex.photometry[0].obs_mjd == 60000.0  # any-timed guard: leave all as-is
     assert ex.photometry[1].obs_mjd is None
+
+
+# Date and offset forms that radio circulars use, each drawn from a real GCN.
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # ATCA separates date from time with an underscore (GCN 33475).
+        ("We observed with ATCA between 2023-03-12_02:30 UT", "2023-03-12T02:30:00Z"),
+        # ...or with "at" (GCN 35155).
+        ("ATCA observed on 2023-11-20 at 14:30 UT for 3 hours", "2023-11-20T14:30:00Z"),
+        # Spelled-out month, year first (GCN 21545).
+        ("observations beginning at 2017 August 18 02:09:00 UT", "2017-08-18T02:09:00Z"),
+        # Abbreviated month with hyphens (GCN 21613).
+        ("observation started on 2017-Aug-19 22:01:48 UT", "2017-08-19T22:01:48Z"),
+        # Day first, with the UT label leading (GCN 21708).
+        ("observations carried out on UT 20 August 2017 08:00", "2017-08-20T08:00:00Z"),
+        # Abbreviated month and "at" (GCN 38640).
+        ("started observing on 2024 Dec 14 at 01:36:13 UTC", "2024-12-14T01:36:13Z"),
+        # A date with no time of day (GCN 34843).
+        ("ATCA observed the burst on 2023-09-11 UT", "2023-09-11T00:00:00Z"),
+    ],
+)
+def test_observation_epochs_radio_circulars_write(text: str, expected: str) -> None:
+    result = parse_observation_epoch(text)
+    assert result is not None
+    assert result[1] == expected
+
+
+def test_an_initial_is_not_read_as_the_end_of_the_sentence() -> None:
+    """ "PI: G. Anderson" sits between the verb and the date in every PanRadio circular."""
+    text = (
+        "ATCA observed the long GRB 231118A, first detected by the Fermi GRB Team "
+        '(GCN 35100), as part of the ATCA "PanRadio GRB" Large Project C3542 '
+        "(PI: G. Anderson) on 2023-11-20 at 14:30 UT for 3 hours."
+    )
+    result = parse_observation_epoch(text)
+    assert result is not None
+    assert result[1] == "2023-11-20T14:30:00Z"
+
+
+@pytest.mark.parametrize(
+    ("text", "value", "unit"),
+    [
+        ("just 27 minutes post-burst", 27.0, "m"),
+        ("(~4.5 days post-burst)", 4.5, "d"),
+        ("5.9d after the Swift/BAT trigger", 5.9, "d"),
+        ("53.84 days after the EP trigger", 53.84, "d"),
+        ("13 hours after the Fermi trigger time", 13.0, "h"),
+    ],
+)
+def test_offsets_measured_from_the_burst_as_well_as_the_trigger(
+    text: str, value: float, unit: str
+) -> None:
+    offsets = parse_time_offsets(text)
+    assert [(o.value, o.unit) for o in offsets] == [(value, unit)]

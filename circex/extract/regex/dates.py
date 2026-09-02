@@ -23,12 +23,17 @@ _T_OFFSET_RE = re.compile(
     re.VERBOSE | re.IGNORECASE,
 )
 
-# "approximately X hours after the trigger", "X minutes post-trigger"
+# "approximately X hours after the trigger", "X minutes post-burst", "5.9d after
+# the Swift/BAT trigger". Circulars say "burst" as often as "trigger", and name
+# the instrument in between, so both are accepted.
 _POST_TRIGGER_RE = re.compile(
     r"""
-    \b(?P<value>\d+(?:\.\d+)?)\s+
-    (?P<unit>seconds?|minutes?|hours?|days?)\s+
-    (?:after\s+(?:the\s+)?trigger|post[-\s]trigger)
+    \b(?P<value>\d+(?:\.\d+)?)\s*
+    (?P<unit>seconds?|minutes?|hours?|days?|[smhd])\s+
+    (?:
+        after\s+(?:the\s+)?(?:\S+\s+){0,2}?(?:trigger|burst|explosion)
+      | post[-\s]?(?:trigger|burst|explosion)
+    )
     \b
     """,
     re.VERBOSE | re.IGNORECASE,

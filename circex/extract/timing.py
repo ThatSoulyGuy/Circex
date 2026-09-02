@@ -96,12 +96,31 @@ def epoch_from_offset(
     return _to_pair(mjd)
 
 
+# Month names as circulars write them: "August", "Aug", "Sept".
+_MONTH = (
+    r"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?"
+    r"|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"
+)
+# "2023-03-12", "2017 August 18", "2017-Aug-19", "20 August 2017".
+_DATE = (
+    r"(?:\d{4}[-.]\d{2}[-.]\d{2}"
+    rf"|\d{{4}}[-.\s]+{_MONTH}[-.\s]+\d{{1,2}}"
+    rf"|\d{{1,2}}[-.\s]+{_MONTH}[-.\s]+\d{{4}})"
+)
+# Radio circulars separate date from time with "_" or " at " as often as a space.
+_TIME = r"(?:(?:[ T_]|\s+at\s+)\d{1,2}:\d{2}(?::\d{2}(?:\.\d+)?)?)?"
+# Anything up to the end of the sentence, so "et al." and "2024 Dec 14" do not
+# cut the search short the way a bare period would. A period after a single
+# capital is an initial ("PI: G. Anderson"), not a sentence end.
+_WITHIN_SENTENCE = r"(?:(?!(?<![A-Z])\.\s+[A-Z])[\s\S]){0,200}?"
+
 # An absolute observation datetime stated in prose, near observation language:
-# "We observed from 2026-06-05 03:41 to 03:51 UTC", "images obtained on
-# 2026-06-08 20:01". Captures the first datetime that follows an observation verb.
+# "We observed from 2026-06-05 03:41 to 03:51 UTC", "beginning at 2017 August 18
+# 02:09:00 UT". Captures the first datetime that follows an observation verb.
 _OBS_EPOCH_RE = re.compile(
-    r"(?:observ|imag|obtain|acquir|expos|integrat|trigger|detect)\w*[^.]{0,120}?"
-    r"(\d{4}[-.]\d{2}[-.]\d{2}(?:(?:[ T_]|\s+at\s+)\d{2}:\d{2}(?::\d{2})?)?)",
+    r"(?:observ|imag|obtain|acquir|expos|integrat|trigger|detect|begin|began"
+    r"|start|monitor|carried\s+out|on\s+target)\w*"
+    rf"{_WITHIN_SENTENCE}({_DATE}{_TIME})",
     re.IGNORECASE,
 )
 
