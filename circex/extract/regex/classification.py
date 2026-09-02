@@ -33,6 +33,38 @@ from circex.schema import Classification, Span
 from circex.taxonomy import alias_to_canonical
 
 # Aliases this short or shorter are ambiguous; see module docstring.
+# Taxonomy "other names" that are English words, observing bands, or bare
+# letters. Upstream lists them for good reason (RS CVn stars emit in radio and
+# X-ray; the class is written "BY Dra"), but as free-text triggers they fire on
+# ordinary prose: over a 3,594-Circular sample, "x-ray" and "radio" alone
+# produced 283 spurious RS CVn classifications, "by" 99 BY Dra, and "in" 54
+# Orion. A classification only comes from a token that names a class.
+_NON_TRIGGER_ALIASES = frozenset(
+    {
+        "radio",
+        "x-ray",
+        "xray",
+        "gamma-ray",
+        "optical",
+        "infrared",
+        "uv",
+        "by",
+        "in",
+        "it",
+        "at",
+        "as",
+        "is",
+        "ep",
+        "id",
+        "ie",
+        "be",
+        "f",
+        "m",
+        "o",
+        "ca ii",
+    }
+)
+
 _SHORT_ALIAS_MAX = 2
 # Window (chars on each side) to look for a classification cue near a 2-char alias.
 _CONTEXT_WINDOW = 60
@@ -48,9 +80,7 @@ _CLASS_CONTEXT = re.compile(
 
 def _build_alias_pattern() -> re.Pattern[str]:
     """Build one big alternation regex of all aliases >1 char, longest-first."""
-    aliases = sorted(
-        (a for a in alias_to_canonical() if len(a) > 1), key=len, reverse=True
-    )
+    aliases = sorted((a for a in alias_to_canonical() if len(a) > 1), key=len, reverse=True)
     # Escape and anchor to word boundaries. Use case-insensitive matching.
     parts = [re.escape(alias) for alias in aliases]
     pattern = r"\b(?:" + "|".join(parts) + r")\b"
@@ -87,6 +117,8 @@ def parse_classification_with_span(
     """
     for match in _alias_pattern().finditer(text):
         token = match.group(0)
+        if token.lower() in _NON_TRIGGER_ALIASES:
+            continue
         canonical = alias_to_canonical().get(token.lower())
         if canonical is None:
             continue
@@ -101,9 +133,7 @@ def parse_classification_with_span(
         if len(tail) == 3 and tail[0] == "-" and tail[1].isupper() and tail[2].islower():
             continue
         if len(token) <= _SHORT_ALIAS_MAX:
-            window = text[
-                max(0, match.start() - _CONTEXT_WINDOW) : match.end() + _CONTEXT_WINDOW
-            ]
+            window = text[max(0, match.start() - _CONTEXT_WINDOW) : match.end() + _CONTEXT_WINDOW]
             if not _CLASS_CONTEXT.search(window):
                 continue
         try:

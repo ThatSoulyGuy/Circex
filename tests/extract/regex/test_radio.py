@@ -222,3 +222,26 @@ def test_the_extraction_itself_keeps_the_uncertainty_null() -> None:
     """The nominal error is a write-time policy; the stored extraction stays truthful."""
     rows = [row for row, _ in parse_radio_with_spans("A flux density of ~0.4 mJy at 9 GHz.")]
     assert rows[0].flux_density_error is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "no significant X-ray source was detected within the 2.4 arcmin radius",
+        "We observed the field with ATCA at radio frequencies",
+        "The burst was detected by the Fermi GBM team",
+        "a source was found in the error box",
+    ],
+)
+def test_band_and_function_words_do_not_classify(text: str) -> None:
+    """The taxonomy lists 'x-ray'/'radio'/'by'/'in' as other names; prose is not a class."""
+    from circex.extract.regex.classification import parse_classification_with_span
+
+    assert parse_classification_with_span(text) is None
+
+
+def test_a_real_class_name_still_classifies() -> None:
+    from circex.extract.regex.classification import parse_classification_with_span
+
+    hit = parse_classification_with_span("We classify this as a Type Ia supernova.")
+    assert hit is not None
