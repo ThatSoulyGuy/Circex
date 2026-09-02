@@ -318,6 +318,13 @@ def _row_to_point(
 # AB zeropoint for a flux density in microjanskys: m = -2.5 log10(f_uJy) + 23.9.
 _UJY_AB_ZP = 23.9
 
+# Roughly half of radio detections quote no uncertainty, and in the archive every
+# one of those is written as "~0.4 mJy" — an approximate quick-look value. Rather
+# than drop them, assume this fraction of the flux, which is the right order for
+# cm-wave absolute flux calibration. Rows carrying it are flagged in altdata so a
+# consumer can tell an assumed error from a reported one.
+ASSUMED_FLUX_ERROR_FRACTION = 0.2
+
 
 def _radio_row_to_point(
     extraction: CircularExtraction,
@@ -357,11 +364,16 @@ def _radio_row_to_point(
         return drop("no flux unit")
 
     flux: float | None = None
+    error_assumed = False
     if row.flux_density is not None:
-        if row.flux_density_error is None:
-            return drop("no flux uncertainty")
         flux = to_ujy(row.flux_density, unit)
-        fluxerr = to_ujy(row.flux_density_error, unit)
+        if row.flux_density_error is not None:
+            fluxerr = to_ujy(row.flux_density_error, unit)
+        else:
+            fluxerr = abs(flux) * ASSUMED_FLUX_ERROR_FRACTION
+            error_assumed = True
+            if fluxerr == 0.0:
+                return drop("zero flux with no uncertainty")
     elif row.limiting_flux_density is not None:
         sigma = row.limiting_mag_sigma or 3.0
         fluxerr = to_ujy(row.limiting_flux_density, unit) / sigma
@@ -372,6 +384,9 @@ def _radio_row_to_point(
     if (note := _provenance_note(extraction, f"photometry[{idx}]")) is not None:
         altdata["note"] = note
     altdata["frequency_ghz"] = row.frequency_ghz
+    if error_assumed:
+        altdata["flux_density_error_assumed"] = True
+        altdata["flux_density_error_fraction"] = ASSUMED_FLUX_ERROR_FRACTION
     if row.limiting_flux_density is not None:
         altdata["limiting_flux_density_sigma"] = row.limiting_mag_sigma or 3.0
     if instrument_fallback:

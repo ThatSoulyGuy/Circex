@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from circex.bot.skyportal_map import to_actions
+from circex.bot.skyportal_map import ASSUMED_FLUX_ERROR_FRACTION, to_actions
 from circex.extract.protocol import Circular
 from circex.extract.regex.extractor import RegexExtractor
 from circex.extract.regex.radio import (
@@ -192,11 +192,33 @@ def test_millijansky_is_converted_to_microjansky() -> None:
     assert (payload["flux"], payload["fluxerr"]) == (2000.0, 100.0)
 
 
-def test_detection_without_an_uncertainty_is_dropped() -> None:
-    """SkyPortal requires a non-null fluxerr; inventing one would be worse than dropping."""
+def test_detection_without_an_uncertainty_gets_a_flagged_nominal_error() -> None:
+    """About half of radio detections quote no error; they are posted, but marked assumed."""
     row = PhotometryExt(
         frequency_ghz=9.0, flux_density=400.0, flux_density_unit="uJy", obs_mjd=60015.1
     )
     actions = to_actions(_radio_extraction(row), default_instrument_id=7)
-    assert actions.photometry == []
-    assert actions.skipped_rows == 1
+    point = actions.photometry[0]
+    payload = point.to_payload()
+    assert payload["flux"] == 400.0
+    assert payload["fluxerr"] == 400.0 * ASSUMED_FLUX_ERROR_FRACTION
+    assert point.altdata["flux_density_error_assumed"] is True
+
+
+def test_a_reported_uncertainty_is_never_marked_assumed() -> None:
+    row = PhotometryExt(
+        frequency_ghz=9.0,
+        flux_density=400.0,
+        flux_density_error=25.0,
+        flux_density_unit="uJy",
+        obs_mjd=60015.1,
+    )
+    point = to_actions(_radio_extraction(row), default_instrument_id=7).photometry[0]
+    assert point.to_payload()["fluxerr"] == 25.0
+    assert "flux_density_error_assumed" not in point.altdata
+
+
+def test_the_extraction_itself_keeps_the_uncertainty_null() -> None:
+    """The nominal error is a write-time policy; the stored extraction stays truthful."""
+    rows = [row for row, _ in parse_radio_with_spans("A flux density of ~0.4 mJy at 9 GHz.")]
+    assert rows[0].flux_density_error is None
