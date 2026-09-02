@@ -25,8 +25,10 @@ round-trips through ``to_label_fields`` for snippet-level human validation.
 
 from __future__ import annotations
 
+import re
+
 from circex.extract.protocol import Circular, Extractor
-from circex.schema import CircularExtraction, ExtractionMeta
+from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
 from circex.schema.span import Span
 
 # field name -> (primary source, secondary source | None). Source is "regex" | "llm".
@@ -43,6 +45,39 @@ _ROUTING: dict[str, tuple[str, str | None]] = {
     "redshift": ("llm", "regex"),  # constrained F1 0.935 > regex 0.862
     "reporter": ("llm", "regex"),
 }
+
+
+# The LLM writes an X-ray band or a radio frequency into `filter` as prose
+# ("0.5-10 keV"), which carries no bandpass and routes to no instrument. Regex
+# parses those into energy_band_kev/frequency_ghz, so its structured rows stand
+# in for the LLM's prose ones.
+_BAND_AS_FILTER_RE = re.compile(
+    r"\d\s*(?:-|–|to)\s*\d.*\b(?:keV|MeV|GHz|MHz)\b|\b(?:keV|GHz|MHz)\b", re.I
+)
+
+
+def _is_structured(row: PhotometryExt) -> bool:
+    return row.energy_band_kev is not None or row.frequency_ghz is not None
+
+
+def _rescue_structured_photometry(
+    fields: dict[str, object], regex_source: CircularExtraction
+) -> None:
+    """Restore regex X-ray/radio rows the LLM returned as prose, in place."""
+    rows = fields.get("photometry")
+    if not isinstance(rows, list) or not rows:
+        return
+    if any(_is_structured(r) for r in rows):
+        return
+    structured = [r for r in regex_source.photometry if _is_structured(r)]
+    if not structured:
+        return
+    kept = [
+        r
+        for r in rows
+        if not (r.bandpass is None and r.filter and _BAND_AS_FILTER_RE.search(r.filter))
+    ]
+    fields["photometry"] = kept + structured
 
 
 def _present(value: object) -> bool:
@@ -104,6 +139,12 @@ class HybridExtractor(Extractor):
             fields[field] = value
             if chosen is not None:
                 provenance.update(_provenance_for(sources[chosen], field))
+
+        _rescue_structured_photometry(fields, sources["regex"])
+
+        # Retraction is read from the subject line, so it is the same either way
+        # and never routed; without this the merged result always reads False.
+        fields["retraction"] = sources["regex"].retraction
 
         fields["provenance"] = provenance
         fields["extraction_meta"] = ExtractionMeta(

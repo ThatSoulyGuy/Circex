@@ -6,7 +6,7 @@ from typing import Any
 
 from circex.extract.hybrid import HybridExtractor
 from circex.extract.protocol import Circular
-from circex.schema import CircularExtraction
+from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
 
 
 def _mk(**fields: Any) -> CircularExtraction:
@@ -95,3 +95,64 @@ def test_hybrid_routing_override_keeps_classifier_fallback() -> None:
     m = hybrid.extract(Circular(circular_id=1, subject="", body="x"))
 
     assert m.classification is not None and m.classification.classification == "Ia"
+
+
+def _stub(circular_id: int, **fields: object) -> CircularExtraction:
+    return CircularExtraction(
+        circular_id=circular_id,
+        extraction_meta=ExtractionMeta(extractor="stub"),
+        **fields,  # type: ignore[arg-type]
+    )
+
+
+class _Fixed:
+    """Extractor returning a fixed extraction."""
+
+    def __init__(self, result: CircularExtraction, name: str) -> None:
+        self._result, self._name = result, name
+
+    @property
+    def extractor_id(self) -> str:
+        return self._name
+
+    def extract(self, circular: Circular) -> CircularExtraction:
+        return self._result
+
+
+def test_xray_row_survives_llm_prose_filter() -> None:
+    # The LLM writes the band into `filter`; the structured regex row stands in.
+    regex = _stub(
+        1, photometry=[PhotometryExt(bandpass="epfxt", energy_band_kev=[0.5, 10.0], obs_mjd=6.0)]
+    )
+    llm = _stub(1, photometry=[PhotometryExt(filter="0.5-10 keV", obs_mjd=6.0)])
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=1, subject="s", body="b")
+    )
+    assert [r.bandpass for r in merged.photometry] == ["epfxt"]
+    assert merged.photometry[0].energy_band_kev == [0.5, 10.0]
+
+
+def test_optical_llm_rows_are_kept_alongside_rescued_rows() -> None:
+    regex = _stub(
+        1, photometry=[PhotometryExt(bandpass="epfxt", energy_band_kev=[0.5, 10.0], obs_mjd=6.0)]
+    )
+    llm = _stub(
+        1,
+        photometry=[
+            PhotometryExt(filter="r", bandpass="sdssr", mag=20.0, obs_mjd=6.0),
+            PhotometryExt(filter="0.5-10 keV", obs_mjd=6.0),
+        ],
+    )
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=1, subject="s", body="b")
+    )
+    assert sorted(r.bandpass or "" for r in merged.photometry) == ["epfxt", "sdssr"]
+
+
+def test_retraction_flag_survives_the_merge() -> None:
+    regex = _stub(1, retraction=True)
+    llm = _stub(1, photometry=[PhotometryExt(filter="r", mag=20.0)])
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=1, subject="Trigger 1 is not a GRB", body="b")
+    )
+    assert merged.retraction is True
