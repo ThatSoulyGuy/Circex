@@ -13,6 +13,7 @@ comment, provenance -> altdata.note.
 from __future__ import annotations
 
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -132,6 +133,8 @@ class SkyPortalActions:
     redshift: tuple[float, float | None] | None  # (z, z_err)
     comments: list[str]
     skipped_rows: int  # photometry rows we could not post (no mjd/filter)
+    # Why each was dropped, so a reader can tell a thin light curve from lost data.
+    skipped_reasons: tuple[str, ...] = ()
     # The extractions these actions were built from. Callers that need fields with
     # no place in the SkyPortal write bundle (event designations, classification)
     # would otherwise have to run the extractor a second time.
@@ -168,7 +171,7 @@ def to_actions(
 
     photometry: list[PhotometryPoint] = []
     comments: list[str] = []
-    skipped = 0
+    dropped: list[str] = []
 
     # A NEW SkyPortal source requires ra/dec. A follow-up circular usually has no
     # position (it lives in the discovery circular), so guard against emitting a
@@ -183,10 +186,10 @@ def to_actions(
         )
 
     for idx, row in enumerate(extraction.photometry):
-        point = _row_to_point(extraction, obj_id, idx, row, instrument_map, default_instrument_id)
-        if point is None:
-            skipped += 1
-        else:
+        point = _row_to_point(
+            extraction, obj_id, idx, row, instrument_map, default_instrument_id, dropped
+        )
+        if point is not None:
             photometry.append(point)
 
     # Redshift: scalar only. Bounds (in notes) become a comment, not a value.
@@ -202,10 +205,10 @@ def to_actions(
     for note in extraction.extraction_meta.notes:
         comments.append(f"Note (not posted as a value): {note}")
 
-    if skipped:
+    if dropped:
+        detail = ", ".join(f"{n}x {reason}" for reason, n in sorted(Counter(dropped).items()))
         comments.append(
-            f"{skipped} photometry row(s) could not be posted "
-            f"(missing observation time, filter, or instrument_id); "
+            f"{len(dropped)} photometry row(s) could not be posted ({detail}); "
             f"kept in the extraction only."
         )
 
@@ -214,7 +217,8 @@ def to_actions(
         photometry=photometry,
         redshift=redshift,
         comments=comments,
-        skipped_rows=skipped,
+        skipped_rows=len(dropped),
+        skipped_reasons=tuple(dropped),
         extractions=(extraction,),
     )
 
@@ -244,6 +248,7 @@ def _row_to_point(
     row: PhotometryExt,
     instrument_map: dict[str, int],
     default_instrument_id: int | None,
+    dropped: list[str],
 ) -> PhotometryPoint | None:
     """One photometry row -> a SkyPortal point, or None if unpostable.
 
@@ -256,27 +261,29 @@ def _row_to_point(
     instrument_id = mapped if mapped is not None else default_instrument_id
     if row.frequency_ghz is not None:
         return _radio_row_to_point(
-            extraction, obj_id, idx, row, band, instrument_id, mapped is None
+            extraction, obj_id, idx, row, band, instrument_id, mapped is None, dropped
         )
     if obj_id is None or row.obs_mjd is None or band is None or instrument_id is None:
         # Name the reason: a filter with no bandpass is a crosswalk gap and the
         # row is lost silently otherwise, which reads as a thin light curve
         # rather than as missing data.
+        reason = (
+            "no bandpass"
+            if band is None
+            else "no obs_mjd"
+            if row.obs_mjd is None
+            else "no obj_id"
+            if obj_id is None
+            else "no instrument_id"
+        )
         log.info(
             "photometry_row_dropped",
             circular_id=extraction.circular_id,
-            reason=(
-                "no bandpass"
-                if band is None
-                else "no obs_mjd"
-                if row.obs_mjd is None
-                else "no obj_id"
-                if obj_id is None
-                else "no instrument_id"
-            ),
+            reason=reason,
             filter=row.filter,
             telescope=row.telescope,
         )
+        dropped.append(reason)
         return None
 
     # SkyPortal's photometry endpoint REQUIRES a non-null limiting_mag for
@@ -287,7 +294,16 @@ def _row_to_point(
     limit_assumed = False
     if limiting_mag is None:
         if row.mag is None:
-            return None  # neither a detection nor a stated limit — nothing to post
+            # Neither a detection nor a stated limit — nothing to post.
+            log.info(
+                "photometry_row_dropped",
+                circular_id=extraction.circular_id,
+                reason="no mag or limit",
+                filter=row.filter,
+                telescope=row.telescope,
+            )
+            dropped.append("no mag or limit")
+            return None
         limiting_mag = row.mag
         limit_assumed = True
 
@@ -334,6 +350,7 @@ def _radio_row_to_point(
     band: str | None,
     instrument_id: int | None,
     instrument_fallback: bool,
+    dropped: list[str],
 ) -> PhotometryPoint | None:
     """A radio row as a flux-space point, or None if unpostable.
 
@@ -349,6 +366,7 @@ def _radio_row_to_point(
             frequency_ghz=row.frequency_ghz,
             telescope=row.telescope,
         )
+        dropped.append(reason)
         return None
 
     unit = row.flux_density_unit

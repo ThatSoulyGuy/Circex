@@ -107,8 +107,8 @@ class LlamaServerExtractor(Extractor):
             if cached is not None:
                 meta = cached.extraction.extraction_meta.model_copy(update={"cache_hit": True})
                 result = cached.extraction.model_copy(update={"extraction_meta": meta})
-                resolve_relative_epochs(result, circular.trigger_time)
                 resolve_observation_epoch(result, circular.body)
+                resolve_relative_epochs(result, circular.trigger_time)
                 return result
 
         started = time.perf_counter()
@@ -167,10 +167,10 @@ class LlamaServerExtractor(Extractor):
                 extraction=merged,
                 latency_ms=latency_ms,
             )
-        resolve_relative_epochs(merged, circular.trigger_time)
-        # Bind a single body-level observation datetime to untimed rows, so a
-        # table without its own date column still gets an obs_mjd (as regex does).
+        # An observation datetime stated in the body is exact; a relative offset is
+        # rounded ("~4.5 days post-burst"), so it only fills what is still untimed.
         resolve_observation_epoch(merged, circular.body)
+        resolve_relative_epochs(merged, circular.trigger_time)
         return merged
 
     @property

@@ -201,10 +201,9 @@ class RegexExtractor(Extractor):
                 notes=bound_notes,
             ),
         )
-        # Fill obs_mjd/obs_time on rows lacking an absolute epoch from T0 + a
-        # single relative offset (no-op when trigger_time is None).
-        resolve_relative_epochs(extraction, circular.trigger_time)
-        # Fallback for prose photometry lists: if every row is still untimed, bind
-        # a single observation datetime stated in the body to all rows.
+        # A datetime stated in the body is exact, so it binds first; T0 + a single
+        # relative offset is rounded ("~4.5 days post-burst") and only fills rows
+        # still untimed. Both are no-ops when the circular states neither.
         resolve_observation_epoch(extraction, body)
+        resolve_relative_epochs(extraction, circular.trigger_time)
         return extraction
