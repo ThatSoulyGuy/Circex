@@ -30,13 +30,23 @@ _DEG = rf"[d°:{_BAD}]+"
 _MIN = rf"[m':{_BAD}]+"
 _SEC = rf"[s\"{_BAD}]*"
 
+# Sexagesimal written with spaces and no unit letters: "RA (J2000) = 11 09 29.61".
+# It must precede the bare-degree fallback, which would otherwise match the hours
+# alone and read 11h09m as 11 degrees.
+_RA_SPACED = r"\d{1,2}\s+\d{1,2}\s+\d{1,2}(?:\.\d+)?"
+_DEC_SPACED = r"[+\-]?\d{1,2}\s+\d{1,2}\s+\d{1,2}(?:\.\d+)?"
+
 _RA_INNER = (
     rf"(?:\d{{1,2}}[h:{_BAD}]+\s*\d{{1,2}}[m':{_BAD}]+\s*\d{{1,2}}(?:\.\d+)?[s\"{_BAD}]*"
+    rf"|{_RA_SPACED}"
+    rf"|\d{{1,2}}[h:{_BAD}]+\s*\d{{1,2}}[m':{_BAD}]+"  # 12h57m, no seconds
     r"|\d{1,3}\.\d+"  # 191.532 decimal degrees
     r"|\d{1,3})"  # 191 (fallback)
 )
 _DEC_INNER = (
     rf"(?:[+\-]?\d{{1,2}}{_DEG}\s*\d{{1,2}}{_MIN}\s*\d{{1,2}}(?:\.\d+)?{_SEC}"
+    rf"|{_DEC_SPACED}"
+    rf"|[+\-]?\d{{1,2}}{_DEG}\s*\d{{1,2}}{_MIN}"  # -17d51m, no arcseconds
     r"|[+\-]?\d{1,2}\.\d+"
     r"|[+\-]?\d{1,2})"
 )
@@ -90,8 +100,14 @@ def _restore_units(token: str, letters: str) -> str:
     return "".join(out)
 
 
+_SPACED_RE = re.compile(r"^([-+]?\d{1,3})\s+(\d{1,2})\s+(\d{1,2}(?:\.\d+)?)$")
+
+
 def _parse_one_ra(token: str) -> str:
     """Normalize an RA token into a string astropy can parse."""
+    spaced = _SPACED_RE.match(token.strip())
+    if spaced is not None:
+        return "{}h{}m{}s".format(*spaced.groups())
     token = _restore_units(token.replace(" ", ""), "hms")
     if ":" in token:
         return token  # 12:34:56.7
@@ -101,6 +117,9 @@ def _parse_one_ra(token: str) -> str:
 
 
 def _parse_one_dec(token: str) -> str:
+    spaced = _SPACED_RE.match(token.strip())
+    if spaced is not None:
+        return "{}d{}m{}s".format(*spaced.groups())
     token = _restore_units(token.replace(" ", ""), "dms")
     # Replace ASCII colons with explicit DMS letters if it's sexagesimal; SkyCoord
     # accepts colons only with explicit unit hints.

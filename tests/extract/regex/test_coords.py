@@ -179,3 +179,24 @@ def test_mangled_unit_symbols_keep_full_precision(text: str, expected: tuple[flo
     assert result is not None
     assert result[0] == pytest.approx(expected[0], abs=1e-4)
     assert result[1] == pytest.approx(expected[1], abs=1e-4)
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # Sexagesimal with spaces and no unit letters (GCN 21862, 34818).
+        ("RA (J2000) = 11 09 29.61 Dec (J2000) = -54 19 34.4", (167.3734, -54.3262)),
+        ("RA,DEC=00 43 54.36, +40 46 34.0", (10.9765, 40.7761)),
+        ("R.A. = 17 48 20, Decl. = -01 50 00", (267.0833, -1.8333)),
+        # Two components only, no seconds (GCN 21513, 21527).
+        ("R.A.=12h57m, Dec.=-17d51m", (194.25, -17.85)),
+        # Forms that already worked must not regress.
+        ("RA = 191.532, Dec = -23.456", (191.532, -23.456)),
+        ("RA (J2000) = 13h09m48.27s Dec = -23d23m04.3s", (197.4511, -23.3845)),
+    ],
+)
+def test_coordinate_notations(text: str, expected: tuple[float, float]) -> None:
+    result = parse_coords(text)
+    assert result is not None
+    assert result[0] == pytest.approx(expected[0], abs=2e-3)
+    assert result[1] == pytest.approx(expected[1], abs=2e-3)
