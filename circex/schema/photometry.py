@@ -14,6 +14,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, model_validator
 
 MagSystem = Literal["AB", "Vega", "STMag"]
+FluxDensityUnit = Literal["uJy", "mJy", "Jy"]
 CalibrationReference = Literal["PS1", "SDSS", "APASS", "2MASS", "Gaia", "Other"]
 
 
@@ -57,6 +58,38 @@ class PhotometryExt(BaseModel):
     limiting_mag_sigma: float | None = Field(
         default=None,
         description="Significance level [sigma] associated with limiting_mag (default 5).",
+    )
+
+    # ---- radio: flux density rather than magnitude ----
+    flux_density: float | None = Field(
+        default=None,
+        description=(
+            "Measured flux density in `flux_density_unit`, for radio/mm rows that "
+            "report a flux rather than a magnitude. May be negative for a marginal "
+            "measurement; null for a non-detection."
+        ),
+    )
+    flux_density_error: float | None = Field(
+        default=None,
+        description="1-sigma statistical uncertainty on flux_density, same unit.",
+    )
+    limiting_flux_density: float | None = Field(
+        default=None,
+        description=(
+            "Upper limit on flux density, same unit, at `limiting_mag_sigma` sigma "
+            "(circulars almost always quote 3-sigma)."
+        ),
+    )
+    flux_density_unit: FluxDensityUnit | None = Field(
+        default=None,
+        description="Unit for the flux-density fields. One of [uJy, mJy, Jy].",
+    )
+    frequency_ghz: float | None = Field(
+        default=None,
+        description=(
+            "Observing frequency in GHz. What identifies the band for radio rows, "
+            "where `filter` is meaningless; crosswalked to a radio-* bandpass."
+        ),
     )
 
     # ---- per-row observation epoch (ICARE P0 #2) ----
@@ -133,9 +166,9 @@ class PhotometryExt(BaseModel):
     def _infer_is_detection(self) -> PhotometryExt:
         """Auto-set is_detection when the caller leaves it null."""
         if self.is_detection is None:
-            if self.mag is not None:
+            if self.mag is not None or self.flux_density is not None:
                 self.is_detection = True
-            elif self.limiting_mag is not None:
+            elif self.limiting_mag is not None or self.limiting_flux_density is not None:
                 self.is_detection = False
         return self
 

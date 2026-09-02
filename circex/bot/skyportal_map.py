@@ -23,6 +23,7 @@ from circex.extract.regex.mag_table import (
     infer_mag_system,
     normalize_filter,
 )
+from circex.extract.regex.radio import bandpass_for_frequency, to_ujy
 from circex.schema import CircularExtraction, PhotometryExt
 
 # mag_system (our enum) -> SkyPortal magsys (lowercase). STMag has no direct
@@ -80,9 +81,33 @@ class PhotometryPoint:
     magerr: float | None
     limiting_mag: float | None
     altdata: dict[str, Any] = field(default_factory=dict)
+    # Flux space, for radio rows. `flux` is null for a non-detection, where
+    # SkyPortal derives the limiting magnitude from fluxerr and the sigma level.
+    flux: float | None = None
+    fluxerr: float | None = None
+    zp: float | None = None
+
+    @property
+    def is_flux_space(self) -> bool:
+        return self.zp is not None
 
     def to_payload(self) -> dict[str, Any]:
-        out: dict[str, Any] = {
+        if self.is_flux_space:
+            out: dict[str, Any] = {
+                "obj_id": self.obj_id,
+                "mjd": self.mjd,
+                "filter": self.filter,
+                "magsys": self.magsys,
+                "flux": self.flux,
+                "fluxerr": self.fluxerr,
+                "zp": self.zp,
+            }
+            if self.instrument_id is not None:
+                out["instrument_id"] = self.instrument_id
+            if self.altdata:
+                out["altdata"] = self.altdata
+            return out
+        out = {
             "obj_id": self.obj_id,
             "mjd": self.mjd,
             "filter": self.filter,
@@ -202,6 +227,8 @@ def _effective_band(row: PhotometryExt) -> tuple[str | None, str]:
     Mistral tagging Cousins "Rc" as sdssr/ab when it is bessellr/vega). Falls
     back to the row's own bandpass/mag_system when the filter isn't recognized.
     """
+    if row.frequency_ghz is not None:
+        return (row.bandpass or bandpass_for_frequency(row.frequency_ghz)), "ab"
     base = normalize_filter(row.filter) if row.filter else None
     band = infer_bandpass(base) if base else None
     if band is not None:
@@ -227,6 +254,10 @@ def _row_to_point(
     band, magsys = _effective_band(row)
     mapped = instrument_map.get(row.telescope_canonical) if row.telescope_canonical else None
     instrument_id = mapped if mapped is not None else default_instrument_id
+    if row.frequency_ghz is not None:
+        return _radio_row_to_point(
+            extraction, obj_id, idx, row, band, instrument_id, mapped is None
+        )
     if obj_id is None or row.obs_mjd is None or band is None or instrument_id is None:
         # Name the reason: a filter with no bandpass is a crosswalk gap and the
         # row is lost silently otherwise, which reads as a thin light curve
@@ -280,5 +311,84 @@ def _row_to_point(
         mag=row.mag,
         magerr=row.mag_error,
         limiting_mag=limiting_mag,
+        altdata=altdata,
+    )
+
+
+# AB zeropoint for a flux density in microjanskys: m = -2.5 log10(f_uJy) + 23.9.
+_UJY_AB_ZP = 23.9
+
+
+def _radio_row_to_point(
+    extraction: CircularExtraction,
+    obj_id: str | None,
+    idx: int,
+    row: PhotometryExt,
+    band: str | None,
+    instrument_id: int | None,
+    instrument_fallback: bool,
+) -> PhotometryPoint | None:
+    """A radio row as a flux-space point, or None if unpostable.
+
+    SkyPortal requires a non-null fluxerr, so a detection quoted without an
+    uncertainty cannot be posted; inventing one would be worse than dropping it.
+    """
+
+    def drop(reason: str) -> PhotometryPoint | None:
+        log.info(
+            "photometry_row_dropped",
+            circular_id=extraction.circular_id,
+            reason=reason,
+            frequency_ghz=row.frequency_ghz,
+            telescope=row.telescope,
+        )
+        return None
+
+    unit = row.flux_density_unit
+    if obj_id is None:
+        return drop("no obj_id")
+    if row.obs_mjd is None:
+        return drop("no obs_mjd")
+    if band is None:
+        return drop("no bandpass")
+    if instrument_id is None:
+        return drop("no instrument_id")
+    if unit is None:
+        return drop("no flux unit")
+
+    flux: float | None = None
+    if row.flux_density is not None:
+        if row.flux_density_error is None:
+            return drop("no flux uncertainty")
+        flux = to_ujy(row.flux_density, unit)
+        fluxerr = to_ujy(row.flux_density_error, unit)
+    elif row.limiting_flux_density is not None:
+        sigma = row.limiting_mag_sigma or 3.0
+        fluxerr = to_ujy(row.limiting_flux_density, unit) / sigma
+    else:
+        return drop("no flux density")
+
+    altdata: dict[str, Any] = {"circex_circular_id": extraction.circular_id}
+    if (note := _provenance_note(extraction, f"photometry[{idx}]")) is not None:
+        altdata["note"] = note
+    altdata["frequency_ghz"] = row.frequency_ghz
+    if row.limiting_flux_density is not None:
+        altdata["limiting_flux_density_sigma"] = row.limiting_mag_sigma or 3.0
+    if instrument_fallback:
+        altdata["instrument_fallback"] = True
+        if row.telescope:
+            altdata["telescope_as_written"] = row.telescope
+    return PhotometryPoint(
+        obj_id=obj_id,
+        mjd=row.obs_mjd,
+        filter=band,
+        magsys="ab",
+        instrument_id=instrument_id,
+        mag=None,
+        magerr=None,
+        limiting_mag=None,
+        flux=flux,
+        fluxerr=fluxerr,
+        zp=_UJY_AB_ZP,
         altdata=altdata,
     )

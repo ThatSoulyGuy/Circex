@@ -13,7 +13,12 @@ from circex.schema.event import Event
 from circex.schema.extraction_meta import ExtractionMeta
 from circex.schema.follow_up import FollowUp
 from circex.schema.localization import Localization
-from circex.schema.photometry import CalibrationReference, MagSystem, PhotometryExt
+from circex.schema.photometry import (
+    CalibrationReference,
+    FluxDensityUnit,
+    MagSystem,
+    PhotometryExt,
+)
 from circex.schema.redshift import Redshift, RedshiftMeasure, RedshiftType
 from circex.schema.reporter import Messenger, Reporter, SpectralBandUnit
 from circex.schema.span import Span
@@ -29,6 +34,7 @@ __all__ = [
     "ExtractionMeta",
     "FollowUp",
     "Localization",
+    "FluxDensityUnit",
     "MagSystem",
     "Messenger",
     "PhotometryExt",

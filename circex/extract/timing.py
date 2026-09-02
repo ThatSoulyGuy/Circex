@@ -45,11 +45,12 @@ def epoch_from_absolute(token: str | None) -> tuple[float, str] | None:
     """Parse an absolute date/MJD token into (obs_mjd, obs_time), or None.
 
     Accepts bare MJD numbers (within the plausible range), ISO-8601, and the
-    loose 'YYYY-MM-DD HH:MM' forms common in circular tables.
+    loose 'YYYY-MM-DD HH:MM' forms common in circular tables, including the
+    'YYYY-MM-DD_HH:MM' and 'YYYY-MM-DD at HH:MM' separators radio circulars use.
     """
     if not token:
         return None
-    token = token.strip()
+    token = re.sub(r"(?:_|\s+at\s+)(?=\d{2}:\d{2})", " ", token.strip())
     if not token:
         return None
     # Bare MJD number.
@@ -99,8 +100,8 @@ def epoch_from_offset(
 # "We observed from 2026-06-05 03:41 to 03:51 UTC", "images obtained on
 # 2026-06-08 20:01". Captures the first datetime that follows an observation verb.
 _OBS_EPOCH_RE = re.compile(
-    r"(?:observ|imag|obtain|acquir|expos|integrat)\w*[^.\n]{0,60}?"
-    r"(\d{4}[-.]\d{2}[-.]\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?)",
+    r"(?:observ|imag|obtain|acquir|expos|integrat|trigger|detect)\w*[^.]{0,120}?"
+    r"(\d{4}[-.]\d{2}[-.]\d{2}(?:(?:[ T_]|\s+at\s+)\d{2}:\d{2}(?::\d{2})?)?)",
     re.IGNORECASE,
 )
 

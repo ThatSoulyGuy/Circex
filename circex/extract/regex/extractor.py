@@ -21,6 +21,7 @@ from circex.extract.regex.mag_table import (
     parse_pipe_table_with_spans,
     parse_single_mags_with_spans,
 )
+from circex.extract.regex.radio import parse_radio_with_spans
 from circex.extract.regex.redshift import (
     parse_redshift_bound,
     parse_redshift_with_span,
@@ -137,6 +138,9 @@ class RegexExtractor(Extractor):
             or parse_mag_table_with_spans(body)
             or parse_single_mags_with_spans(body)
         )
+        # Radio rows are additive: they use flux density rather than magnitude, so
+        # they never compete with the magnitude parsers above.
+        photo_hits = list(photo_hits) + parse_radio_with_spans(body)
         photometry = [row for row, _ in photo_hits]
         for idx, (_, span) in enumerate(photo_hits):
             provenance[f"photometry[{idx}]"] = span
