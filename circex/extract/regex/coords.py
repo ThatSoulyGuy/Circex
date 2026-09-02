@@ -22,13 +22,21 @@ from circex.schema import Span
 # Reusable RA / Dec value sub-patterns (shared by both pair regexes below).
 # Each accepts sexagesimal (with optional interior spaces), decimal degrees, or a
 # bare integer-degree fallback.
+# Some circulars reach us with the degree/arcmin/arcsec symbols replaced by
+# U+FFFD. Accepting it as a unit keeps a sexagesimal coordinate whole; without
+# it the match stops after the degrees and the value is silently truncated.
+_BAD = "\ufffd"
+_DEG = rf"[d°:{_BAD}]+"
+_MIN = rf"[m':{_BAD}]+"
+_SEC = rf"[s\"{_BAD}]*"
+
 _RA_INNER = (
-    r"(?:\d{1,2}[h:]\s*\d{1,2}[m:]\s*\d{1,2}(?:\.\d+)?s?"  # 12h34m56.7s / 12:34:56.7
+    rf"(?:\d{{1,2}}[h:{_BAD}]+\s*\d{{1,2}}[m':{_BAD}]+\s*\d{{1,2}}(?:\.\d+)?[s\"{_BAD}]*"
     r"|\d{1,3}\.\d+"  # 191.532 decimal degrees
     r"|\d{1,3})"  # 191 (fallback)
 )
 _DEC_INNER = (
-    r"(?:[+\-]?\d{1,2}[d°:]\s*\d{1,2}[m':]\s*\d{1,2}(?:\.\d+)?[s\"]?"
+    rf"(?:[+\-]?\d{{1,2}}{_DEG}\s*\d{{1,2}}{_MIN}\s*\d{{1,2}}(?:\.\d+)?{_SEC}"
     r"|[+\-]?\d{1,2}\.\d+"
     r"|[+\-]?\d{1,2})"
 )
@@ -64,9 +72,27 @@ _PAIR_COMBINED_RE = re.compile(
 )
 
 
+def _restore_units(token: str, letters: str) -> str:
+    """Put back sexagesimal unit letters that arrived as U+FFFD."""
+    out: list[str] = []
+    seen = 0
+    for ch in token:
+        if ch == "\ufffd":
+            if out and out[-1] in letters:
+                continue  # a multi-byte symbol collapses to one letter
+            if seen < len(letters):
+                out.append(letters[seen])
+                seen += 1
+            continue
+        if ch in letters:
+            seen = letters.index(ch) + 1
+        out.append(ch)
+    return "".join(out)
+
+
 def _parse_one_ra(token: str) -> str:
     """Normalize an RA token into a string astropy can parse."""
-    token = token.replace(" ", "")
+    token = _restore_units(token.replace(" ", ""), "hms")
     if ":" in token:
         return token  # 12:34:56.7
     if "h" in token.lower():
@@ -75,7 +101,7 @@ def _parse_one_ra(token: str) -> str:
 
 
 def _parse_one_dec(token: str) -> str:
-    token = token.replace(" ", "")
+    token = _restore_units(token.replace(" ", ""), "dms")
     # Replace ASCII colons with explicit DMS letters if it's sexagesimal; SkyCoord
     # accepts colons only with explicit unit hints.
     return token

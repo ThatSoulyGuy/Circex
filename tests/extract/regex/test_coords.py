@@ -158,3 +158,24 @@ def test_transient_position_survives_a_preceding_fov() -> None:
     assert result is not None
     assert result[0] == pytest.approx(60.6)
     assert result[1] == pytest.approx(-75.4)
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        # Degree/arcmin/arcsec symbols arrive as U+FFFD (GCN 33429, 21612).
+        (
+            "RA (J2000): 04h 03m 26.24s\nDec (J2000): -75�� 22��� 43.8�",
+            (60.85933, -75.37883),
+        ),
+        (
+            "RA (J2000.0) = 13h 09m 48.27s\nDec (J2000.0) = -23d 23��� 04.3�",
+            (197.45112, -23.38453),
+        ),
+    ],
+)
+def test_mangled_unit_symbols_keep_full_precision(text: str, expected: tuple[float, float]) -> None:
+    result = parse_coords(text)
+    assert result is not None
+    assert result[0] == pytest.approx(expected[0], abs=1e-4)
+    assert result[1] == pytest.approx(expected[1], abs=1e-4)
