@@ -87,11 +87,47 @@ def parse_coords(text: str) -> tuple[float, float] | None:
     return result[0] if result is not None else None
 
 
+# A circular states positions for things that are not the transient: the host
+# galaxy, an unrelated galaxy the slit crossed, or the boresight of an instrument
+# that saw nothing. Whichever anchor sits nearest before the coordinates owns them.
+_NOT_TRANSIENT_RE = re.compile(
+    r"\b(?:host|nearby|neighbou?ring|foreground|companion)\s+galax(?:y|ies)"
+    r"|\bgalaxy\s+candidate"
+    r"|\b(?:reference|comparison|field|standard)\s+stars?"
+    r"|\bfield\s+of\s+view|\bFOV\b|\bboresight"
+    r"|\b(?:latitude|longitude)\b",
+    re.I,
+)
+_IS_TRANSIENT_RE = re.compile(
+    r"\b(?:afterglow|counterpart|transient|burst|source|positions?|detected"
+    r"|optical|X-ray|radio)\b",
+    re.I,
+)
+_ANCHOR_WINDOW = 160
+
+
+def _describes_transient(text: str, at: int) -> bool:
+    """Whether the nearest preceding anchor marks these coordinates as the transient's."""
+    before = text[max(0, at - _ANCHOR_WINDOW) : at]
+    others = _NOT_TRANSIENT_RE.findall(before)
+    if not others:
+        return True
+    nearest = before.rfind(others[-1])
+    return any(m.start() > nearest for m in _IS_TRANSIENT_RE.finditer(before))
+
+
 def parse_coords_with_span(
     text: str,
 ) -> tuple[tuple[float, float], Span] | None:
     """Same as parse_coords, but also return a Span covering the RA/Dec match."""
-    match = _PAIR_RE.search(text) or _PAIR_COMBINED_RE.search(text)
+    match = None
+    for pattern in (_PAIR_RE, _PAIR_COMBINED_RE):
+        for candidate in pattern.finditer(text):
+            if _describes_transient(text, candidate.start()):
+                match = candidate
+                break
+        if match is not None:
+            break
     if not match:
         return None
 

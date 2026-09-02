@@ -125,3 +125,36 @@ def test_svom_discovery_circular_prefers_the_refined_position():
 
 def test_ra_label_does_not_match_mid_word():
     assert parse_coords("The SPECTRA 12.5, Dec. 4.5 were reduced") is None
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        # Swift's boresight in a circular that reports no detection (GCN 21524).
+        "The center of the BAT FOV at T0 is RA = 36.075 deg, DEC = -52.287 deg, ROLL = 108.5 deg.",
+        # The host, not the burst (GCN 38535).
+        "We obtained spectroscopy of this, brighter and more likely host galaxy candidate "
+        "(located at RA = 10:21:35.09, Dec = +06:19:45.4) using OSIRIS+.",
+        # A foreground galaxy the slit happened to cross (GCN 38877).
+        "The slit was aligned in order to cover also the nearby galaxy at coordinates "
+        "RA = 13:25:18.72, Dec = +25:37:12.7, with photometric redshift z = 0.2-0.3.",
+        # The centre of the imaged field in an upper-limit circular (GCN 36857).
+        "We do not detect any new source in our stacked frames having a Field of View (FoV) "
+        "of around 13'.0 x 13'.0 centered at R.A. = 23:30:24.55 and Dec. = +01:52:50.9.",
+    ],
+)
+def test_position_of_another_object_is_refused(text: str) -> None:
+    assert parse_coords(text) is None
+
+
+def test_transient_position_survives_a_preceding_fov() -> None:
+    # The FoV describes the instrument; the position that follows is still the GRB's.
+    text = (
+        "The GRB was detected within the extended FoV (about 0.6 deg outside the nominal "
+        "18.6deg x 18.6deg FoV) of LEIA, and the on-ground calculated position is "
+        "RA=60.6, Dec=-75.4, with an estimated 3-sigma error of 10 arcmin."
+    )
+    result = parse_coords(text)
+    assert result is not None
+    assert result[0] == pytest.approx(60.6)
+    assert result[1] == pytest.approx(-75.4)
