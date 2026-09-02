@@ -245,3 +245,39 @@ def test_a_real_class_name_still_classifies() -> None:
 
     hit = parse_classification_with_span("We classify this as a Type Ia supernova.")
     assert hit is not None
+
+
+# --- error-box radii are not magnitudes -------------------------------------
+
+MASTER_ERRORBOX = (
+    "MASTER-Tavrida was pointed to GRB240618.80 (trigger No 740430582,"
+    "22h 48m 28.80s , +71d 41m 24.0s, R=74.88) errorbox 2162 sec after notice time."
+)
+
+
+def test_an_error_box_radius_is_not_photometry() -> None:
+    """R is a radius in this template; 58 such values fall inside the mag range."""
+    from circex.extract.regex.mag_table import parse_single_mags
+
+    assert parse_single_mags(MASTER_ERRORBOX) == []
+
+
+def test_an_error_box_radius_inside_the_magnitude_range_is_still_rejected() -> None:
+    from circex.extract.regex.mag_table import parse_single_mags
+
+    text = MASTER_ERRORBOX.replace("R=74.88", "R=19.5")
+    assert parse_single_mags(text) == []
+
+
+def test_a_real_magnitude_of_the_same_value_survives() -> None:
+    from circex.extract.regex.mag_table import parse_single_mags
+
+    rows = parse_single_mags("We detect the afterglow at R = 19.5 +/- 0.1.")
+    assert [(r.filter, r.mag) for r in rows] == [("R", 19.5)]
+
+
+@pytest.mark.parametrize("mag", [31.0, 74.88, 4.9])
+def test_magnitudes_outside_the_optical_range_are_rejected(mag: float) -> None:
+    from circex.extract.regex.mag_table import parse_single_mags
+
+    assert parse_single_mags(f"the source was at R = {mag} in our image") == []

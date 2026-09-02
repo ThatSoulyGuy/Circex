@@ -120,13 +120,18 @@ def infer_bandpass(filter_name: str) -> str | None:
     return _BANDPASS_CROSSWALK.get(filter_name)
 
 
+# Optical magnitudes run roughly 5 to 30; the deepest reported limits sit just
+# under 30, so a larger number is something else wearing a filter name.
+_MAG_MIN, _MAG_MAX = 5.0, 30.0
+
+
 def _plausible_mag(filter_name: str, mag: float) -> bool:
     """Reject obvious non-photometric values (e.g., 'z = 1.61' for redshift).
 
-    Photometric magnitudes are typically 5-30; the lowercase Sloan filter 'z'
-    overlaps with redshift notation, so require z-band mags to be > 10.
+    The lowercase Sloan filter 'z' overlaps with redshift notation, so z-band
+    mags must additionally be > 10.
     """
-    if mag < 5.0:
+    if not _MAG_MIN < mag < _MAG_MAX:
         return False
     return not (filter_name == "z" and mag < 10.0)
 
@@ -140,6 +145,18 @@ _CONTAMINANT_RE = re.compile(
     r"|reference\s+star|comparison\s+star|calibration\s+star|field\s+star|nearby\s+star",
     re.IGNORECASE,
 )
+
+
+# "GRB240618.80 (trigger No 740430582, 22h 48m 28.80s, +71d 41m 24.0s, R=74.88)
+# errorbox" reports the radius of an error box. R is a length here, and 58 of
+# these fall inside the plausible magnitude range, so no bound separates them
+# from real photometry; the surrounding template is what identifies them.
+_ERRORBOX_RE = re.compile(r"\(\s*trigger\s+No\b[^)]*\)\s*errorbox", re.IGNORECASE)
+
+
+def _errorbox_ranges(text: str) -> list[tuple[int, int]]:
+    """Char ranges of error-box declarations, whose R is a radius, not a band."""
+    return [(m.start(), m.end()) for m in _ERRORBOX_RE.finditer(text)]
 
 
 def _contaminant_ranges(text: str) -> list[tuple[int, int]]:
@@ -169,7 +186,8 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     """Same as parse_single_mags, plus per-row Spans into the source text."""
     rows: list[tuple[PhotometryExt, Span]] = []
     consumed: list[tuple[int, int]] = []  # char ranges already claimed
-    excluded = _contaminant_ranges(text)  # non-transient (galaxy / ref-star) clauses
+    # non-transient (galaxy / ref-star) clauses, and error-box radii
+    excluded = _contaminant_ranges(text) + _errorbox_ranges(text)
 
     for match in _DETECTION_RE.finditer(text):
         filter_name = match.group("filter")
