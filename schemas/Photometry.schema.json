@@ -1,7 +1,7 @@
 {
   "$id": "https://gcn.nasa.gov/schema/main/gcn/notices/core/Photometry.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "title": "PhotometryExt",
   "description": "Magnitude-based UV/optical/NIR photometry for one source in one filter (one row).",
   "properties": {
@@ -170,6 +170,61 @@
       "default": null,
       "description": "Observing frequency in GHz. What identifies the band for radio rows, where `filter` is meaningless; crosswalked to a radio-* bandpass.",
       "title": "Frequency Ghz"
+    },
+    "energy_flux": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Band-integrated energy flux in erg cm^-2 s^-1, for X-ray and gamma-ray rows. Distinct from a fluence (erg cm^-2) and from a luminosity (erg s^-1), neither of which is photometry.",
+      "title": "Energy Flux"
+    },
+    "energy_flux_error": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "1-sigma uncertainty on energy_flux, erg cm^-2 s^-1.",
+      "title": "Energy Flux Error"
+    },
+    "limiting_energy_flux": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Upper limit on the energy flux, erg cm^-2 s^-1, at `limiting_mag_sigma` sigma.",
+      "title": "Limiting Energy Flux"
+    },
+    "energy_band_kev": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Energy band the flux is integrated over, [low, high] in keV. What identifies the band for X-ray rows, where `filter` is meaningless.",
+      "title": "Energy Band Kev"
     },
     "obs_mjd": {
       "anyOf": [
