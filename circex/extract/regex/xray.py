@@ -28,6 +28,17 @@ _INSTRUMENT_BANDPASS: Final[tuple[tuple[str, str], ...]] = (
     (r"SVOM[-/\s]?GRM|\bGRM\b", "svomgrm"),
     (r"Swift[-/\s]?XRT|\bXRT\b", "swiftxrt"),
     (r"NICER|\bXTI\b", "nicerxti"),
+    # Hard X-ray and gamma-ray monitors.
+    (r"Swift[-/\s]?BAT|\bBAT\b", "swiftbat"),
+    (r"Fermi[-/\s]?GBM|\bGBM\b", "fermigbm"),
+    (r"Fermi[-/\s]?LAT|\bLAT\b", "fermilat"),
+    (r"Konus[-\s]?Wind|\bKonus\b", "konus"),
+    (r"SPI[-/\s]?ACS", "integralacs"),
+    (r"IBIS[/\s]?ISGRI|\bISGRI\b|\bIBIS\b", "integralibis"),
+    (r"JEM[-\s]?X", "integraljemx"),
+    (r"CGBM|\bCALET\b", "caletcgbm"),
+    (r"NuSTAR", "nustar"),
+    (r"MAXI[-/\s]?GSC|\bMAXI\b", "maxigsc"),
 )
 _INSTRUMENT_RE: Final[tuple[tuple[re.Pattern[str], str], ...]] = tuple(
     (re.compile(pattern, re.IGNORECASE), band) for pattern, band in _INSTRUMENT_BANDPASS
