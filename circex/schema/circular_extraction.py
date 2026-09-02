@@ -79,6 +79,15 @@ class CircularExtraction(BaseModel):
         description="Who issued the alert (do NOT conflate with photometry.telescope).",
     )
 
+    retraction: bool = Field(
+        default=False,
+        description=(
+            "True when the circular withdraws a previously reported trigger. Such a "
+            "circular still names the event and may restate its position; consumers "
+            "should not treat those values as a new detection."
+        ),
+    )
+
     provenance: dict[str, Span] = Field(
         default_factory=dict,
         description=(

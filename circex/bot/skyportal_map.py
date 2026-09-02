@@ -199,7 +199,12 @@ def to_actions(
     # positionless source-create that SkyPortal would reject with a 400.
     source: SourceUpsert | None = None
     error_deg = position_error_deg(extraction)
-    if error_deg is not None and error_deg > MAX_SOURCE_POSITION_ERROR_DEG:
+    if extraction.retraction:
+        comments.append(
+            "This circular withdraws the trigger; no source created and no photometry posted."
+        )
+        dropped.append("retraction")
+    elif error_deg is not None and error_deg > MAX_SOURCE_POSITION_ERROR_DEG:
         # A region, not a counterpart; it still localizes the event.
         comments.append(
             f"Position is an error region ({error_deg:.3f} deg), not a counterpart; "
@@ -213,7 +218,7 @@ def to_actions(
             f"(position comes from the discovery circular)."
         )
 
-    for idx, row in enumerate(extraction.photometry):
+    for idx, row in enumerate(extraction.photometry if not extraction.retraction else []):
         point = _row_to_point(
             extraction,
             obj_id,

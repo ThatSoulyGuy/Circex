@@ -34,6 +34,7 @@ from circex.extract.regex.regex_events import (
     extract_gcn_xrefs_with_positions,
     extract_matches_with_positions,
 )
+from circex.extract.regex.retraction import is_retraction
 from circex.extract.regex.xray import parse_xray_with_spans
 from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
 from circex.schema import (
@@ -207,6 +208,7 @@ class RegexExtractor(Extractor):
             photometry=photometry,
             classification=classification,
             redshift=redshift,
+            retraction=is_retraction(circular.subject),
             provenance=provenance,
             extraction_meta=ExtractionMeta(
                 extractor=REGEX_EXTRACTOR_ID,
