@@ -390,3 +390,21 @@ def test_johnson_filters_still_read():
     rows = [row for row, _ in parse_single_mags_with_spans("R = 20.1 +/- 0.2")]
     assert rows[0].filter == "R"
     assert rows[0].bandpass == "bessellr"
+
+
+def test_header_punctuation_does_not_hide_a_column():
+    # "mag." with its trailing period is still the magnitude column.
+    table = (
+        "Tel.      Date (UT)   exp    filter  mag.\n"
+        "=========================================\n"
+        "NOT-2.5m  Dec.12.22   900s     R    20.07\n"
+        "NOT-2.5m  Dec.12.28   300s     B    21.41\n"
+    )
+    rows = parse_mag_table(table)
+    assert [(r.filter, r.mag) for r in rows] == [("R", 20.07), ("B", 21.41)]
+
+
+def test_a_rule_under_the_header_is_not_the_end_of_the_table():
+    for rule in ("-----------------------------", "=============================", "____"):
+        table = f"filter  mag\n{rule}\nR   20.07\nB   21.41\n"
+        assert len(parse_mag_table(table)) == 2, rule

@@ -337,15 +337,18 @@ def _looks_like_table_row(line: str, expected_columns: int) -> bool:
     return any(re.search(r"\d", f) for f in fields)
 
 
+# A rule drawn under a header: "-----", "=====", "_____".
+_RULE_RE = re.compile(r"^\s*[-=_]{3,}\s*$")
+
+
 def _classify_columns(header_line: str) -> dict[int, str]:
     """Return a dict mapping column index -> semantic role (filter, mag, err, ...).
 
-    Tokens are whitespace-stripped first so a trailing newline (the parser reads
-    lines with line endings kept, for span offsets) can't corrupt the last
-    column's role — previously "Err\\n" failed to classify and mag_error was
-    silently dropped.
+    Tokens are stripped of surrounding whitespace and the punctuation headers
+    carry ("Err\\n", "mag.", "Filter:"), any of which otherwise leaves the column
+    unclassified and its values silently dropped.
     """
-    fields = [f.strip().strip(":").lower() for f in _COLUMN_SPLIT_RE.split(header_line) if f]
+    fields = [f.strip().strip(":.,()").lower() for f in _COLUMN_SPLIT_RE.split(header_line) if f]
     classification: dict[int, str] = {}
     for i, token in enumerate(fields):
         if token in {"filter", "band"}:
@@ -666,6 +669,9 @@ def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
         expected = len(header_fields)
 
         j = i + 1
+        # A rule drawn under the header is not a row, but nor is it the end.
+        while j < len(lines) and _RULE_RE.match(lines[j]):
+            j += 1
         while j < len(lines) and _looks_like_table_row(lines[j], expected):
             data_fields = [f for f in _COLUMN_SPLIT_RE.split(lines[j].strip()) if f]
             row_data: dict[str, str] = {}
