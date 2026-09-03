@@ -30,6 +30,7 @@ import re
 from circex.data.telescopes import canonicalize_telescope
 from circex.extract.protocol import Circular, Extractor
 from circex.extract.regex.telescope import parse_telescope_with_span
+from circex.extract.timing import parse_observation_epoch
 from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
 from circex.schema.span import Span
 
@@ -56,6 +57,28 @@ _ROUTING: dict[str, tuple[str, str | None]] = {
 _BAND_AS_FILTER_RE = re.compile(
     r"\d\s*(?:-|–|to)\s*\d.*\b(?:keV|MeV|GHz|MHz)\b|\b(?:keV|GHz|MHz)\b", re.I
 )
+
+
+def _prefer_stated_epoch(fields: dict[str, object], body: str) -> None:
+    """Replace generated epochs with the one the circular states, in place.
+
+    A grammar constrains the model's syntax, not its arithmetic: it will emit a
+    well-formed MJD that appears nowhere in the text. An epoch parsed from a
+    character span is the more trustworthy of the two, so where the body states
+    an observation time it overrides what the model supplied.
+    """
+    rows = fields.get("photometry")
+    if not isinstance(rows, list) or not rows:
+        return
+    stated = parse_observation_epoch(body)
+    if stated is None:
+        return
+    mjd, iso = stated
+    for row in rows:
+        if row.obs_mjd == mjd:
+            continue
+        row.obs_mjd = mjd
+        row.obs_time = iso
 
 
 def _carry_telescope(
@@ -174,6 +197,7 @@ class HybridExtractor(Extractor):
 
         _rescue_structured_photometry(fields, sources["regex"])
         _carry_telescope(fields, sources["regex"], circular.body)
+        _prefer_stated_epoch(fields, circular.body)
 
         # Retraction is read from the subject line, so it is the same either way
         # and never routed; without this the merged result always reads False.

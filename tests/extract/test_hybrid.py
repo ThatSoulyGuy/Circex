@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from circex.extract.hybrid import _ROUTING, HybridExtractor
 from circex.extract.protocol import Circular
 from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
@@ -204,3 +206,29 @@ def test_the_prose_names_the_telescope_when_regex_found_no_rows() -> None:
     )
     assert merged.photometry[0].telescope == "Keck-II"
     assert merged.photometry[0].telescope_canonical == "Keck"
+
+
+def test_a_stated_epoch_overrides_a_generated_one() -> None:
+    # GCN 45501: the model emitted a well-formed MJD four years off; the body
+    # states the observation time, and that is the one to keep.
+    body = "Our observation started on 2026-09-03T13:06:41.486 UT (29.36 min after the trigger)."
+    regex = _stub(1)
+    llm = _stub(
+        1,
+        photometry=[
+            PhotometryExt(filter="r", mag=17.91, obs_mjd=59868.0, obs_time="2022-10-16T00:00:00Z")
+        ],
+    )
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=45501, subject="s", body=body)
+    )
+    assert merged.photometry[0].obs_mjd == pytest.approx(61286.546, abs=1e-3)
+    assert merged.photometry[0].obs_time.startswith("2026-09-03")
+
+
+def test_rows_keep_their_epoch_when_the_body_states_none() -> None:
+    llm = _stub(1, photometry=[PhotometryExt(filter="r", mag=20.0, obs_mjd=61200.5)])
+    merged = HybridExtractor(_Fixed(_stub(1), "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=1, subject="s", body="No time is given here.")
+    )
+    assert merged.photometry[0].obs_mjd == 61200.5
