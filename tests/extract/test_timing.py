@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pytest
+from astropy.time import Time
 
 from circex.extract.protocol import Circular
 from circex.extract.regex import RegexExtractor
@@ -14,6 +15,7 @@ from circex.extract.timing import (
     epoch_from_offset,
     normalize_pair,
     parse_observation_epoch,
+    resolve_inline_offsets,
     resolve_observation_epoch,
     resolve_relative_epochs,
 )
@@ -345,3 +347,43 @@ def test_fractional_day_epoch(text: str, expected_mjd: float) -> None:
     )
     resolve_observation_epoch(extraction, text)
     assert extraction.photometry[0].obs_mjd == pytest.approx(expected_mjd, abs=1e-3)
+
+
+def test_each_row_takes_the_offset_on_its_own_line():
+    """GCN 45505 reported three epochs, each timed beside its magnitude.
+
+    The circular-level rule refuses several distinct offsets as ambiguous; these
+    are not ambiguous, because each sits in the clause with its measurement.
+    """
+    body = (
+        "r = 20.92 +/- 0.19 AB (mid-time 38.66 min after the trigger);\n"
+        "r = 20.46 +/- 0.19 AB (mid-time 2.30 hr after the trigger);\n"
+        "r = 21.8 +/- 0.4 AB (mid-time 2.74 hr after the trigger).\n"
+    )
+    trigger = datetime(2026, 9, 3, 12, 36, 47, tzinfo=UTC)
+    extraction = CircularExtraction(
+        circular_id=45505,
+        photometry=[
+            PhotometryExt(filter="r", mag=20.92),
+            PhotometryExt(filter="r", mag=20.46),
+            PhotometryExt(filter="r", mag=21.8),
+        ],
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    resolve_inline_offsets(extraction, body, trigger)
+    hours = [(row.obs_mjd - Time(trigger).mjd) * 24 for row in extraction.photometry]
+    assert hours[0] == pytest.approx(38.66 / 60, abs=1e-3)
+    assert hours[1] == pytest.approx(2.30, abs=1e-3)
+    assert hours[2] == pytest.approx(2.74, abs=1e-3)
+
+
+def test_an_offset_away_from_the_measurement_is_left_alone():
+    # One offset in prose, magnitudes elsewhere: the per-row rule must not guess.
+    body = "We observed 3 hours after the trigger.\nr = 20.9\nz = 21.4\n"
+    extraction = CircularExtraction(
+        circular_id=1,
+        photometry=[PhotometryExt(filter="r", mag=20.9)],
+        extraction_meta=ExtractionMeta(extractor="test"),
+    )
+    resolve_inline_offsets(extraction, body, datetime(2026, 9, 3, tzinfo=UTC))
+    assert extraction.photometry[0].obs_mjd is None

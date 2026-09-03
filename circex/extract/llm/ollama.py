@@ -27,7 +27,10 @@ from circex.extract.llm.prompt import (
     llm_input_schema,
 )
 from circex.extract.protocol import Circular, Extractor
-from circex.extract.timing import resolve_relative_epochs
+from circex.extract.timing import (
+    resolve_inline_offsets,
+    resolve_relative_epochs,
+)
 from circex.schema import CircularExtraction, ExtractionMeta
 from circex.taxonomy import normalize_classification
 
@@ -75,6 +78,7 @@ class OllamaExtractor(Extractor):
                 meta = cached.extraction.extraction_meta.model_copy(update={"cache_hit": True})
                 result = cached.extraction.model_copy(update={"extraction_meta": meta})
                 # Relative epochs are resolved per-call (T0-dependent), not cached.
+                resolve_inline_offsets(result, circular.body, circular.trigger_time)
                 resolve_relative_epochs(result, circular.trigger_time)
                 return result
 
@@ -146,6 +150,7 @@ class OllamaExtractor(Extractor):
                 latency_ms=latency_ms,
             )
 
+        resolve_inline_offsets(merged, circular.body, circular.trigger_time)
         resolve_relative_epochs(merged, circular.trigger_time)
         return merged
 

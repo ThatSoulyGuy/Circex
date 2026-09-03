@@ -29,7 +29,7 @@ _T_OFFSET_RE = re.compile(
 _POST_TRIGGER_RE = re.compile(
     r"""
     \b(?P<value>\d+(?:\.\d+)?)\s*
-    (?P<unit>ks|seconds?|minutes?|hours?|days?|[smhd])\s+
+    (?P<unit>ks|seconds?|secs?|minutes?|mins?|hours?|hrs?|days?|[smhd])\s+
     (?:
         after\s+(?:the\s+)?(?:\S+\s+){0,2}?(?:trigger|burst|explosion)
       | post[-\s]?(?:trigger|burst|explosion)
@@ -52,6 +52,8 @@ _UNIT_MAP: dict[str, TimeOffsetUnit] = {
     "minute": "m",
     "minutes": "m",
     "h": "h",
+    "hr": "h",
+    "hrs": "h",
     "hour": "h",
     "hours": "h",
     "d": "d",

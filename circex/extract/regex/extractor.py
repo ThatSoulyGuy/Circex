@@ -38,7 +38,11 @@ from circex.extract.regex.regex_events import (
 from circex.extract.regex.retraction import is_retraction
 from circex.extract.regex.telescope import parse_telescope_with_span
 from circex.extract.regex.xray import parse_xray_with_spans
-from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
+from circex.extract.timing import (
+    resolve_inline_offsets,
+    resolve_observation_epoch,
+    resolve_relative_epochs,
+)
 from circex.schema import (
     CircularExtraction,
     Classification,
@@ -242,6 +246,7 @@ class RegexExtractor(Extractor):
         # relative offset is rounded ("~4.5 days post-burst") and only fills rows
         # still untimed. Both are no-ops when the circular states neither.
         resolve_observation_epoch(extraction, body)
+        resolve_inline_offsets(extraction, circular.body, circular.trigger_time)
         resolve_relative_epochs(extraction, circular.trigger_time)
         _apply_telescope(extraction, body, provenance)
         return extraction

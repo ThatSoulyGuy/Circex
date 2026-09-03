@@ -33,7 +33,11 @@ from circex.extract.llm.prompt import (
     llm_grammar_schema,
 )
 from circex.extract.protocol import Circular, Extractor
-from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
+from circex.extract.timing import (
+    resolve_inline_offsets,
+    resolve_observation_epoch,
+    resolve_relative_epochs,
+)
 from circex.schema import CircularExtraction, ExtractionMeta
 
 log = structlog.get_logger(__name__)
@@ -108,6 +112,7 @@ class LlamaServerExtractor(Extractor):
                 meta = cached.extraction.extraction_meta.model_copy(update={"cache_hit": True})
                 result = cached.extraction.model_copy(update={"extraction_meta": meta})
                 resolve_observation_epoch(result, circular.body)
+                resolve_inline_offsets(result, circular.body, circular.trigger_time)
                 resolve_relative_epochs(result, circular.trigger_time)
                 return result
 
@@ -170,6 +175,7 @@ class LlamaServerExtractor(Extractor):
         # An observation datetime stated in the body is exact; a relative offset is
         # rounded ("~4.5 days post-burst"), so it only fills what is still untimed.
         resolve_observation_epoch(merged, circular.body)
+        resolve_inline_offsets(merged, circular.body, circular.trigger_time)
         resolve_relative_epochs(merged, circular.trigger_time)
         return merged
 

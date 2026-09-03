@@ -204,6 +204,48 @@ def resolve_observation_epoch(extraction: CircularExtraction, body: str) -> None
     )
 
 
+def resolve_inline_offsets(
+    extraction: CircularExtraction, body: str, trigger_time: datetime | None
+) -> None:
+    """Pair each row with an offset stated on its own line, in place.
+
+    A circular that lists several epochs usually writes each one beside its
+    magnitude ("r = 20.92 +/- 0.19 AB (mid-time 38.66 min after the trigger)").
+    The offsets are only ambiguous when they sit apart from the measurements, so
+    a row is timed here when exactly one offset shares its line.
+    """
+    from circex.extract.regex.dates import parse_time_offsets
+
+    if trigger_time is None or not extraction.photometry:
+        return
+
+    untimed = [r for r in extraction.photometry if r.obs_mjd is None and r.obs_time is None]
+    if not untimed:
+        return
+
+    for row in untimed:
+        value = row.mag if row.mag is not None else row.limiting_mag
+        if value is None:
+            continue
+        line = _line_containing(body, value)
+        if line is None:
+            continue
+        offsets = parse_time_offsets(line)
+        if len(offsets) != 1:
+            continue
+        pair = epoch_from_offset(trigger_time, offsets[0].value, offsets[0].unit)
+        if pair is None:
+            continue
+        row.obs_mjd, row.obs_time = pair
+
+
+def _line_containing(body: str, value: float) -> str | None:
+    """The one line stating this magnitude, or None if it is not unique."""
+    token = f"{value:g}"
+    hits = [line for line in body.splitlines() if token in line]
+    return hits[0] if len(hits) == 1 else None
+
+
 def resolve_relative_epochs(extraction: CircularExtraction, trigger_time: datetime | None) -> None:
     """Fill obs_mjd/obs_time on rows that lack an epoch, in place.
 
