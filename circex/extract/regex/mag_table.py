@@ -20,32 +20,55 @@ from circex.extract.timing import epoch_from_absolute, epoch_from_offset
 from circex.schema import MagSystem, PhotometryExt, Span
 
 # Filter classification.
+# Filter tokens circulars use, beyond the Johnson/Sloan/NIR letters: Swift's UVOT
+# set, HST's F###W names, and the several spellings of "no filter".
+_UVOT = ("uvw1", "uvw2", "uvm2", "white")
+_UNFILTERED = ("unfiltered", "clear", "CR", "CV")
+
 _SLOAN: Final[frozenset[str]] = frozenset({"u", "g", "r", "i", "z", "y"})
 _BESSEL: Final[frozenset[str]] = frozenset({"U", "B", "V", "R", "I"})
 _NIR: Final[frozenset[str]] = frozenset({"J", "H", "K", "Ks"})
 
-_KNOWN_FILTERS: Final[frozenset[str]] = _SLOAN | _BESSEL | _NIR | frozenset({"clear", "C"})
+_HST: Final[frozenset[str]] = frozenset(
+    {"F450W", "F555W", "F606W", "F702W", "F775W", "F814W", "F850LP", "F160W", "F110W"}
+)
+_KNOWN_FILTERS: Final[frozenset[str]] = (
+    _SLOAN
+    | _BESSEL
+    | _NIR
+    | _HST
+    | frozenset(_UVOT)
+    | frozenset(_UNFILTERED)
+    | frozenset({"clear", "C", "W", "Rc", "Ic"})
+)
 
 # Single-mag patterns. Matches "r = 18.42 ± 0.05", "R=22.1+/-0.3", "K_s = 19.0",
+_FILTER_TOKEN = (
+    r"(?:F\d{3}[A-Z]{1,2}"
+    r"|" + "|".join(_UVOT) + r""
+    r"|" + "|".join(_UNFILTERED) + r""
+    r"|[UBVRI]c|[ugriz][p']|[UBVRIJHKgrizyuCW]s?)"
+)
+
 # upper limits: "r > 22.5", "m > 22 (3-sigma)".
 _DETECTION_RE = re.compile(
-    r"""
+    rf"""
     (?<![A-Za-z])                          # not preceded by a letter (avoid "Ar=...")
-    (?P<filter>[UBVRIJHKgrizyuC]s?)         # filter
+    (?P<filter>{_FILTER_TOKEN})            # filter
     \s*[=~]\s*
-    (?P<mag>\d{1,2}\.\d{1,3})              # magnitude
+    (?P<mag>\d{{1,2}}\.\d{{1,3}})              # magnitude
     (?:\s*(?:±|\+/[-−]|[+\-])\s*(?P<err>\d+\.\d+))?   # optional error (±, +/-, +/−)
     """,
     re.VERBOSE,
 )
 
 _UPPER_LIMIT_RE = re.compile(
-    r"""
+    rf"""
     (?<![A-Za-z])
-    (?P<filter>[UBVRIJHKgrizyuC]s?)
+    (?P<filter>{_FILTER_TOKEN})
     \s*>\s*
-    (?P<limit>\d{1,2}\.\d{1,3})
-    (?:.{0,40}?(?P<sigma>\d+(?:\.\d+)?)\s*[-–]?\s*sigma)?
+    (?P<limit>\d{{1,2}}\.\d{{1,3}})
+    (?:.{{0,40}}?(?P<sigma>\d+(?:\.\d+)?)\s*[-–]?\s*sigma)?
     """,
     re.VERBOSE | re.IGNORECASE,
 )
@@ -59,11 +82,11 @@ _UPPER_LIMIT_RE = re.compile(
 # parse multi-row tables (the documented regex/LLM boundary); it recovers the
 # common single-detection line the column-split parser drops.
 _SPACED_DETECTION_RE = re.compile(
-    r"""
+    rf"""
     (?<![A-Za-z])
-    (?P<filter>[UBVRI]c|[ugriz][p']|[UBVRIJHKgrizyuC]s?)
+    (?P<filter>{_FILTER_TOKEN})
     \s+
-    (?P<mag>\d{1,2}\.\d{1,3})
+    (?P<mag>\d{{1,2}}\.\d{{1,3}})
     \s*(?:±|\+/-|\+/−)\s*
     (?P<err>\d+\.\d+)
     """,
@@ -110,6 +133,11 @@ _BANDPASS_CROSSWALK: Final[dict[str, str]] = {
     # Cousins R/I, as the circulars write them.
     "Rc": "bessellr",
     "Ic": "besselli",
+    # Swift/UVOT, which names its filters in lower case.
+    "uvw1": "uvot::uvw1",
+    "uvw2": "uvot::uvw2",
+    "uvm2": "uvot::uvm2",
+    "white": "uvot::white",
     # 2MASS / NIR (Vega)
     "J": "2massj",
     "H": "2massh",

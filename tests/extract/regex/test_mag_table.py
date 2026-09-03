@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import pytest
+
 from circex.extract.regex.mag_table import (
     infer_bandpass,
     infer_mag_system,
     parse_mag_table,
     parse_single_mags,
+    parse_single_mags_with_spans,
 )
 
 
@@ -357,3 +360,29 @@ def test_pipe_candidate_refuses_multi_row_survey_lists() -> None:
         + "| ZTF26xxyyzzq |  AT 2026abc  | 12.5000000 | -4.1000000 | g      | 20.10 | 0.10   |\n"
     )
     assert parse_pipe_candidate_with_span(multi) is None
+
+
+@pytest.mark.parametrize(
+    ("text", "expected_filter", "expected_bandpass"),
+    [
+        # Swift/UVOT names its filters in lower case.
+        ("uvw1 = 19.2 +/- 0.1", "uvw1", "uvot::uvw1"),
+        ("white = 18.4 +/- 0.1", "white", "uvot::white"),
+        # HST filters have no sncosmo bandpass here, but the row is still real.
+        ("F814W = 22.79 +/- 0.03", "F814W", None),
+    ],
+)
+def test_mission_filters_are_read(
+    text: str, expected_filter: str, expected_bandpass: str | None
+) -> None:
+    rows = [row for row, _ in parse_single_mags_with_spans(text)]
+    assert rows
+    assert rows[0].filter == expected_filter
+    assert rows[0].bandpass == expected_bandpass
+
+
+def test_johnson_filters_still_read():
+    # The shared filter token must not regress the letters it started with.
+    rows = [row for row, _ in parse_single_mags_with_spans("R = 20.1 +/- 0.2")]
+    assert rows[0].filter == "R"
+    assert rows[0].bandpass == "bessellr"

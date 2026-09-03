@@ -233,7 +233,7 @@ def test_unrecognized_filter_falls_back_to_row_bandpass() -> None:
         event=Event(event_name="AT2026xyz"),
         photometry=[
             PhotometryExt(
-                filter="white", bandpass="ztfg", mag_system="AB", mag=20.0, obs_mjd=61199.83
+                filter="Zband", bandpass="ztfg", mag_system="AB", mag=20.0, obs_mjd=61199.83
             )
         ],
         extraction_meta=_meta(),
