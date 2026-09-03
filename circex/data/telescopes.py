@@ -48,3 +48,12 @@ def canonicalize_instrument(name: str | None) -> str | None:
     if not name:
         return None
     return _alias_maps()[1].get(name.strip().lower())
+
+
+@cache
+def _alias_source() -> dict[str, dict[str, list[str]]]:
+    """The alias map as written, keeping the original spellings."""
+    return cast(
+        dict[str, dict[str, list[str]]],
+        yaml.safe_load(_ALIASES_PATH.read_text("utf-8")),
+    )

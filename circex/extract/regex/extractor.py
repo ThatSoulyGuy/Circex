@@ -10,6 +10,7 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Final
 
+from circex.data.telescopes import canonicalize_telescope
 from circex.extract.protocol import Circular, Extractor
 from circex.extract.regex.classification import parse_classification_with_span
 from circex.extract.regex.coords import (
@@ -35,6 +36,7 @@ from circex.extract.regex.regex_events import (
     extract_matches_with_positions,
 )
 from circex.extract.regex.retraction import is_retraction
+from circex.extract.regex.telescope import parse_telescope_with_span
 from circex.extract.regex.xray import parse_xray_with_spans
 from circex.extract.timing import resolve_observation_epoch, resolve_relative_epochs
 from circex.schema import (
@@ -51,6 +53,26 @@ if TYPE_CHECKING:
     from circex.classify import SNTypeClassifier
 
 REGEX_EXTRACTOR_ID: Final[str] = "regex-v1"
+
+
+def _apply_telescope(
+    extraction: CircularExtraction, body: str, provenance: dict[str, Span]
+) -> None:
+    """Name the telescope on rows that state none; a circular observes with one."""
+    if not extraction.photometry:
+        return
+    if all(row.telescope for row in extraction.photometry):
+        return
+    found = parse_telescope_with_span(body)
+    if found is None:
+        return
+    name, span = found
+    for index, row in enumerate(extraction.photometry):
+        if row.telescope:
+            continue
+        row.telescope = name
+        row.telescope_canonical = canonicalize_telescope(name)
+        provenance.setdefault(f"photometry[{index}].telescope", span)
 
 
 class RegexExtractor(Extractor):
@@ -221,4 +243,5 @@ class RegexExtractor(Extractor):
         # still untimed. Both are no-ops when the circular states neither.
         resolve_observation_epoch(extraction, body)
         resolve_relative_epochs(extraction, circular.trigger_time)
+        _apply_telescope(extraction, body, provenance)
         return extraction
