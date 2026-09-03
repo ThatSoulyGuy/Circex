@@ -134,6 +134,7 @@ def aggregate_event(
     photometry: list[Any] = []
     comments: list[str] = []
     skipped = 0
+    skipped_reasons: list[str] = []
     redshift: tuple[float, float | None] | None = None
     source: SourceUpsert | None = None
     event = Event(event_name=name) if name is not None else None
@@ -158,6 +159,7 @@ def aggregate_event(
         photometry.extend(actions.photometry)
         comments.extend(actions.comments)
         skipped += actions.skipped_rows
+        skipped_reasons.extend(actions.skipped_reasons)
         if redshift is None and actions.redshift is not None:
             redshift = actions.redshift
 
@@ -184,5 +186,6 @@ def aggregate_event(
         redshift=redshift,
         comments=uniq_comments,
         skipped_rows=skipped,
+        skipped_reasons=tuple(skipped_reasons),
         extractions=tuple(extractions),
     )

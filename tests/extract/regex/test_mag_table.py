@@ -408,3 +408,10 @@ def test_a_rule_under_the_header_is_not_the_end_of_the_table():
     for rule in ("-----------------------------", "=============================", "____"):
         table = f"filter  mag\n{rule}\nR   20.07\nB   21.41\n"
         assert len(parse_mag_table(table)) == 2, rule
+
+
+def test_svom_vt_filters_are_read():
+    rows = [row for row, _ in parse_single_mags_with_spans("VT_B > 22.5 (5 sigma)")]
+    assert rows[0].filter == "VT_B"
+    assert rows[0].bandpass == "svomvtb"
+    assert rows[0].limiting_mag == 22.5

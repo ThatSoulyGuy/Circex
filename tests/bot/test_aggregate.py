@@ -126,3 +126,40 @@ def test_source_created_from_name_and_position_without_surviving_photometry() ->
     assert actions.source.id == "AT2026vts"
     assert actions.source.ra == 191.3 and actions.source.dec == 30.6
     assert actions.skipped_rows == 1  # the row was still (correctly) unpostable
+
+
+def test_skip_reasons_survive_aggregation():
+    """A row dropped in one circular must still be reportable on the event.
+
+    The comment on the event is built from the aggregate; a reason lost here is
+    a measurement that vanishes without explanation.
+    """
+    from circex.bot.aggregate import aggregate_event
+    from circex.extract.protocol import Circular
+    from circex.schema import (
+        CircularExtraction,
+        Event,
+        ExtractionMeta,
+        Localization,
+        PhotometryExt,
+    )
+
+    class _Ext:
+        extractor_id = "stub"
+
+        def extract(self, circular: Circular):
+            return CircularExtraction(
+                circular_id=circular.circular_id,
+                event=Event(event_name="GRB 260903A"),
+                localization=Localization(ra=10.0, dec=20.0),
+                photometry=[PhotometryExt(filter="Zband", mag=19.0, obs_mjd=61286.0)],
+                extraction_meta=ExtractionMeta(extractor="stub"),
+            )
+
+    actions = aggregate_event(
+        [{"circularId": 1, "subject": "s", "body": "b"}],
+        _Ext(),
+        default_instrument_id=1,
+    )
+    assert actions.skipped_reasons
+    assert "no bandpass" in actions.skipped_reasons

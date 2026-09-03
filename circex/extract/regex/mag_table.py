@@ -23,6 +23,7 @@ from circex.schema import MagSystem, PhotometryExt, Span
 # Filter tokens circulars use, beyond the Johnson/Sloan/NIR letters: Swift's UVOT
 # set, HST's F###W names, and the several spellings of "no filter".
 _UVOT = ("uvw1", "uvw2", "uvm2", "white")
+_SVOM_VT = ("VT_B", "VT_R")
 _UNFILTERED = ("unfiltered", "clear", "CR", "CV")
 
 _SLOAN: Final[frozenset[str]] = frozenset({"u", "g", "r", "i", "z", "y"})
@@ -38,6 +39,7 @@ _KNOWN_FILTERS: Final[frozenset[str]] = (
     | _NIR
     | _HST
     | frozenset(_UVOT)
+    | frozenset(_SVOM_VT)
     | frozenset(_UNFILTERED)
     | frozenset({"clear", "C", "W", "Rc", "Ic"})
 )
@@ -45,6 +47,7 @@ _KNOWN_FILTERS: Final[frozenset[str]] = (
 # Single-mag patterns. Matches "r = 18.42 ± 0.05", "R=22.1+/-0.3", "K_s = 19.0",
 _FILTER_TOKEN = (
     r"(?:F\d{3}[A-Z]{1,2}"
+    r"|" + "|".join(_SVOM_VT) + r""
     r"|" + "|".join(_UVOT) + r""
     r"|" + "|".join(_UNFILTERED) + r""
     r"|[UBVRI]c|[ugriz][p']|[UBVRIJHKgrizyuCW]s?)"
@@ -138,6 +141,9 @@ _BANDPASS_CROSSWALK: Final[dict[str, str]] = {
     "uvw2": "uvot::uvw2",
     "uvm2": "uvot::uvm2",
     "white": "uvot::white",
+    # SVOM's Visible Telescope, whose blue and red channels SkyPortal defines.
+    "VT_B": "svomvtb",
+    "VT_R": "svomvtr",
     # HST, where sncosmo registers the bare name. F814W is deliberately absent:
     # it exists only as uvf814w (WFC3/UVIS), and ACS carries an F814W too, so the
     # bare name does not say which instrument took the measurement.
