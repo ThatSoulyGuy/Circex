@@ -368,7 +368,11 @@ def test_pipe_candidate_refuses_multi_row_survey_lists() -> None:
         # Swift/UVOT names its filters in lower case.
         ("uvw1 = 19.2 +/- 0.1", "uvw1", "uvot::uvw1"),
         ("white = 18.4 +/- 0.1", "white", "uvot::white"),
-        # HST filters have no sncosmo bandpass here, but the row is still real.
+        # sncosmo registers the bare HST name for these.
+        ("F555W = 24.43 +/- 0.05", "F555W", "f555w"),
+        ("F850LP = 22.51 +/- 0.06", "F850LP", "f850lp"),
+        # F814W is ambiguous between ACS and WFC3/UVIS, so the row keeps no
+        # bandpass rather than asserting an instrument the circular did not.
         ("F814W = 22.79 +/- 0.03", "F814W", None),
     ],
 )

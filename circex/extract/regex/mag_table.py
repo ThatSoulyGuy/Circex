@@ -138,6 +138,16 @@ _BANDPASS_CROSSWALK: Final[dict[str, str]] = {
     "uvw2": "uvot::uvw2",
     "uvm2": "uvot::uvm2",
     "white": "uvot::white",
+    # HST, where sncosmo registers the bare name. F814W is deliberately absent:
+    # it exists only as uvf814w (WFC3/UVIS), and ACS carries an F814W too, so the
+    # bare name does not say which instrument took the measurement.
+    "F555W": "f555w",
+    "F606W": "f606w",
+    "F775W": "f775w",
+    "F850LP": "f850lp",
+    "F110W": "f110w",
+    "F125W": "f125w",
+    "F160W": "f160w",
     # 2MASS / NIR (Vega)
     "J": "2massj",
     "H": "2massh",
