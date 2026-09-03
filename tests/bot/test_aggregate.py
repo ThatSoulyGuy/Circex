@@ -163,3 +163,45 @@ def test_skip_reasons_survive_aggregation():
     )
     assert actions.skipped_reasons
     assert "no bandpass" in actions.skipped_reasons
+
+
+def test_a_retraction_withdraws_the_event_photometry():
+    """GCN 45503 retracted the counterpart GCN 45501 reported.
+
+    The retraction cross-references the circular it withdraws, so the aggregate
+    contains both; posting the withdrawn rows again is the one thing it must not
+    do.
+    """
+    from circex.bot.aggregate import aggregate_event
+    from circex.extract.protocol import Circular
+    from circex.schema import (
+        CircularExtraction,
+        Event,
+        ExtractionMeta,
+        Localization,
+        PhotometryExt,
+    )
+
+    class _Ext:
+        extractor_id = "stub"
+
+        def extract(self, circular: Circular):
+            retracting = circular.circular_id == 45503
+            return CircularExtraction(
+                circular_id=circular.circular_id,
+                event=Event(event_name="GRB 260903A"),
+                localization=Localization(ra=25.77, dec=11.44),
+                retraction=retracting,
+                photometry=[]
+                if retracting
+                else [PhotometryExt(filter="r", bandpass="sdssr", mag=17.91, obs_mjd=61286.55)],
+                extraction_meta=ExtractionMeta(extractor="stub"),
+            )
+
+    records = [
+        {"circularId": 45503, "subject": "Retraction of optical counterpart", "body": "b"},
+        {"circularId": 45501, "subject": "LCO optical counterpart", "body": "b"},
+    ]
+    actions = aggregate_event(records, _Ext(), default_instrument_id=1)
+    assert actions.photometry == []
+    assert any("withdraws this counterpart" in c for c in actions.comments)

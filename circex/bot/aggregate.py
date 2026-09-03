@@ -139,6 +139,11 @@ def aggregate_event(
     source: SourceUpsert | None = None
     event = Event(event_name=name) if name is not None else None
 
+    # A circular retracting the counterpart retracts the whole event's
+    # photometry, not just its own: the rows were reported by the circular it
+    # withdraws. Without this the retraction re-posts what it takes back.
+    retracted = any(e.retraction for e in extractions)
+
     for extraction in extractions:
         if event is not None:
             extraction.event = event
@@ -156,7 +161,8 @@ def aggregate_event(
         # to_actions' source, which already guards the positionless case.
         if source is None and actions.source is not None:
             source = actions.source
-        photometry.extend(actions.photometry)
+        if not retracted:
+            photometry.extend(actions.photometry)
         comments.extend(actions.comments)
         skipped += actions.skipped_rows
         skipped_reasons.extend(actions.skipped_reasons)
@@ -179,6 +185,13 @@ def aggregate_event(
         if comment not in seen_c:
             seen_c.add(comment)
             uniq_comments.append(comment)
+
+    if retracted:
+        withdrawn = [e.circular_id for e in extractions if e.retraction]
+        uniq_comments.append(
+            "A circular withdraws this counterpart "
+            f"({', '.join(f'GCN {c}' for c in withdrawn)}); no photometry posted."
+        )
 
     return SkyPortalActions(
         source=source,
