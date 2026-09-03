@@ -56,6 +56,28 @@ _BAND_AS_FILTER_RE = re.compile(
 )
 
 
+def _carry_telescope(fields: dict[str, object], regex_source: CircularExtraction) -> None:
+    """Name the telescope on LLM rows that omit it, in place.
+
+    The LLM owns photometry, so a telescope regex found in the prose is otherwise
+    discarded along with the rows regex built.
+    """
+    rows = fields.get("photometry")
+    if not isinstance(rows, list) or not rows:
+        return
+    named = next(
+        (r for r in regex_source.photometry if r.telescope),
+        None,
+    )
+    if named is None:
+        return
+    for row in rows:
+        if row.telescope:
+            continue
+        row.telescope = named.telescope
+        row.telescope_canonical = named.telescope_canonical
+
+
 def _is_structured(row: PhotometryExt) -> bool:
     return row.energy_band_kev is not None or row.frequency_ghz is not None
 
@@ -141,6 +163,7 @@ class HybridExtractor(Extractor):
                 provenance.update(_provenance_for(sources[chosen], field))
 
         _rescue_structured_photometry(fields, sources["regex"])
+        _carry_telescope(fields, sources["regex"])
 
         # Retraction is read from the subject line, so it is the same either way
         # and never routed; without this the merged result always reads False.

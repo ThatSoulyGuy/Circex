@@ -163,3 +163,28 @@ def test_every_extraction_field_is_routed_or_handled() -> None:
     # looks like the extractor never found it.
     handled = set(_ROUTING) | {"circular_id", "provenance", "extraction_meta", "retraction"}
     assert set(CircularExtraction.model_fields) - handled == set()
+
+
+def test_telescope_survives_the_llm_owning_photometry() -> None:
+    # The LLM's rows carry no telescope; the one regex read from the prose stands.
+    regex = _stub(
+        1,
+        photometry=[
+            PhotometryExt(filter="r", mag=20.0, telescope="Keck-II", telescope_canonical="Keck")
+        ],
+    )
+    llm = _stub(1, photometry=[PhotometryExt(filter="r", mag=20.1, obs_mjd=6.0)])
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=1, subject="s", body="b")
+    )
+    assert [r.telescope for r in merged.photometry] == ["Keck-II"]
+    assert merged.photometry[0].mag == 20.1
+
+
+def test_a_telescope_the_llm_named_is_kept() -> None:
+    regex = _stub(1, photometry=[PhotometryExt(filter="r", telescope="Keck-II")])
+    llm = _stub(1, photometry=[PhotometryExt(filter="r", telescope="Subaru")])
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=1, subject="s", body="b")
+    )
+    assert [r.telescope for r in merged.photometry] == ["Subaru"]
