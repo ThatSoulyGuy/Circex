@@ -188,3 +188,19 @@ def test_a_telescope_the_llm_named_is_kept() -> None:
         Circular(circular_id=1, subject="s", body="b")
     )
     assert [r.telescope for r in merged.photometry] == ["Subaru"]
+
+
+def test_the_prose_names_the_telescope_when_regex_found_no_rows() -> None:
+    # Regex parsed no photometry, so it has no row to carry a telescope from;
+    # the name is still in the body.
+    regex = _stub(1)
+    llm = _stub(1, photometry=[PhotometryExt(filter="r", mag=20.0)])
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(
+            circular_id=1,
+            subject="s",
+            body="We observed the field at the Keck-II telescope on UT 1998 June 16.",
+        )
+    )
+    assert merged.photometry[0].telescope == "Keck-II"
+    assert merged.photometry[0].telescope_canonical == "Keck"

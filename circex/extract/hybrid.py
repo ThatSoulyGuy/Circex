@@ -27,7 +27,9 @@ from __future__ import annotations
 
 import re
 
+from circex.data.telescopes import canonicalize_telescope
 from circex.extract.protocol import Circular, Extractor
+from circex.extract.regex.telescope import parse_telescope_with_span
 from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
 from circex.schema.span import Span
 
@@ -56,7 +58,9 @@ _BAND_AS_FILTER_RE = re.compile(
 )
 
 
-def _carry_telescope(fields: dict[str, object], regex_source: CircularExtraction) -> None:
+def _carry_telescope(
+    fields: dict[str, object], regex_source: CircularExtraction, body: str
+) -> None:
     """Name the telescope on LLM rows that omit it, in place.
 
     The LLM owns photometry, so a telescope regex found in the prose is otherwise
@@ -65,17 +69,23 @@ def _carry_telescope(fields: dict[str, object], regex_source: CircularExtraction
     rows = fields.get("photometry")
     if not isinstance(rows, list) or not rows:
         return
-    named = next(
-        (r for r in regex_source.photometry if r.telescope),
-        None,
-    )
-    if named is None:
-        return
+    named = next((r for r in regex_source.photometry if r.telescope), None)
+    if named is not None:
+        telescope, canonical = named.telescope, named.telescope_canonical
+    else:
+        # Regex found no rows of its own to hang a telescope on, so read the
+        # prose directly rather than leaving the LLM's rows anonymous.
+        found = parse_telescope_with_span(body)
+        if found is None:
+            return
+        telescope = found[0]
+        canonical = canonicalize_telescope(telescope)
+
     for row in rows:
         if row.telescope:
             continue
-        row.telescope = named.telescope
-        row.telescope_canonical = named.telescope_canonical
+        row.telescope = telescope
+        row.telescope_canonical = canonical
 
 
 def _is_structured(row: PhotometryExt) -> bool:
@@ -163,7 +173,7 @@ class HybridExtractor(Extractor):
                 provenance.update(_provenance_for(sources[chosen], field))
 
         _rescue_structured_photometry(fields, sources["regex"])
-        _carry_telescope(fields, sources["regex"])
+        _carry_telescope(fields, sources["regex"], circular.body)
 
         # Retraction is read from the subject line, so it is the same either way
         # and never routed; without this the merged result always reads False.
