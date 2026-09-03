@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from circex.data.swift_gold import SwiftEvaluationRow
 from circex.eval.vidushi_adapter import (
+    _canon_redshift_measure,
+    _canon_redshift_type,
     vidushi_gold_extraction,
     vidushi_predicted_extraction,
 )
@@ -84,3 +86,17 @@ def test_all_null_row_produces_extraction_with_no_fields() -> None:
     assert ext.event is None
     assert ext.redshift is None
     assert ext.reporter is None
+
+
+def test_redshift_type_column_is_the_measure():
+    """Vidushi's "Redshift Type" records how the redshift was measured.
+
+    Spectroscopic/Photometric is our redshift_measure; redshift_type is the
+    spectral feature (emission/absorption/host), which her table does not record.
+    """
+    assert _canon_redshift_measure("Spectroscopic") == "spectroscopic"
+    assert _canon_redshift_measure("Photometric") == "photometric"
+    assert _canon_redshift_measure("No Information") is None
+    assert _canon_redshift_measure(None) is None
+    # The feature-type map must not claim these.
+    assert _canon_redshift_type("Spectroscopic") is None

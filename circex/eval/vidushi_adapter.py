@@ -48,10 +48,19 @@ def _canon_redshift_type(value: str | None) -> RedshiftType | None:
     return _REDSHIFT_TYPE_MAP.get(value.strip().lower())
 
 
-def _canon_redshift_measure(_value: str | None) -> RedshiftMeasure | None:
-    """Vidushi's CSV doesn't have a measure column distinct from type, but we
-    can infer: emission/absorption/host all imply spectroscopic in the GRB context."""
-    return None  # leave null; the type field encodes the relevant info
+_REDSHIFT_MEASURE_MAP: dict[str, RedshiftMeasure] = {
+    "spectroscopic": "spectroscopic",
+    "photometric": "photometric",
+}
+
+
+def _canon_redshift_measure(value: str | None) -> RedshiftMeasure | None:
+    """The CSV's "Redshift Type" column records how the redshift was measured
+    (Spectroscopic / Photometric), which is our `redshift_measure`. Its
+    "No Information" rows stay null."""
+    if value is None:
+        return None
+    return _REDSHIFT_MEASURE_MAP.get(value.strip().lower())
 
 
 def _grb_event_name(grb_number: str | None) -> str | None:
@@ -76,20 +85,22 @@ def _row_to_extraction(
     """Build a partial CircularExtraction populated from the four 4-field columns."""
     if side == "gold":
         z = row.actual_redshift
+        z_measure = _canon_redshift_measure(row.actual_redshift_type)
         z_type = _canon_redshift_type(row.actual_redshift_type)
         grb = row.actual_grb_number
         telescope = row.actual_telescope
     else:
         z = row.predicted_redshift
+        z_measure = _canon_redshift_measure(row.predicted_redshift_type)
         z_type = _canon_redshift_type(row.predicted_redshift_type)
         grb = row.predicted_grb_number
         telescope = row.predicted_telescope
 
     redshift_obj: Redshift | None = None
-    if z is not None or z_type is not None:
+    if z is not None or z_type is not None or z_measure is not None:
         redshift_obj = Redshift(
             redshift=z,
-            redshift_measure=_canon_redshift_measure(None),
+            redshift_measure=z_measure,
             redshift_type=z_type,
         )
 

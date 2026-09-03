@@ -27,7 +27,7 @@ from circex.schema import CircularExtraction
 VIDUSHI_FIELDS = {
     "event.event_name",  # her "GRB number"
     "redshift.redshift",
-    "redshift.redshift_type",
+    "redshift.redshift_measure",
     "telescope_name",
 }
 
@@ -159,7 +159,7 @@ def render_report(
         "event.event_name",
         "telescope_name",
         "redshift.redshift",
-        "redshift.redshift_type",
+        "redshift.redshift_measure",
         "localization.ra",
         "localization.dec",
         "classification.classification",
