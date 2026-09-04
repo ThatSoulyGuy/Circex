@@ -10,6 +10,7 @@ from circex.extract.regex.mag_table import (
     parse_mag_table,
     parse_single_mags,
     parse_single_mags_with_spans,
+    stated_mag_system,
 )
 
 
@@ -466,3 +467,25 @@ def test_an_error_written_without_a_slash_is_read():
     assert [(p.mag, p.mag_error) for p in parse_single_mags("r = 22.88 +- 0.16 (AB)")] == [
         (22.88, 0.16)
     ]
+
+
+def test_a_stated_system_beats_the_filter_convention():
+    """NIR is Vega by convention, but "J = 19.07 mag (AB)" says otherwise."""
+    assert stated_mag_system("J = 19.07 mag (AB)") == "AB"
+    assert stated_mag_system("The photometry is in the AB magnitude system") == "AB"
+    assert stated_mag_system("preliminary photometry (Vega)") == "Vega"
+    assert stated_mag_system("no system is named here") is None
+    # A circular quoting both cannot be resolved per row, so it defers.
+    assert stated_mag_system("g (AB) and J (Vega)") is None
+
+
+def test_an_upper_limit_written_as_an_equality():
+    rows = parse_single_mags("We obtain the following 5-sigma upper limit: J = 19.07 mag (AB).")
+    assert [(p.filter, p.mag, p.limiting_mag, p.limiting_mag_sigma) for p in rows] == [
+        ("J", None, 19.07, 5.0)
+    ]
+
+
+def test_a_limit_in_an_earlier_sentence_leaves_a_detection_alone():
+    rows = parse_single_mags("The limiting magnitude was 21.5. The source is at R = 20.1 +/- 0.1.")
+    assert [(p.filter, p.mag, p.limiting_mag) for p in rows] == [("R", 20.1, None)]

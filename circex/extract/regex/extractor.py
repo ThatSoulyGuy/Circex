@@ -27,6 +27,7 @@ from circex.extract.regex.mag_table import (
     parse_pipe_candidate_with_span,
     parse_pipe_table_with_spans,
     parse_single_mags_with_spans,
+    stated_mag_system,
 )
 from circex.extract.regex.radio import parse_radio_with_spans
 from circex.extract.regex.redshift import (
@@ -80,6 +81,16 @@ def _apply_telescope(
         row.telescope = name
         row.telescope_canonical = canonicalize_telescope(name)
         provenance.setdefault(f"photometry[{index}].telescope", span)
+
+
+def _apply_stated_mag_system(extraction: CircularExtraction, body: str) -> None:
+    """Let a stated magnitude system override the one inferred from the filter."""
+    stated = stated_mag_system(body)
+    if stated is None:
+        return
+    for row in extraction.photometry:
+        if row.mag is not None or row.limiting_mag is not None:
+            row.mag_system = stated
 
 
 class RegexExtractor(Extractor):
@@ -256,6 +267,7 @@ class RegexExtractor(Extractor):
         # A datetime stated in the body is exact, so it binds first; T0 + a single
         # relative offset is rounded ("~4.5 days post-burst") and only fills rows
         # still untimed. Both are no-ops when the circular states neither.
+        _apply_stated_mag_system(extraction, body)
         resolve_observation_epoch(extraction, body, circular.trigger_time)
         resolve_inline_offsets(extraction, circular.body, circular.trigger_time)
         resolve_relative_epochs(extraction, circular.trigger_time)

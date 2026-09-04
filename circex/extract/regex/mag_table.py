@@ -57,6 +57,16 @@ _FILTER_TOKEN = (
     r"|[UBVRI]c|[ugriz][p" + _PRIMES + r"]|[UBVRIJHKgrizyuCW]s?)"
 )
 
+# "5-sigma upper limit: J = 19.07" states a limit in the syntax of a detection.
+# Scoped to the clause before the value so a limit mentioned in an earlier
+# sentence does not turn a real detection into a non-detection.
+_LIMIT_CLAUSE_RE = re.compile(
+    r"(?:(?P<sigma>\d+(?:\.\d+)?)\s*[-\s]?\s*sigma\s+)?"
+    r"(?:upper[-\s]?limits?|limiting\s+magnitudes?|non[-\s]?detections?)"
+    r"[^.;:]*[:\s]\s*$",
+    re.IGNORECASE,
+)
+
 # upper limits: "r > 22.5", "m > 22 (3-sigma)".
 _DETECTION_RE = re.compile(
     rf"""
@@ -108,6 +118,48 @@ def normalize_filter(token: str) -> str:
     if len(token) == 2 and token[0] in "ugriz" and token[1] in "p" + _PRIMES:
         return token[0]
     return token
+
+
+# Circulars that state their system say so plainly, and it overrides the filter
+# convention: NIR is usually Vega, but "J = 19.07 mag (AB)" is not.
+_STATED_AB_RE = re.compile(
+    r"\(\s*AB\s*\)|\bAB\s+(?:mag(?:nitude)?s?|system|photometric)"
+    r"|magnitudes?\s+(?:are\s+)?(?:given\s+|reported\s+|calibrated\s+)?in\s+"
+    r"(?:the\s+)?AB\b",
+    re.IGNORECASE,
+)
+_STATED_VEGA_RE = re.compile(
+    r"\(\s*Vega\s*\)|\bVega\s+(?:mag(?:nitude)?s?|system|photometric)"
+    r"|magnitudes?\s+(?:are\s+)?(?:given\s+|reported\s+|calibrated\s+)?in\s+"
+    r"(?:the\s+)?Vega\b",
+    re.IGNORECASE,
+)
+
+
+def _clause_before(text: str, at: int, window: int = 90) -> str:
+    """Text back to the previous sentence break, so a clause cannot reach past it."""
+    start = max(0, at - window)
+    segment = text[start:at]
+    for stop in (". ", "\n\n"):
+        cut = segment.rfind(stop)
+        if cut != -1:
+            segment = segment[cut + len(stop) :]
+    return segment
+
+
+def stated_mag_system(text: str) -> MagSystem | None:
+    """The system the text names, or None when it names neither or both.
+
+    A circular aggregating several telescopes can quote both, and there is no
+    way to tell here which row is which, so it defers to the filter convention.
+    """
+    ab = _STATED_AB_RE.search(text) is not None
+    vega = _STATED_VEGA_RE.search(text) is not None
+    if ab and not vega:
+        return "AB"
+    if vega and not ab:
+        return "Vega"
+    return None
 
 
 def infer_mag_system(filter_name: str) -> MagSystem | None:
@@ -253,13 +305,20 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
         if not _plausible_mag(filter_name, mag):
             continue
         err = float(match.group("err")) if match.group("err") else None
+        limit_clause = _LIMIT_CLAUSE_RE.search(_clause_before(text, match.start()))
         consumed.append((match.start(), match.end()))
         rows.append(
             (
                 PhotometryExt(
                     filter=filter_name,
-                    mag=mag,
-                    mag_error=err,
+                    mag=None if limit_clause else mag,
+                    mag_error=None if limit_clause else err,
+                    limiting_mag=mag if limit_clause else None,
+                    limiting_mag_sigma=(
+                        float(limit_clause.group("sigma"))
+                        if limit_clause and limit_clause.group("sigma")
+                        else None
+                    ),
                     mag_system=infer_mag_system(filter_name),
                     bandpass=infer_bandpass(filter_name),
                 ),
