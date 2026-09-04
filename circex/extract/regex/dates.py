@@ -23,6 +23,23 @@ _T_OFFSET_RE = re.compile(
     re.VERBOSE | re.IGNORECASE,
 )
 
+# "T-T0 = 11h", "observations mid-time at T-To=11h", "T_mid-T_0 12.2 h". The
+# elapsed time written as a difference rather than as an offset from T; the
+# subscript is a zero, a letter o, or absent.
+_T_MINUS_T0_RE = re.compile(
+    r"""
+    \bT(?:_?mid)?
+    \s*[-−–]\s*
+    T[_\s]?(?:0|o)\b
+    \s*(?:[=:~]|\s)\s*
+    (?P<value>\d+(?:\.\d+)?)
+    \s*
+    (?P<unit>ks|hrs?|s(?:ec(?:ond)?s?)?|m(?:in(?:ute)?s?)?|h(?:our)?s?|d(?:ay)?s?)
+    \b
+    """,
+    re.VERBOSE | re.IGNORECASE,
+)
+
 # "approximately X hours after the trigger", "X minutes post-burst", "5.9d after
 # the Swift/BAT trigger". Circulars say "burst" as often as "trigger", and name
 # the instrument in between, so both are accepted.
@@ -98,6 +115,21 @@ def parse_time_offsets_with_spans(text: str) -> list[tuple[TimeOffset, Span]]:
         out.append(
             (
                 TimeOffset(value=value, unit=unit, reference=reference),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
+
+    for match in _T_MINUS_T0_RE.finditer(text):
+        unit = _normalize_unit(match.group("unit"))
+        if unit is None:
+            continue
+        out.append(
+            (
+                TimeOffset(
+                    value=_scaled(float(match.group("value")), match.group("unit")),
+                    unit=unit,
+                    reference="trigger",
+                ),
                 Span(start=match.start(), end=match.end(), snippet=match.group(0)),
             )
         )

@@ -446,3 +446,17 @@ def test_the_first_column_carrying_a_role_owns_it():
         " 153       200       V      19.6    19.1 - 20.3\n"
     )
     assert [(r.filter, r.mag) for r in rows] == [("V", 19.6)]
+
+
+def test_primed_sloan_filters_are_read():
+    """r' and its typographic form name the same band as r."""
+    assert [(p.filter, p.mag, p.bandpass) for p in parse_single_mags("r’ = 23.0 +/- 0.2")] == [
+        ("r", 23.0, "sdssr")
+    ]
+    assert [(p.filter, p.limiting_mag) for p in parse_single_mags("g' > 22.4")] == [("g", 22.4)]
+
+
+def test_a_cousins_band_keeps_its_name():
+    assert [(p.filter, p.bandpass) for p in parse_single_mags("Rc = 20.1 +/- 0.1")] == [
+        ("Rc", "bessellr")
+    ]

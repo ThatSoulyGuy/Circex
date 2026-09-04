@@ -40,3 +40,13 @@ def test_multiple_offsets() -> None:
 
 def test_no_offsets() -> None:
     assert parse_time_offsets("No time offsets mentioned here.") == []
+
+
+def test_elapsed_time_written_as_a_difference():
+    """ "T-To=11h" states the same offset as "11 hours after the trigger"."""
+    assert [(o.value, o.unit, o.reference) for o in parse_time_offsets("mid-time at T-To=11h")] == [
+        (11.0, "h", "trigger")
+    ]
+    assert [(o.value, o.unit, o.reference) for o in parse_time_offsets("t-t0 = 2.30 hr")] == [
+        (2.3, "h", "trigger")
+    ]

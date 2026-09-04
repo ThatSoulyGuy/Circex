@@ -44,13 +44,17 @@ _KNOWN_FILTERS: Final[frozenset[str]] = (
     | frozenset({"clear", "C", "W", "Rc", "Ic"})
 )
 
+# Circulars write the Sloan prime with an ASCII quote or, when the text has been
+# through a word processor, a typographic one.
+_PRIMES = "'\u2019\u02b9\u2032"
+
 # Single-mag patterns. Matches "r = 18.42 ± 0.05", "R=22.1+/-0.3", "K_s = 19.0",
 _FILTER_TOKEN = (
     r"(?:F\d{3}[A-Z]{1,2}"
     r"|" + "|".join(_SVOM_VT) + r""
     r"|" + "|".join(_UVOT) + r""
     r"|" + "|".join(_UNFILTERED) + r""
-    r"|[UBVRI]c|[ugriz][p']|[UBVRIJHKgrizyuCW]s?)"
+    r"|[UBVRI]c|[ugriz][p" + _PRIMES + r"]|[UBVRIJHKgrizyuCW]s?)"
 )
 
 # upper limits: "r > 22.5", "m > 22 (3-sigma)".
@@ -101,7 +105,7 @@ def normalize_filter(token: str) -> str:
     """Strip a Cousins 'c' suffix (Rc->R) or a prime marker (r'/rp->r)."""
     if len(token) == 2 and token[0] in "UBVRI" and token[1] == "c":
         return token[0]
-    if len(token) == 2 and token[0] in "ugriz" and token[1] in "p'":
+    if len(token) == 2 and token[0] in "ugriz" and token[1] in "p" + _PRIMES:
         return token[0]
     return token
 
@@ -237,7 +241,10 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     excluded = _contaminant_ranges(text) + _errorbox_ranges(text)
 
     for match in _DETECTION_RE.finditer(text):
-        filter_name = match.group("filter")
+        raw = match.group("filter")
+        # Rc stays Rc; r' and rp fold to r. Checking the raw token first keeps a
+        # Cousins band distinguishable from its Johnson counterpart.
+        filter_name = raw if raw in _KNOWN_FILTERS else normalize_filter(raw)
         if filter_name not in _KNOWN_FILTERS:
             continue
         if _in_ranges(match.start(), excluded):
@@ -287,7 +294,10 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
         )
 
     for match in _UPPER_LIMIT_RE.finditer(text):
-        filter_name = match.group("filter")
+        raw = match.group("filter")
+        # Rc stays Rc; r' and rp fold to r. Checking the raw token first keeps a
+        # Cousins band distinguishable from its Johnson counterpart.
+        filter_name = raw if raw in _KNOWN_FILTERS else normalize_filter(raw)
         if filter_name not in _KNOWN_FILTERS:
             continue
         if _in_ranges(match.start(), excluded):
