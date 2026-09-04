@@ -331,7 +331,7 @@ _HEADER_KEYWORDS = {
 
 def _looks_like_header(line: str) -> bool:
     """Cheap heuristic: line is a header if it contains 2+ table keywords."""
-    tokens = {token.strip().strip(":").lower() for token in _COLUMN_SPLIT_RE.split(line)}
+    tokens = {_header_word(token) for token in _COLUMN_SPLIT_RE.split(line)}
     return len(tokens & _HEADER_KEYWORDS) >= 2
 
 
@@ -347,22 +347,45 @@ def _looks_like_table_row(line: str, expected_columns: int) -> bool:
 _RULE_RE = re.compile(r"^\s*[-=_]{3,}\s*$")
 
 
+_ERR_WORDS = frozenset({"err", "err.", "error", "magerr", "merr", "uncertainty"})
+
+
+def _strip_word(word: str) -> str:
+    return word.strip(":.,()[]").lower()
+
+
+def _header_word(field: str) -> str:
+    """The word a header cell is named by: "Mag. (AB)" -> "mag", "MJD (mid)" -> "mjd".
+
+    A cell often carries a unit or qualifier after the name, and matching the
+    whole cell leaves the column unclassified and its values dropped.
+    """
+    first = field.strip().split()[0] if field.strip() else ""
+    return _strip_word(first)
+
+
 def _classify_columns(header_line: str) -> dict[int, str]:
     """Return a dict mapping column index -> semantic role (filter, mag, err, ...).
 
-    Tokens are stripped of surrounding whitespace and the punctuation headers
-    carry ("Err\\n", "mag.", "Filter:"), any of which otherwise leaves the column
-    unclassified and its values silently dropped.
+    A cell is named by its first word, stripped of the punctuation headers carry
+    ("Err\\n", "mag.", "Filter:", "Mag. (AB)"); matching the whole cell leaves the
+    column unclassified and its values silently dropped.
     """
-    fields = [f.strip().strip(":.,()").lower() for f in _COLUMN_SPLIT_RE.split(header_line) if f]
+    fields = [f for f in _COLUMN_SPLIT_RE.split(header_line) if f]
     classification: dict[int, str] = {}
-    for i, token in enumerate(fields):
+    for i, field in enumerate(fields):
+        # An uncertainty keyword anywhere in the cell settles it: "Mag err" names
+        # the error column, not a second magnitude one.
+        if _ERR_WORDS & {_strip_word(w) for w in field.split()}:
+            classification[i] = "mag_error"
+            continue
+        token = _header_word(field)
+        if token in classification.values():
+            continue  # "Mag" then "Mag. Range": the first column carrying a role owns it
         if token in {"filter", "band"}:
             classification[i] = "filter"
         elif token in {"mag", "magnitude"}:
             classification[i] = "mag"
-        elif token in {"err", "error", "magerr", "merr"}:
-            classification[i] = "mag_error"
         elif token in {"date", "mjd", "epoch"}:
             classification[i] = "date"
         elif token in {"exp", "exptime", "exposure"}:
@@ -650,6 +673,28 @@ def parse_mag_table(text: str) -> list[PhotometryExt]:
     return [p for p, _ in parse_mag_table_with_spans(text)]
 
 
+_CELL_MAG_RE = re.compile(
+    r"^(?P<limit>[<>])?\s*(?P<mag>\d{1,2}(?:\.\d+)?)"
+    r"(?:\s*(?:±|\+/[-−]|\+-)\s*(?P<err>\d+(?:\.\d+)?))?$"
+)
+
+
+def _parse_mag_cell(cell: str) -> tuple[float | None, float | None, float | None] | None:
+    """Split a magnitude cell into (mag, error, limit).
+
+    A single column often carries the whole measurement — "22.73 +/- 0.26" for a
+    detection, "> 22.37" for an upper limit — so a bare float() drops the row.
+    """
+    m = _CELL_MAG_RE.match(cell.strip().replace("−", "-"))
+    if m is None:
+        return None
+    value = float(m.group("mag"))
+    if m.group("limit"):
+        return None, None, value
+    err = float(m.group("err")) if m.group("err") else None
+    return value, err, None
+
+
 def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
     """Same as parse_mag_table, plus per-row Spans covering each data line."""
     rows: list[tuple[PhotometryExt, Span]] = []
@@ -687,14 +732,10 @@ def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
 
             filter_token = row_data.get("filter")
             mag_token = row_data.get("mag")
-            if filter_token and mag_token:
-                try:
-                    mag = float(mag_token)
-                except ValueError:
-                    j += 1
-                    continue
-                err: float | None = None
-                if (err_token := row_data.get("mag_error")) is not None:
+            parsed = _parse_mag_cell(mag_token) if mag_token else None
+            if filter_token and parsed is not None:
+                mag, err, limit = parsed
+                if err is None and (err_token := row_data.get("mag_error")) is not None:
                     try:
                         err = float(err_token)
                     except ValueError:
@@ -711,6 +752,7 @@ def parse_mag_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                             filter=filter_token,
                             mag=mag,
                             mag_error=err,
+                            limiting_mag=limit,
                             mag_system=infer_mag_system(filter_token),
                             bandpass=infer_bandpass(filter_token),
                             obs_mjd=obs_mjd,

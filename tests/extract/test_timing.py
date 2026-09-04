@@ -45,6 +45,14 @@ def test_absolute_number_outside_mjd_range_is_none() -> None:
     assert epoch_from_absolute("12") is None
 
 
+def test_a_date_missing_its_year_or_month_is_none() -> None:
+    # Filling the gap from today's clock yields a confident wrong date.
+    assert epoch_from_absolute("Jan 24.16") is None
+    assert epoch_from_absolute("Dec.12.22") is None
+    assert epoch_from_absolute("15:13:13") is None
+    assert epoch_from_absolute("2004 Oct 10.05") is not None
+
+
 def test_absolute_garbage_is_none() -> None:
     assert epoch_from_absolute("not a date") is None
     assert epoch_from_absolute(None) is None

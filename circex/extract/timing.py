@@ -64,13 +64,29 @@ def epoch_from_absolute(token: str | None) -> tuple[float, str] | None:
         return None  # a number outside MJD range isn't a date we trust
     # Calendar date/time.
     token, day_fraction = _split_fractional_day(token)
-    try:
-        dt = date_parser.parse(token)
-    except (ValueError, OverflowError):
+    dt = _parse_complete_date(token)
+    if dt is None:
         return None
     if day_fraction:
         return _to_pair(float(Time(dt.replace(tzinfo=UTC)).mjd) + day_fraction)
     return _to_pair(dt)
+
+
+# Two defaults a year apart: whatever dateutil fills in from the default rather
+# than from the token comes out different, and a date it had to invent is worse
+# than no date at all.
+_DEFAULT_A = datetime(1904, 1, 1, tzinfo=UTC)
+_DEFAULT_B = datetime(1905, 2, 2, tzinfo=UTC)
+
+
+def _parse_complete_date(token: str) -> datetime | None:
+    """Parse a token only if it states its own year, month and day."""
+    try:
+        a = date_parser.parse(token, default=_DEFAULT_A)
+        b = date_parser.parse(token, default=_DEFAULT_B)
+    except (ValueError, OverflowError):
+        return None
+    return a if a == b else None
 
 
 def _split_fractional_day(token: str) -> tuple[str, float]:

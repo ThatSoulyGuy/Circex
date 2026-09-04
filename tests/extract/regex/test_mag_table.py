@@ -415,3 +415,34 @@ def test_svom_vt_filters_are_read():
     assert rows[0].filter == "VT_B"
     assert rows[0].bandpass == "svomvtb"
     assert rows[0].limiting_mag == 22.5
+
+
+def test_header_units_do_not_hide_a_column():
+    """A header cell is named by its first word: "Mag. (AB)" is a magnitude column."""
+    rows = parse_mag_table(
+        "MJD (mid)         T_mid-T_0        Filter       Mag. (AB)\n"
+        "61287.03369        12.2 h           g            > 22.37\n"
+        "61287.04889        12.6 h           r         22.73 ± 0.26\n"
+        "61287.06252        12.9 h           z            > 21.38\n"
+    )
+    assert [(r.filter, r.mag, r.mag_error, r.limiting_mag, r.obs_mjd) for r in rows] == [
+        ("g", None, None, 22.37, 61287.03369),
+        ("r", 22.73, 0.26, None, 61287.04889),
+        ("z", None, None, 21.38, 61287.06252),
+    ]
+
+
+def test_an_error_column_is_not_a_second_magnitude_column():
+    rows = parse_mag_table(
+        "+T0 (hour)     Filter    Exp (sec)   Mag     Mag err     Limit\n"
+        "11.141         Rc        3x300       17.4    0.1         20.0\n"
+    )
+    assert [(r.filter, r.mag, r.mag_error) for r in rows] == [("Rc", 17.4, 0.1)]
+
+
+def test_the_first_column_carrying_a_role_owns_it():
+    rows = parse_mag_table(
+        "T_start  Exposure   Filter   Mag   Mag. Range (1-sigma)\n"
+        " 153       200       V      19.6    19.1 - 20.3\n"
+    )
+    assert [(r.filter, r.mag) for r in rows] == [("V", 19.6)]
