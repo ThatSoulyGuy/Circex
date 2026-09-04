@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from circex.extract.hybrid import _ROUTING, HybridExtractor
+from circex.extract.hybrid import _ROUTING, HybridExtractor, _carry_telescope
 from circex.extract.protocol import Circular
 from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
 
@@ -232,3 +232,22 @@ def test_rows_keep_their_epoch_when_the_body_states_none() -> None:
         Circular(circular_id=1, subject="s", body="No time is given here.")
     )
     assert merged.photometry[0].obs_mjd == 61200.5
+
+
+def test_a_run_on_telescope_name_yields_to_the_regex_one():
+    fields: dict[str, object] = {
+        "photometry": [
+            PhotometryExt(
+                filter="r",
+                mag=22.73,
+                telescope=(
+                    "Liverpool Telescope IO:O optical camera 2m robotic telescope "
+                    "(LT2m-IO:O-cam-2m-robotic-telescope-LT2m-IO:O-cam-2m-robotic-telesc"
+                ),
+            )
+        ]
+    }
+    _carry_telescope(fields, _stub(1), "observed with the 2m robotic Liverpool Telescope")
+    rows = fields["photometry"]
+    assert isinstance(rows, list)
+    assert rows[0].telescope == "2m robotic Liverpool"

@@ -81,6 +81,19 @@ def _prefer_stated_epoch(fields: dict[str, object], body: str) -> None:
         row.obs_time = iso
 
 
+# A small model asked for a telescope name sometimes degenerates into a run-on
+# concatenation of every name in the circular. Real names are short and say a
+# thing once.
+_MAX_TELESCOPE_CHARS = 64
+
+
+def _is_plausible_telescope(name: str) -> bool:
+    if len(name) > _MAX_TELESCOPE_CHARS:
+        return False
+    words = name.lower().split()
+    return len(set(words)) == len(words)
+
+
 def _carry_telescope(
     fields: dict[str, object], regex_source: CircularExtraction, body: str
 ) -> None:
@@ -92,6 +105,11 @@ def _carry_telescope(
     rows = fields.get("photometry")
     if not isinstance(rows, list) or not rows:
         return
+    for row in rows:
+        if row.telescope and not _is_plausible_telescope(row.telescope):
+            row.telescope = None
+            row.telescope_canonical = None
+
     named = next((r for r in regex_source.photometry if r.telescope), None)
     if named is not None:
         telescope, canonical = named.telescope, named.telescope_canonical
