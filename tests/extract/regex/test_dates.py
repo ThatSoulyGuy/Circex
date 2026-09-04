@@ -50,3 +50,15 @@ def test_elapsed_time_written_as_a_difference():
     assert [(o.value, o.unit, o.reference) for o in parse_time_offsets("t-t0 = 2.30 hr")] == [
         (2.3, "h", "trigger")
     ]
+
+
+def test_a_stated_mid_time_is_an_offset_from_the_trigger():
+    assert [(o.value, o.unit) for o in parse_time_offsets("(mid. time = 8.1358 hours)")] == [
+        (8.1358, "h")
+    ]
+    # A clock time is not an elapsed time.
+    assert parse_time_offsets("mid time = 03:41 UT") == []
+
+
+def test_a_mid_time_already_tied_to_the_trigger_is_counted_once():
+    assert len(parse_time_offsets("mid-time 38.66 min after the trigger")) == 1

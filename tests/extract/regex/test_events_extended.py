@@ -27,8 +27,9 @@ def test_extract_atlas_designation() -> None:
 
 
 def test_extract_asassn_designation() -> None:
-    assert "ASASSN-19A" in extract_matches("ASASSN-19a brightened.") or \
-           any("ASASSN" in m for m in extract_matches("ASASSN-19a brightened."))
+    assert "ASASSN-19A" in extract_matches("ASASSN-19a brightened.") or any(
+        "ASASSN" in m for m in extract_matches("ASASSN-19a brightened.")
+    )
 
 
 def test_extract_panstarrs_designation() -> None:

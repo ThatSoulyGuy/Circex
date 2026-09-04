@@ -64,7 +64,7 @@ _DETECTION_RE = re.compile(
     (?P<filter>{_FILTER_TOKEN})            # filter
     \s*[=~]\s*
     (?P<mag>\d{{1,2}}\.\d{{1,3}})              # magnitude
-    (?:\s*(?:±|\+/[-−]|[+\-])\s*(?P<err>\d+\.\d+))?   # optional error (±, +/-, +/−)
+    (?:\s*(?:±|\+/[-−]|\+[-−]|[+\-])\s*(?P<err>\d+\.\d+))?  # error: ±, +/-, +-
     """,
     re.VERBOSE,
 )
@@ -610,7 +610,7 @@ def parse_pipe_candidate_with_span(text: str) -> tuple[list[str], float, float, 
 _FIXEDW_ROW_RE = re.compile(
     r"""^[ \t]*
     (?P<dt>\d{4}[.\-]\d{2}[.\-]\d{2}[ T]\d{2}:\d{2}:\d{2})   # date + time (secs required)
-    \s+[\d.]+                                                 # t-T0 (days)
+    \s+(?P<offset_d>[\d.]+)                                   # t-T0, mid-exposure (days)
     \s+\S+                                                    # exposure (12*300, 26x150)
     \s+(?P<filter>[A-Za-z']{1,4})                             # filter (Rc, R)
     \s+(?P<mag>\d{1,2}\.\d{1,3})                              # mag
@@ -631,7 +631,9 @@ def _looks_like_fixedw_header(line: str) -> bool:
     )
 
 
-def parse_fixed_width_table_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
+def parse_fixed_width_table_with_spans(
+    text: str, trigger_time: datetime | None = None
+) -> list[tuple[PhotometryExt, Span]]:
     """Parse the SAO-RAS/IKI fixed-width photometry template. Per-row Spans.
 
     A row is only accepted when a matching header sits within the preceding few
@@ -652,7 +654,13 @@ def parse_fixed_width_table_with_spans(text: str) -> list[tuple[PhotometryExt, S
         base = normalize_filter(m.group("filter"))
         if base not in _KNOWN_FILTERS:
             continue
-        ep = epoch_from_absolute(m.group("dt").replace(".", "-"))
+        # The datetime column is when the exposures started; t-T0 is their
+        # mid-point, which is the epoch of the measurement.
+        ep = None
+        if trigger_time is not None:
+            ep = epoch_from_offset(trigger_time, float(m.group("offset_d")), "d")
+        if ep is None:
+            ep = epoch_from_absolute(m.group("dt").replace(".", "-"))
         obs_mjd, obs_time = ep if ep is not None else (None, None)
         row_text = line.rstrip("\r\n")
         rows.append(

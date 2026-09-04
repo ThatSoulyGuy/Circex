@@ -194,7 +194,21 @@ def parse_observation_epoch(text: str) -> tuple[float, str] | None:
     return epoch_from_absolute(match.group(1))
 
 
-def resolve_observation_epoch(extraction: CircularExtraction, body: str) -> None:
+def _stated_mid_time(body: str, trigger_time: datetime | None) -> tuple[float, str] | None:
+    """T0 plus a mid-exposure offset the circular states, when both are known."""
+    if trigger_time is None:
+        return None
+    from circex.extract.regex.dates import parse_mid_time_offset
+
+    offset = parse_mid_time_offset(body)
+    if offset is None:
+        return None
+    return epoch_from_offset(trigger_time, offset.value, offset.unit)
+
+
+def resolve_observation_epoch(
+    extraction: CircularExtraction, body: str, trigger_time: datetime | None = None
+) -> None:
     """Backfill a single circular-level observation epoch onto untimed rows, in place.
 
     For prose photometry lists ("g = 19.69 +/- 0.04", magnitudes on their own
@@ -207,7 +221,9 @@ def resolve_observation_epoch(extraction: CircularExtraction, body: str) -> None
         return
     if any(r.obs_mjd is not None or r.obs_time is not None for r in extraction.photometry):
         return
-    pair = parse_observation_epoch(body)
+    # A datetime in the prose is usually when the exposures began; where the
+    # circular also states the mid-time, that is the epoch of the measurement.
+    pair = _stated_mid_time(body, trigger_time) or parse_observation_epoch(body)
     if pair is None:
         return
     mjd, iso = pair

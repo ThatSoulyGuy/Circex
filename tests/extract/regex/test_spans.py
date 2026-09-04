@@ -41,7 +41,7 @@ def test_redshift_span_resolves_to_snippet() -> None:
     result = parse_redshift_with_span(body)
     assert result is not None
     _, span = result
-    assert body[span.start:span.end] == span.snippet
+    assert body[span.start : span.end] == span.snippet
     assert "1.234" in span.snippet
 
 
@@ -50,7 +50,7 @@ def test_coords_span_resolves_to_snippet() -> None:
     result = parse_coords_with_span(body)
     assert result is not None
     _, span = result
-    assert body[span.start:span.end] == span.snippet
+    assert body[span.start : span.end] == span.snippet
     assert "RA" in span.snippet and "Dec" in span.snippet
 
 
@@ -59,7 +59,7 @@ def test_classification_span_resolves_to_snippet() -> None:
     result = parse_classification_with_span(body)
     assert result is not None
     _, span = result
-    assert body[span.start:span.end] == span.snippet
+    assert body[span.start : span.end] == span.snippet
 
 
 def test_time_offsets_spans_resolve_to_snippets() -> None:
@@ -67,7 +67,7 @@ def test_time_offsets_spans_resolve_to_snippets() -> None:
     hits = parse_time_offsets_with_spans(body)
     assert len(hits) == 2
     for _, span in hits:
-        assert body[span.start:span.end] == span.snippet
+        assert body[span.start : span.end] == span.snippet
 
 
 def test_single_mag_span_resolves_to_snippet() -> None:
@@ -75,7 +75,7 @@ def test_single_mag_span_resolves_to_snippet() -> None:
     hits = parse_single_mags_with_spans(body)
     assert hits, "expected a magnitude hit"
     _, span = hits[0]
-    assert body[span.start:span.end] == span.snippet
+    assert body[span.start : span.end] == span.snippet
     assert "18.42" in span.snippet
 
 
@@ -88,7 +88,7 @@ def test_mag_table_spans_resolve_to_per_row_snippets() -> None:
     hits = parse_mag_table_with_spans(body)
     assert len(hits) == 2
     for row, span in hits:
-        assert body[span.start:span.end] == span.snippet
+        assert body[span.start : span.end] == span.snippet
         assert str(row.mag) in span.snippet
 
 
@@ -100,7 +100,7 @@ def test_extractor_populates_provenance_for_redshift() -> None:
     r = RegexExtractor().extract(_circular(body))
     assert "redshift" in r.provenance
     p = r.provenance["redshift"]
-    assert body[p.start:p.end] == p.snippet
+    assert body[p.start : p.end] == p.snippet
 
 
 def test_extractor_populates_provenance_for_localization() -> None:
@@ -108,7 +108,7 @@ def test_extractor_populates_provenance_for_localization() -> None:
     r = RegexExtractor().extract(_circular(body))
     assert "localization" in r.provenance
     p = r.provenance["localization"]
-    assert body[p.start:p.end] == p.snippet
+    assert body[p.start : p.end] == p.snippet
 
 
 def test_extractor_populates_provenance_for_table_rows() -> None:
@@ -121,7 +121,7 @@ def test_extractor_populates_provenance_for_table_rows() -> None:
     assert "photometry[0]" in r.provenance and "photometry[1]" in r.provenance
     for key in ("photometry[0]", "photometry[1]"):
         p = r.provenance[key]
-        assert body[p.start:p.end] == p.snippet
+        assert body[p.start : p.end] == p.snippet
 
 
 def test_extractor_populates_provenance_for_time_offsets() -> None:
@@ -131,7 +131,7 @@ def test_extractor_populates_provenance_for_time_offsets() -> None:
     assert "time_offsets[1]" in r.provenance
     for key in ("time_offsets[0]", "time_offsets[1]"):
         p = r.provenance[key]
-        assert body[p.start:p.end] == p.snippet
+        assert body[p.start : p.end] == p.snippet
 
 
 def test_extractor_populates_provenance_for_follow_up() -> None:
@@ -139,7 +139,7 @@ def test_extractor_populates_provenance_for_follow_up() -> None:
     r = RegexExtractor().extract(_circular(body))
     assert "follow_up" in r.provenance
     p = r.provenance["follow_up"]
-    assert body[p.start:p.end] == p.snippet
+    assert body[p.start : p.end] == p.snippet
     assert "205" in p.snippet and "213" in p.snippet
 
 
@@ -151,7 +151,7 @@ def test_extractor_provenance_for_event_from_body() -> None:
     assert r.event is not None
     assert "event" in r.provenance
     p = r.provenance["event"]
-    assert body[p.start:p.end] == p.snippet
+    assert body[p.start : p.end] == p.snippet
     assert "GRB" in p.snippet
 
 
@@ -165,7 +165,7 @@ def test_extractor_classification_provenance() -> None:
     r = RegexExtractor().extract(_circular(body))
     assert "classification" in r.provenance
     p = r.provenance["classification"]
-    assert body[p.start:p.end] == p.snippet
+    assert body[p.start : p.end] == p.snippet
 
 
 # ---- model_dump round-trip (P1 #7) ----
@@ -184,7 +184,7 @@ def test_provenance_round_trips_through_model_dump_json() -> None:
     span = wire["provenance"]["redshift"]
     assert {"start", "end", "snippet"} <= set(span.keys())
     # Round-trip-stable: the snippet equals body[start:end] in the original text.
-    assert body[span["start"]:span["end"]] == span["snippet"]
+    assert body[span["start"] : span["end"]] == span["snippet"]
 
 
 def test_provenance_round_trips_through_model_dump_then_validate() -> None:
@@ -210,4 +210,4 @@ def test_redshift_bound_provenance_round_trips() -> None:
     assert dumped["extraction_meta"]["notes"] == ["redshift_bound: z <= 1.61"]
     assert "_redshift_bound" in dumped["provenance"]
     bound_span = dumped["provenance"]["_redshift_bound"]
-    assert body[bound_span["start"]:bound_span["end"]] == bound_span["snippet"]
+    assert body[bound_span["start"] : bound_span["end"]] == bound_span["snippet"]

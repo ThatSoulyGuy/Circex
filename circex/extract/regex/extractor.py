@@ -174,7 +174,7 @@ class RegexExtractor(Extractor):
         # ---- photometry: prefer pipe table, then whitespace table, then prose ----
         photo_hits = (
             parse_pipe_table_with_spans(body, circular.trigger_time)
-            or parse_fixed_width_table_with_spans(body)
+            or parse_fixed_width_table_with_spans(body, circular.trigger_time)
             or parse_mag_table_with_spans(body)
             or parse_single_mags_with_spans(body)
         )
@@ -245,7 +245,7 @@ class RegexExtractor(Extractor):
         # A datetime stated in the body is exact, so it binds first; T0 + a single
         # relative offset is rounded ("~4.5 days post-burst") and only fills rows
         # still untimed. Both are no-ops when the circular states neither.
-        resolve_observation_epoch(extraction, body)
+        resolve_observation_epoch(extraction, body, circular.trigger_time)
         resolve_inline_offsets(extraction, circular.body, circular.trigger_time)
         resolve_relative_epochs(extraction, circular.trigger_time)
         _apply_telescope(extraction, body, provenance)

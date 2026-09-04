@@ -40,6 +40,21 @@ _T_MINUS_T0_RE = re.compile(
     re.VERBOSE | re.IGNORECASE,
 )
 
+# "mid. time = 8.1358 hours", "observations mid-time at 2.3 hr" — the elapsed
+# time to the middle of a stacked exposure, with the trigger left implicit. A
+# clock time ("mid time = 03:41 UT") carries no bare unit and does not match.
+_MID_TIME_RE = re.compile(
+    r"""
+    \bmid[-.\s]*time\b
+    \s*(?:[=:~]|\s+(?:of|at)\s+)?\s*
+    (?P<value>\d+(?:\.\d+)?)
+    \s*
+    (?P<unit>ks|hrs?|s(?:ec(?:ond)?s?)?|m(?:in(?:ute)?s?)?|h(?:our)?s?|d(?:ay)?s?)
+    \b
+    """,
+    re.VERBOSE | re.IGNORECASE,
+)
+
 # "approximately X hours after the trigger", "X minutes post-burst", "5.9d after
 # the Swift/BAT trigger". Circulars say "burst" as often as "trigger", and name
 # the instrument in between, so both are accepted.
@@ -149,4 +164,44 @@ def parse_time_offsets_with_spans(text: str) -> list[tuple[TimeOffset, Span]]:
             )
         )
 
+    # Last, and only where nothing else claimed the text: "mid-time 38.66 min
+    # after the trigger" is already an offset by the clause above.
+    for match in _MID_TIME_RE.finditer(text):
+        unit = _normalize_unit(match.group("unit"))
+        if unit is None:
+            continue
+        if any(sp.start < match.end() and match.start() < sp.end for _, sp in out):
+            continue
+        out.append(
+            (
+                TimeOffset(
+                    value=_scaled(float(match.group("value")), match.group("unit")),
+                    unit=unit,
+                    reference="trigger",
+                ),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
+
     return out
+
+
+def parse_mid_time_offset(text: str) -> TimeOffset | None:
+    """The mid-exposure offset from the trigger, when the circular states one.
+
+    Only one: a circular listing several mid-times is describing several epochs,
+    and which row each belongs to is decided per line, not here.
+    """
+    matches = _MID_TIME_RE.findall(text)
+    if len(matches) != 1:
+        return None
+    match = _MID_TIME_RE.search(text)
+    assert match is not None
+    unit = _normalize_unit(match.group("unit"))
+    if unit is None:
+        return None
+    return TimeOffset(
+        value=_scaled(float(match.group("value")), match.group("unit")),
+        unit=unit,
+        reference="trigger",
+    )

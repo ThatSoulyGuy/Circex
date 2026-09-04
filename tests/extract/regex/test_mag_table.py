@@ -460,3 +460,9 @@ def test_a_cousins_band_keeps_its_name():
     assert [(p.filter, p.bandpass) for p in parse_single_mags("Rc = 20.1 +/- 0.1")] == [
         ("Rc", "bessellr")
     ]
+
+
+def test_an_error_written_without_a_slash_is_read():
+    assert [(p.mag, p.mag_error) for p in parse_single_mags("r = 22.88 +- 0.16 (AB)")] == [
+        (22.88, 0.16)
+    ]
