@@ -12,7 +12,10 @@ from typing import TYPE_CHECKING, Final
 
 from circex.data.telescopes import canonicalize_telescope
 from circex.extract.protocol import Circular, Extractor
-from circex.extract.regex.classification import parse_classification_with_span
+from circex.extract.regex.classification import (
+    parse_classification_with_span,
+    parse_xrf_subtype,
+)
 from circex.extract.regex.coords import (
     parse_coords_with_span,
     parse_ipn_error_box_with_span,
@@ -216,6 +219,14 @@ class RegexExtractor(Extractor):
             predicted = self._sn_classifier.predict_type(f"{subject}\n{body}")
             classification = Classification(classification=predicted) if predicted else None
             provenance.pop("classification", None)
+
+        # An X-ray flash is a soft GRB the taxonomy has no node for, so it rides
+        # on the subtype. The circular states it outright or hedges it, and the
+        # difference is what a reader acts on.
+        if (xrf := parse_xrf_subtype(body)) is not None:
+            if classification is None:
+                classification = Classification(classification="GRB")
+            classification.subtype = xrf
 
         # ---- time offsets ----
         offset_hits = parse_time_offsets_with_spans(body)

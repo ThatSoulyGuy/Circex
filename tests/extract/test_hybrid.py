@@ -6,9 +6,19 @@ from typing import Any
 
 import pytest
 
-from circex.extract.hybrid import _ROUTING, HybridExtractor, _carry_telescope
+from circex.extract.hybrid import (
+    _ROUTING,
+    HybridExtractor,
+    _carry_telescope,
+    _carry_xrf_subtype,
+)
 from circex.extract.protocol import Circular
-from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
+from circex.schema import (
+    CircularExtraction,
+    Classification,
+    ExtractionMeta,
+    PhotometryExt,
+)
 
 
 def _mk(**fields: Any) -> CircularExtraction:
@@ -251,3 +261,14 @@ def test_a_run_on_telescope_name_yields_to_the_regex_one():
     rows = fields["photometry"]
     assert isinstance(rows, list)
     assert rows[0].telescope == "2m robotic Liverpool"
+
+
+def test_the_xrf_subtype_survives_the_llm_owning_classification():
+    fields: dict[str, object] = {
+        "classification": Classification(classification="GRB"),
+    }
+    regex = _stub(1, classification=Classification(classification="GRB", subtype="XRF candidate"))
+    _carry_xrf_subtype(fields, regex)
+    chosen = fields["classification"]
+    assert isinstance(chosen, Classification)
+    assert chosen.subtype == "XRF candidate"

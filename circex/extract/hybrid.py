@@ -31,7 +31,12 @@ from circex.data.telescopes import canonicalize_telescope
 from circex.extract.protocol import Circular, Extractor
 from circex.extract.regex.telescope import parse_telescope_with_span
 from circex.extract.timing import parse_observation_epoch
-from circex.schema import CircularExtraction, ExtractionMeta, PhotometryExt
+from circex.schema import (
+    CircularExtraction,
+    Classification,
+    ExtractionMeta,
+    PhotometryExt,
+)
 from circex.schema.span import Span
 
 # field name -> (primary source, secondary source | None). Source is "regex" | "llm".
@@ -129,6 +134,23 @@ def _carry_telescope(
         row.telescope_canonical = canonical
 
 
+def _carry_xrf_subtype(fields: dict[str, object], regex_source: CircularExtraction) -> None:
+    """Keep the X-ray flash subtype regex read from the prose, in place.
+
+    The LLM owns classification, so a subtype it does not emit is otherwise
+    dropped along with the rest of the regex classification.
+    """
+    regex_cls = regex_source.classification
+    if regex_cls is None or not regex_cls.subtype:
+        return
+    chosen = fields.get("classification")
+    if isinstance(chosen, Classification):
+        if not chosen.subtype:
+            chosen.subtype = regex_cls.subtype
+    elif chosen is None:
+        fields["classification"] = regex_cls
+
+
 def _is_structured(row: PhotometryExt) -> bool:
     return row.energy_band_kev is not None or row.frequency_ghz is not None
 
@@ -216,6 +238,7 @@ class HybridExtractor(Extractor):
         _rescue_structured_photometry(fields, sources["regex"])
         _carry_telescope(fields, sources["regex"], circular.body)
         _prefer_stated_epoch(fields, circular.body)
+        _carry_xrf_subtype(fields, sources["regex"])
 
         # Retraction is read from the subject line, so it is the same either way
         # and never routed; without this the merged result always reads False.

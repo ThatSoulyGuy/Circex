@@ -176,3 +176,59 @@ def parse_classification_with_span(
         span = Span(start=match.start(), end=match.end(), snippet=token)
         return cls, span
     return None
+
+
+# ---- X-ray flash ----
+#
+# XRF is not a taxonomy class, so it rides on `subtype` while `classification`
+# stays GRB. Circulars name it three ways, and only one is a classification:
+#   "Therefore this burst is an XRF."            <- classifies this burst
+#   "the optical counterpart of XRF 050406"      <- a designation
+#   "similar to that seen in GRB/XRF 060218"     <- a different burst, cited
+_XRF = r"(?:X[-\s]?ray\s+flash(?:es)?|XRF)"
+
+# "XRF 030723", "XRF/GRB 011030", "XRF 100316D" — a name, not a class.
+_XRF_DESIGNATION_RE = re.compile(rf"{_XRF}\s*/?\s*(?:GRB\s*)?\d{{6}}", re.I)
+
+# The burst is being classified, rather than merely mentioned.
+_XRF_CLASSIFIES_RE = re.compile(
+    rf"(?:\b(?:is|are|was|were)\s+(?:an?\s+)?(?:[\w-]+\s+){{0,3}}?{_XRF}\b"
+    rf"|classif\w*\s+(?:it\s+)?(?:as\s+)?(?:an?\s+)?{_XRF}\b"
+    rf"|{_XRF}\s+classification"
+    rf"|consistent\s+with\s+(?:an?\s+){_XRF}\b)",
+    re.I,
+)
+
+# Hedges that make it a candidate rather than a claim, read within the sentence
+# that classifies: an adjacent sentence hedging something else does not count.
+_XRF_HEDGE_RE = re.compile(
+    r"\b(?:could|may|might|would|possibl[ey]|potential(?:ly)?|probable|probably"
+    r"|either"
+    r"|likely|suspect\w*|suggest\w*|appears?|seems?|candidate|if\b|had\s+it"
+    r"|consistent\s+with|cannot\s+be\s+excluded)\b",
+    re.I,
+)
+
+# An explicit refusal to classify is not a classification: "it is not possible
+# to conclude that this event is an X-ray flash".
+_XRF_NEGATED_RE = re.compile(
+    r"\b(?:not\s+possible\s+to\s+conclude|cannot\s+(?:be\s+)?conclude\w*"
+    r"|do(?:es)?\s+not\s+(?:appear|seem)|is\s+not\s+an?|no\s+evidence)\b",
+    re.I,
+)
+
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+
+
+def parse_xrf_subtype(text: str) -> str | None:
+    """ "XRF", "XRF candidate", or None if the text classifies no X-ray flash."""
+    for sentence in _SENTENCE_SPLIT_RE.split(text):
+        stripped = _XRF_DESIGNATION_RE.sub(" ", sentence)
+        if not _XRF_CLASSIFIES_RE.search(stripped):
+            continue
+        if _SEARCH_CONTEXT_RE.search(stripped[: stripped.lower().find("x")]):
+            continue
+        if _XRF_NEGATED_RE.search(stripped):
+            continue
+        return "XRF candidate" if _XRF_HEDGE_RE.search(stripped) else "XRF"
+    return None

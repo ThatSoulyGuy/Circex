@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from circex.extract.regex.classification import parse_classification
+from circex.extract.regex.classification import parse_classification, parse_xrf_subtype
 
 
 def test_match_canonical_class() -> None:
@@ -86,3 +86,36 @@ def test_single_letter_subtype_suffix_is_kept() -> None:
     """'Type II-P' keeps the base class (single-letter subtype, not a proper noun)."""
     c = parse_classification("Classified as a Type II-P supernova.")
     assert c is not None and c.classification == "Type II"
+
+
+def test_a_stated_x_ray_flash_is_a_subtype():
+    assert parse_xrf_subtype("Therefore this burst is an XRF.") == "XRF"
+    assert (
+        parse_xrf_subtype("It is not detected above 40 keV, which classifies it as an XRF.")
+        == "XRF"
+    )
+
+
+def test_a_hedged_x_ray_flash_is_a_candidate():
+    assert (
+        parse_xrf_subtype("Therefore this burst could be classified as an X-Ray Flash (XRF).")
+        == "XRF candidate"
+    )
+    assert (
+        parse_xrf_subtype("we conclude the burst is either an X-Ray Flash or a hard burst.")
+        == "XRF candidate"
+    )
+
+
+def test_a_named_x_ray_flash_is_not_a_classification():
+    """A designation or a cited burst names an XRF without classifying this one."""
+    assert parse_xrf_subtype("this is the optical counterpart of XRF 050406.") is None
+    assert parse_xrf_subtype("similar to that seen in GRB/XRF 060218 (Campana et al.).") is None
+    assert parse_xrf_subtype("to look for any coincident hard X-ray flash.") is None
+
+
+def test_a_refusal_to_conclude_is_not_a_classification():
+    assert (
+        parse_xrf_subtype("it is not possible to conclude that this event is an X-ray flash.")
+        is None
+    )
