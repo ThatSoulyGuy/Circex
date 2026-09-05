@@ -232,3 +232,44 @@ def parse_xrf_subtype(text: str) -> str | None:
             continue
         return "XRF candidate" if _XRF_HEDGE_RE.search(stripped) else "XRF"
     return None
+
+
+# ---- stellar flare ----
+#
+# EP and Swift trigger often on flaring stars, and the circular says so. The
+# class is UV Ceti in the taxonomy; only a statement about *this* trigger counts,
+# not a flare star named as a position reference ("2.9 arcsec from the known
+# flare star DG CVn").
+_FLARE = r"(?:stellar\s+flare|flar(?:e|ing)\s+star|M[-\s]?dwarf\s+flare)"
+
+# Only a statement about the trigger itself: a flare star in an error box, a
+# decline rate "similar to" one, or an enumerated hypothesis are not it.
+_FLARE_CLASSIFIES_RE = re.compile(
+    rf"(?:\b(?:trigger|transient)\w*\b(?:\W+\w+){{0,6}}?\W+(?:is|was)\s+"
+    rf"(?:\w+\s+){{0,3}}?{_FLARE}\b"
+    rf"|(?:caused\s+by|due\s+to)\s+(?:an?\s+|the\s+)?(?:known\s+)?{_FLARE}\b"
+    rf"|trigger(?:ed|s)?\s+(?:\w+\s+){{0,6}}?(?:from|on)\s+(?:the\s+)?"
+    rf"(?:location\s+of\s+the\s+)?{_FLARE}\b)",
+    re.I,
+)
+
+# The clause denies the flare, or refuses to settle it.
+_FLARE_NEGATED_RE = re.compile(
+    r"\bno\s+(?:signs?|evidence|indication)\s+of|\bnoise\s+event"
+    r"|\bcannot\s+be\s+(?:ruled\s+out|excluded)|\bpossibility\s+that"
+    r"|\bwe\s+consider\s+this\s+unlikely"
+    r"|\brather\s+than\s+(?:a\s+)?(?:stellar\s+flare|flare)"
+    r"|\bnot\s+(?:a\s+|an\s+)?(?:stellar\s+flare|flar)",
+    re.I,
+)
+
+
+def parse_stellar_flare(text: str) -> str | None:
+    """ "UV Ceti", "UV Ceti candidate", or None if no flare is claimed here."""
+    for sentence in _SENTENCE_SPLIT_RE.split(text):
+        if not _FLARE_CLASSIFIES_RE.search(sentence):
+            continue
+        if _FLARE_NEGATED_RE.search(sentence):
+            continue
+        return "UV Ceti candidate" if _XRF_HEDGE_RE.search(sentence) else "UV Ceti"
+    return None

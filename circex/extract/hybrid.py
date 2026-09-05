@@ -135,16 +135,22 @@ def _carry_telescope(
 
 
 def _carry_xrf_subtype(fields: dict[str, object], regex_source: CircularExtraction) -> None:
-    """Keep the X-ray flash subtype regex read from the prose, in place.
+    """Keep what regex read from the prose about the class, in place.
 
     The LLM owns classification, so a subtype it does not emit is otherwise
-    dropped along with the rest of the regex classification.
+    dropped; a stellar flare, which regex states outright, replaces it.
     """
     regex_cls = regex_source.classification
-    if regex_cls is None or not regex_cls.subtype:
+    if regex_cls is None:
+        return
+    if not regex_cls.subtype and regex_cls.classification != "UV Ceti":
         return
     chosen = fields.get("classification")
-    if isinstance(chosen, Classification):
+    if regex_cls.classification == "UV Ceti":
+        # A circular saying the trigger was a flaring star is settling what it
+        # was; the model's guess from the same text does not override that.
+        fields["classification"] = regex_cls
+    elif isinstance(chosen, Classification):
         if not chosen.subtype:
             chosen.subtype = regex_cls.subtype
     elif chosen is None:

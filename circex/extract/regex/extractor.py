@@ -14,6 +14,7 @@ from circex.data.telescopes import canonicalize_telescope
 from circex.extract.protocol import Circular, Extractor
 from circex.extract.regex.classification import (
     parse_classification_with_span,
+    parse_stellar_flare,
     parse_xrf_subtype,
 )
 from circex.extract.regex.coords import (
@@ -234,6 +235,12 @@ class RegexExtractor(Extractor):
         # An X-ray flash is a soft GRB the taxonomy has no node for, so it rides
         # on the subtype. The circular states it outright or hedges it, and the
         # difference is what a reader acts on.
+        # The subject often carries the terse claim ("...is likely a flaring star").
+        if (flare := parse_stellar_flare(f"{subject}\n{body}")) is not None:
+            classification = Classification(classification="UV Ceti")
+            if flare.endswith("candidate"):
+                classification.subtype = flare
+
         if (xrf := parse_xrf_subtype(body)) is not None:
             if classification is None:
                 classification = Classification(classification="GRB")

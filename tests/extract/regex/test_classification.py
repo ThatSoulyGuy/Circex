@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
-from circex.extract.regex.classification import parse_classification, parse_xrf_subtype
+from circex.extract.regex.classification import (
+    parse_classification,
+    parse_stellar_flare,
+    parse_xrf_subtype,
+)
 
 
 def test_match_canonical_class() -> None:
@@ -117,5 +121,47 @@ def test_a_named_x_ray_flash_is_not_a_classification():
 def test_a_refusal_to_conclude_is_not_a_classification():
     assert (
         parse_xrf_subtype("it is not possible to conclude that this event is an X-ray flash.")
+        is None
+    )
+
+
+def test_a_trigger_stated_to_be_a_flaring_star():
+    assert parse_stellar_flare("BAT triggered on the flare star Algol.") == "UV Ceti"
+    assert (
+        parse_stellar_flare("Hence we confirm that this EP trigger is due to the flaring star.")
+        == "UV Ceti"
+    )
+
+
+def test_a_hedged_flaring_star_is_a_candidate():
+    assert (
+        parse_stellar_flare(
+            "The EP-WXT trigger is likely a stellar flare associated with LP 296-57."
+        )
+        == "UV Ceti candidate"
+    )
+
+
+def test_a_flare_star_that_is_not_the_classification():
+    """A flare star can be a position reference, a comparison, or a rejected guess."""
+    assert (
+        parse_stellar_flare("This position is 2.9 arcsec from the known flare star DG CVn.") is None
+    )
+    assert parse_stellar_flare("Decline is similar to M-dwarf flare decline rate.") is None
+    assert (
+        parse_stellar_flare("there is a flare star system BD-21 1074 in the MAXI error box.")
+        is None
+    )
+    assert (
+        parse_stellar_flare("we see no signs of activity from the RS CVn flare star HR 5110.")
+        is None
+    )
+
+
+def test_refusing_to_rule_a_flare_out_is_not_a_classification():
+    assert (
+        parse_stellar_flare(
+            "Hence, the possibility that EP241107a is a stellar flare event cannot be ruled out."
+        )
         is None
     )
