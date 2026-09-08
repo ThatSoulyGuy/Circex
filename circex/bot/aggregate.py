@@ -99,6 +99,22 @@ def _dedup_key(point: Any) -> tuple[Any, ...]:
     return (point.obj_id, point.filter, point.magsys, round(point.mjd, 5), point.mag)
 
 
+# A line measured in the transient's own spectrum beats an association with a
+# host galaxy, and a spectrum beats a colour.
+_MEASURE_RANK = {"spectroscopic": 2, "photometric": 1}
+_TYPE_RANK = {"emission": 2, "absorption": 2, "host": 1}
+
+
+def _redshift_rank(redshift: Any) -> tuple[int, int]:
+    """How much weight a stated redshift carries; higher wins."""
+    if redshift is None:
+        return (0, 0)
+    return (
+        _MEASURE_RANK.get(redshift.redshift_measure or "", 0),
+        _TYPE_RANK.get(redshift.redshift_type or "", 0),
+    )
+
+
 def aggregate_event(
     records: Iterable[dict[str, Any]],
     extractor: Extractor,
@@ -136,6 +152,7 @@ def aggregate_event(
     skipped = 0
     skipped_reasons: list[str] = []
     redshift: tuple[float, float | None] | None = None
+    redshifts: list[tuple[tuple[int, int], tuple[float, float | None]]] = []
     source: SourceUpsert | None = None
     event = Event(event_name=name) if name is not None else None
 
@@ -166,8 +183,14 @@ def aggregate_event(
         comments.extend(actions.comments)
         skipped += actions.skipped_rows
         skipped_reasons.extend(actions.skipped_reasons)
-        if redshift is None and actions.redshift is not None:
-            redshift = actions.redshift
+        if actions.redshift is not None:
+            redshifts.append((_redshift_rank(extraction.redshift), actions.redshift))
+
+    # A later circular routinely improves on the discovery circular's guess, so
+    # take the best redshift rather than the first. `max` is stable, so equally
+    # good ones keep the order the circulars arrived in.
+    if redshifts:
+        redshift = max(redshifts, key=lambda candidate: candidate[0])[1]
 
     # Dedup photometry (idempotent re-runs; overlapping reports).
     seen: set[tuple[Any, ...]] = set()

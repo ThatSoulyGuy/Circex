@@ -205,3 +205,45 @@ def test_a_retraction_withdraws_the_event_photometry():
     actions = aggregate_event(records, _Ext(), default_instrument_id=1)
     assert actions.photometry == []
     assert any("withdraws this counterpart" in c for c in actions.comments)
+
+
+def test_aggregate_prefers_a_line_redshift_over_a_host_association() -> None:
+    """A discovery circular's host guess must not outrank a later spectrum."""
+    records = [
+        {
+            "circularId": 40030,
+            "subject": "EP240806a: discovery",
+            "body": (
+                "EP240806a optical counterpart at RA = 12.278, Dec = +35.588 (J2000). "
+                "The candidate host galaxy is at a redshift of 0.136."
+            ),
+        },
+        {
+            "circularId": 40031,
+            "subject": "EP240806a: GTC redshift",
+            "body": (
+                "Spectroscopy of EP240806a shows emission lines at a common redshift z = 0.089."
+            ),
+        },
+    ]
+    actions = aggregate_event(records, RegexExtractor(), default_instrument_id=7, group_ids=[3])
+    assert actions.redshift is not None
+    assert actions.redshift[0] == 0.089
+
+
+def test_aggregate_keeps_the_earlier_of_two_equally_good_redshifts() -> None:
+    records = [
+        {
+            "circularId": 40040,
+            "subject": "GRB 990102A: first spectrum",
+            "body": ("GRB 990102A at RA = 10.0, Dec = +5.0. Emission lines give z = 1.20."),
+        },
+        {
+            "circularId": 40041,
+            "subject": "GRB 990102A: second spectrum",
+            "body": "Emission lines of GRB 990102A give a redshift z = 1.21.",
+        },
+    ]
+    actions = aggregate_event(records, RegexExtractor(), default_instrument_id=7, group_ids=[3])
+    assert actions.redshift is not None
+    assert actions.redshift[0] == 1.20
