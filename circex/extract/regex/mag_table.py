@@ -418,13 +418,13 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
         limit = float(match.group("limit"))
         if not _plausible_mag(filter_name, limit):
             continue
-        sigma = match.group("sigma") or match.group("sigma_after")
+        stated_sigma = match.group("sigma") or match.group("sigma_after")
         rows.append(
             (
                 PhotometryExt(
                     filter=filter_name,
                     limiting_mag=limit,
-                    limiting_mag_sigma=float(sigma) if sigma else None,
+                    limiting_mag_sigma=float(stated_sigma) if stated_sigma else None,
                     is_detection=False,
                     mag_system=infer_mag_system(filter_name),
                     bandpass=infer_bandpass(filter_name),
