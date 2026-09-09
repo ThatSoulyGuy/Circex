@@ -67,6 +67,27 @@ _LIMIT_CLAUSE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# "down to a 3-sigma upper limit of about 20.6 mag": the depth is stated in
+# prose and the band named in a neighbouring sentence, so no filter sits beside
+# the number. `mag` is mandatory, because the same phrasing carries X-ray limits
+# in ph/cm2/s and counts/s, which are not magnitudes.
+_BARE_LIMIT_RE = re.compile(
+    r"(?:(?P<sigma>\d+(?:\.\d+)?)\s*[-–\s]?\s*sigma\s+)?"
+    r"(?:upper[-\s]?limits?|limiting\s+magnitudes?)"
+    r"\s*(?:of|is|was|are|were|[:=~])\s*"
+    r"(?:a\s+|about\s+|approximately\s+|around\s+|~\s*)*"
+    r"(?P<limit>\d{1,2}\.\d{1,3})\s*mag\b"
+    r"(?:[^.;]{0,30}?\(?\s*(?P<sigma_after>\d+(?:\.\d+)?)\s*[-–\s]?\s*sigma)?",
+    re.IGNORECASE,
+)
+
+# "in R-band", "the r' filter": the band a bare limit refers to.
+_BAND_CONTEXT_RE = re.compile(
+    rf"(?<![A-Za-z])(?P<filter>{_FILTER_TOKEN})\s*[-\s]?\s*(?:band|filter)\b",
+    re.IGNORECASE,
+)
+
+
 # upper limits: "r > 22.5", "m > 22 (3-sigma)".
 _DETECTION_RE = re.compile(
     rf"""
@@ -280,6 +301,16 @@ def _in_ranges(pos: int, ranges: list[tuple[int, int]]) -> bool:
     return any(s <= pos < e for s, e in ranges)
 
 
+def _context_filter(text: str, pos: int, window: int = 400) -> str | None:
+    """The band named most recently before `pos`, for a limit that names none."""
+    for match in reversed(list(_BAND_CONTEXT_RE.finditer(text, max(0, pos - window), pos))):
+        raw = match.group("filter")
+        name = raw if raw in _KNOWN_FILTERS else normalize_filter(raw)
+        if name in _KNOWN_FILTERS:
+            return name
+    return None
+
+
 def parse_single_mags(text: str) -> list[PhotometryExt]:
     """Extract single-row magnitude mentions ('r = 18.42 ± 0.05', 'R > 22.5')."""
     return [p for p, _ in parse_single_mags_with_spans(text)]
@@ -369,6 +400,32 @@ def parse_single_mags_with_spans(text: str) -> list[tuple[PhotometryExt, Span]]:
                     filter=filter_name,
                     limiting_mag=limit,
                     limiting_mag_sigma=sigma,
+                    mag_system=infer_mag_system(filter_name),
+                    bandpass=infer_bandpass(filter_name),
+                ),
+                Span(start=match.start(), end=match.end(), snippet=match.group(0)),
+            )
+        )
+
+    # Limits stated without a filter beside them, the band taken from context.
+    claimed = [(span.start, span.end) for _, span in rows]
+    for match in _BARE_LIMIT_RE.finditer(text):
+        if _in_ranges(match.start(), excluded) or _in_ranges(match.start(), claimed):
+            continue
+        filter_name = _context_filter(text, match.start())
+        if filter_name is None:
+            continue
+        limit = float(match.group("limit"))
+        if not _plausible_mag(filter_name, limit):
+            continue
+        sigma = match.group("sigma") or match.group("sigma_after")
+        rows.append(
+            (
+                PhotometryExt(
+                    filter=filter_name,
+                    limiting_mag=limit,
+                    limiting_mag_sigma=float(sigma) if sigma else None,
+                    is_detection=False,
                     mag_system=infer_mag_system(filter_name),
                     bandpass=infer_bandpass(filter_name),
                 ),

@@ -489,3 +489,39 @@ def test_an_upper_limit_written_as_an_equality():
 def test_a_limit_in_an_earlier_sentence_leaves_a_detection_alone():
     rows = parse_single_mags("The limiting magnitude was 21.5. The source is at R = 20.1 +/- 0.1.")
     assert [(p.filter, p.mag, p.limiting_mag) for p in rows] == [("R", 20.1, None)]
+
+
+def test_a_limit_stated_without_a_filter_beside_it_takes_the_band_from_context():
+    """GCN 45536: the band is named a sentence earlier than the depth."""
+    text = (
+        "We obtained 3*60s frames in R-band, starting at 13:09:25 UT on 2026-09-09. "
+        "No uncatalogued source was detected down to 3-sigma upper limit of about "
+        "20.6 mag."
+    )
+    (row,) = parse_single_mags(text)
+    assert row.filter == "R"
+    assert row.limiting_mag == 20.6
+    assert row.limiting_mag_sigma == 3.0
+    assert row.is_detection is False
+
+
+def test_a_bare_limit_without_a_band_anywhere_is_not_invented():
+    text = "No source was detected down to a 3-sigma upper limit of about 20.6 mag."
+    assert parse_single_mags(text) == []
+
+
+def test_a_limit_in_flux_units_is_not_read_as_a_magnitude():
+    """The same phrasing carries X-ray limits, which are not magnitudes."""
+    for units in ("0.1 ph/cm2", "0.04 counts/s", "3.2e-13 erg/cm2/s"):
+        text = f"We observed in R-band. In that interval the 3-sigma upper limit is {units}."
+        assert parse_single_mags(text) == [], units
+
+
+def test_a_confidence_limit_does_not_invent_a_sigma():
+    text = (
+        "Using the U filter, no new source was found down to a 90%-confidence "
+        "upper limit of about 20.0 mag."
+    )
+    (row,) = parse_single_mags(text)
+    assert row.limiting_mag == 20.0
+    assert row.limiting_mag_sigma is None

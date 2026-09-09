@@ -64,7 +64,25 @@ _BAND_AS_FILTER_RE = re.compile(
 )
 
 
-def _prefer_stated_epoch(fields: dict[str, object], body: str) -> None:
+def _regex_epoch(regex_source: CircularExtraction) -> tuple[float, str] | None:
+    """The single epoch regex read, when its rows agree on one.
+
+    A row parsed from a table carries the epoch that row states, which is more
+    specific than a time recovered from the prose: a table giving the
+    mid-exposure beats "starting at 13:44 UT" by half the exposure. Rows
+    disagreeing means several epochs, and no one of them speaks for the rest.
+    """
+    epochs = {
+        (row.obs_mjd, row.obs_time)
+        for row in regex_source.photometry
+        if row.obs_mjd is not None and row.obs_time is not None
+    }
+    return epochs.pop() if len(epochs) == 1 else None
+
+
+def _prefer_stated_epoch(
+    fields: dict[str, object], body: str, regex_source: CircularExtraction
+) -> None:
     """Replace generated epochs with the one the circular states, in place.
 
     A grammar constrains the model's syntax, not its arithmetic: it will emit a
@@ -75,7 +93,7 @@ def _prefer_stated_epoch(fields: dict[str, object], body: str) -> None:
     rows = fields.get("photometry")
     if not isinstance(rows, list) or not rows:
         return
-    stated = parse_observation_epoch(body)
+    stated = _regex_epoch(regex_source) or parse_observation_epoch(body)
     if stated is None:
         return
     mjd, iso = stated
@@ -243,7 +261,7 @@ class HybridExtractor(Extractor):
 
         _rescue_structured_photometry(fields, sources["regex"])
         _carry_telescope(fields, sources["regex"], circular.body)
-        _prefer_stated_epoch(fields, circular.body)
+        _prefer_stated_epoch(fields, circular.body, sources["regex"])
         _carry_xrf_subtype(fields, sources["regex"])
 
         # Retraction is read from the subject line, so it is the same either way

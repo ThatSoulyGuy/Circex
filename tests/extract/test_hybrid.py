@@ -272,3 +272,52 @@ def test_the_xrf_subtype_survives_the_llm_owning_classification():
     chosen = fields["classification"]
     assert isinstance(chosen, Classification)
     assert chosen.subtype == "XRF candidate"
+
+
+def test_a_table_epoch_beats_the_prose_start_time() -> None:
+    # GCN 45537: the prose gives the exposure start, the table the mid-exposure
+    # half an exposure later. The row parsed from the table is the specific one.
+    body = (
+        "A set of 38x120 sec images in the R band was obtained starting on "
+        "2026-09-09 at 13:44 UT (i.e. 2.446 hours since trigger).\n\n"
+        "2026-09-09 13:44:47 0.12831  38*120  R      21.6    0.1      22.7\n"
+    )
+    regex = _stub(
+        45537,
+        photometry=[
+            PhotometryExt(
+                filter="R",
+                mag=21.6,
+                obs_mjd=61292.598981,
+                obs_time="2026-09-09T14:22:31Z",
+            )
+        ],
+    )
+    llm = _stub(
+        45537,
+        photometry=[
+            PhotometryExt(filter="R", mag=21.6, obs_mjd=0.0, obs_time="1858-11-17T00:00:00Z")
+        ],
+    )
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=45537, subject="s", body=body)
+    )
+    assert merged.photometry[0].obs_time == "2026-09-09T14:22:31Z"
+
+
+def test_rows_disagreeing_on_the_epoch_leave_the_body_to_speak() -> None:
+    # Several epochs means no single one of them stands for the rest, so the
+    # body's stated time is used as before.
+    body = "Our observation started on 2026-09-03T13:06:41.486 UT (29.36 min after the trigger)."
+    regex = _stub(
+        1,
+        photometry=[
+            PhotometryExt(filter="R", obs_mjd=61292.5, obs_time="2026-09-09T12:00:00Z"),
+            PhotometryExt(filter="g", obs_mjd=61292.7, obs_time="2026-09-09T16:48:00Z"),
+        ],
+    )
+    llm = _stub(1, photometry=[PhotometryExt(filter="r", mag=17.9, obs_mjd=59868.0)])
+    merged = HybridExtractor(_Fixed(regex, "regex"), _Fixed(llm, "llm")).extract(
+        Circular(circular_id=1, subject="s", body=body)
+    )
+    assert merged.photometry[0].obs_time.startswith("2026-09-03")
